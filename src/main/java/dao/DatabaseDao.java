@@ -12,10 +12,10 @@ import java.util.ArrayList;
 
 public class DatabaseDao {
 
-	public static String drv = "com.mysql.jdbc.Driver";// 数据库类型
-	public static String url = "jdbc:mysql://localhost:3306/NewsSystem";// 数据库网址
-	public static String usr = "root";// 用户名
-	public static String pwd = "659zxcvbnm";// 密码
+	public static String drv;// 数据库类型
+	public static String url;// 数据库网址
+	public static String usr;// 用户名
+	public static String pwd;// 密码
 
 	private Connection connect = null;
 	private Statement stmt = null;
@@ -26,17 +26,6 @@ public class DatabaseDao {
 		connect = DriverManager.getConnection(url, usr, pwd);
 		stmt = connect.createStatement();
 	}
-
-	// public DatabaseDao(String test) throws Exception {
-	//
-	// }
-
-	// public void init(String drv, String url, String usr, String pwd) throws
-	// Exception {
-	// Class.forName(drv);
-	// connect = DriverManager.getConnection(url, usr, pwd);
-	// stmt = connect.createStatement();
-	// }
 
 	public void query(String sql) throws SQLException {
 		rs = stmt.executeQuery(sql);
@@ -151,5 +140,13 @@ public class DatabaseDao {
 					+ ids + ")");
 		else
 			return -1;
+	}
+
+	public Integer hasStringValue(String tableName, String fieldName, String value) throws SQLException {
+		String sql = "select * from " + tableName + " where " + fieldName + "='" + value + "'";
+		query(sql);
+		while (next())
+			return 1;
+		return 0;
 	}
 }

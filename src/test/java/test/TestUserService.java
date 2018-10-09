@@ -9,8 +9,6 @@ import org.junit.Test;
 
 import bean.User;
 import bean.UserInformation;
-import dao.DatabaseDao;
-import dao.UserDao;
 import service.UserService;
 import tools.PageInformation;
 
@@ -23,17 +21,9 @@ public class TestUserService {
 	// 首先执行（在所有@test方法之前执行），并且只执行一次，多个@Test只执行一次
 	@BeforeClass
 	static public void beforeClass() throws Exception {
-		// databaseDao = new DatabaseDao("");
-		// databaseDao.drv = "com.mysql.jdbc.Driver";// 数据库类型
-		// databaseDao.url = "jdbc:mysql://localhost:3306/NewsSystem";// 数据库网址
-		// databaseDao.usr = "root";// 用户名
-		// databaseDao.pwd = "659zxcvbnm";// 密码
-		// databaseDao.init(databaseDao.drv, databaseDao.url, databaseDao.usr,
-		// databaseDao.pwd);
 		userService = new UserService();
 		user = new User();
 		pageInformation = new PageInformation();
-
 		pageInformation.setPage(1);
 		pageInformation.setPageSize(2);
 		pageInformation.setAllRecordCount(7);

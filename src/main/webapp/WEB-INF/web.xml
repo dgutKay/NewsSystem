@@ -21,11 +21,27 @@
 		<param-name>pwd</param-name>
 		<param-value>659zxcvbnm</param-value>
 	</context-param>
+	<context-param>
+		<param-name>domain</param-name>
+		<param-value>http://localhost:8080/NewsSystem</param-value>
+	</context-param>
+	<context-param>
+		<param-name>emailHost</param-name>
+		<param-value>smtp.163.com</param-value>
+	</context-param>
+	<context-param>
+		<param-name>emailUserEmail</param-name>
+		<param-value>yemeiqistudy@163.com</param-value>
+	</context-param>
+	<context-param>
+		<param-name>emailUserName</param-name>
+		<param-value>yemeiqistudy</param-value>
+	</context-param>
+	<context-param>
+		<param-name>emailPassword</param-name>
+		<param-value>study123</param-value>
+	</context-param>
 
-	<servlet>
-		<servlet-name>UserServlet</servlet-name>
-		<servlet-class>servlet.UserServlet</servlet-class>
-	</servlet>
 	<servlet>
 		<servlet-name>InitServlet</servlet-name>
 		<servlet-class>servlet.InitServlet</servlet-class>
@@ -39,14 +55,17 @@
 		<servlet-name>CommentServlet</servlet-name>
 		<servlet-class>servlet.CommentServlet</servlet-class>
 	</servlet>
+	<servlet>
+		<servlet-name>ImageCheckCodeServlet</servlet-name>
+		<servlet-class>servlet.ImageCheckCodeServlet</servlet-class>
+	</servlet>
+  <servlet>
+    <servlet-name>UserServlet</servlet-name>
+    <servlet-class>servlet.UserServlet</servlet-class>
+  </servlet>
 
 
 
-
-	<servlet-mapping>
-		<servlet-name>UserServlet</servlet-name>
-		<url-pattern>/servlet/UserServlet</url-pattern>
-	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>InitServlet</servlet-name>
 		<url-pattern>/servlet/InitServlet</url-pattern>
@@ -59,6 +78,14 @@
 		<servlet-name>CommentServlet</servlet-name>
 		<url-pattern>/servlet/CommentServlet</url-pattern>
 	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>ImageCheckCodeServlet</servlet-name>
+		<url-pattern>/servlet/ImageCheckCodeServlet</url-pattern>
+	</servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>UserServlet</servlet-name>
+    <url-pattern>/servlet/UserServlet</url-pattern>
+  </servlet-mapping>
 
 	<filter>
 		<filter-name>charencode</filter-name>

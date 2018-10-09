@@ -18,6 +18,7 @@ import org.apache.commons.configuration2.ex.ConfigurationException;
 import bean.Authority;
 import bean.NewsType;
 import tools.AuthorityTool;
+import tools.EMailTool;
 import tools.FileTool;
 import tools.WebProperties;
 import dao.DatabaseDao;
@@ -33,6 +34,13 @@ public class InitServlet extends HttpServlet {
 		DatabaseDao.usr = this.getServletContext().getInitParameter("usr");
 		DatabaseDao.pwd = this.getServletContext().getInitParameter("pwd");
 
+		// 初始化email参数
+		EMailTool.emailHost = this.getServletContext().getInitParameter("emailHost");
+		EMailTool.emailUserEmail = this.getServletContext().getInitParameter("emailUserEmail");
+		EMailTool.emailUserName = this.getServletContext().getInitParameter("emailUserName");
+		EMailTool.emailPassword = this.getServletContext().getInitParameter("emailPassword");
+		EMailTool.domain = this.getServletContext().getInitParameter("domain");
+
 		ServletContext servletContext = conf.getServletContext();
 		FileTool.root = servletContext.getRealPath("\\");
 
@@ -44,10 +52,9 @@ public class InitServlet extends HttpServlet {
 
 		try {
 			WebProperties.config = builder.getConfiguration();
-			WebProperties.config.addProperty("projectRoot", 
+			WebProperties.config.addProperty("projectRoot",
 					servletContext.getRealPath(WebProperties.config.getString("projectName")));
-			
-			
+
 			Configuration config = builder.getConfiguration();
 			WebProperties.propertiesMap.put("projectRoot", servletContext.getRealPath(config.getString("projectName")));
 			WebProperties.propertiesMap.put("projectName", config.getString("projectName"));

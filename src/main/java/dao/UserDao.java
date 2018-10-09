@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import bean.User;
+import tools.Encryption;
 import tools.PageInformation;
 import tools.Tool;
 import tools.WebProperties;
@@ -21,25 +22,28 @@ public class UserDao {
 	public Integer register(User user, DatabaseDao databaseDao) throws SQLException {
 		user.setHeadIconUrl("\\" + WebProperties.propertiesMap.get("projectName")
 				+ WebProperties.propertiesMap.get("headIconFileDefault"));// 默认头像
-		String sql = "insert into user(type,name,password,usability,headIconUrl) values('" + user.getType() + "','"
-				+ user.getName() + "','" + user.getPassword() + "','" + user.getUsability() + "','"
-				+ user.getHeadIconUrl().replace("\\", "\\\\") + "')";
+		String sql = "insert into user(type,name,email,password,salt,usability,headIconUrl) values('" + user.getType()
+				+ "','" + user.getName() + "','" + user.getEmail() + "','" + user.getPassword() + "','" + user.getSalt()
+				+ "','" + user.getUsability() + "','" + user.getHeadIconUrl().replace("\\", "\\\\") + "')";
 		return databaseDao.update(sql);
 	}
 
 	public Integer login(User user, DatabaseDao databaseDao) throws SQLException {
-		String sql = "select * from user where name='" + user.getName() + "' and password='" + user.getPassword()
-				+ "';";
+		String sql = "select * from user where name='" + user.getName() + "';";
 		databaseDao.query(sql);
 		while (databaseDao.next()) {
-			if ("use".equals(databaseDao.getString("usability"))) {
-				user.setUserId(databaseDao.getInt("userId"));
-				user.setType(databaseDao.getString("type"));
-				user.setHeadIconUrl(databaseDao.getString("headIconUrl"));
-				user.setRegisterDate(databaseDao.getTimestamp("registerDate"));
-				return 1; // 可以登录
+			user.setSalt(databaseDao.getString("salt"));
+			if (Encryption.checkPassword(user, databaseDao.getString("password"))) {
+
+				if ("use".equals(databaseDao.getString("usability"))) {
+					user.setUserId(databaseDao.getInt("userId"));
+					user.setType(databaseDao.getString("type"));
+					user.setHeadIconUrl(databaseDao.getString("headIconUrl"));
+					user.setRegisterDate(databaseDao.getTimestamp("registerDate"));
+					return 1; // 可以登录
+				}
+				return 0; // 用户存在，但被停用
 			}
-			return 0; // 用户存在，但被停用
 		}
 		return -1; // 该用户不存在或密码错误
 	}
@@ -95,4 +99,9 @@ public class UserDao {
 
 	}
 
+	public Integer updatePassword(User user, DatabaseDao databaseDao) throws SQLException {
+		String sql = "update user set password='" + user.getPassword() + "', salt='" + user.getSalt()
+				+ "' where email='" + user.getEmail() + "'";
+		return databaseDao.update(sql);
+	}
 }

@@ -6,7 +6,9 @@ public class User {
 	private Integer userId;
 	private String name;
 	private String type;
+	private String email;
 	private String password;
+	private String salt;
 	private String headIconUrl;
 	private Timestamp registerDate;
 	private String usability;
@@ -33,6 +35,22 @@ public class User {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getSalt() {
+		return salt;
+	}
+
+	public void setSalt(String salt) {
+		this.salt = salt;
 	}
 
 	public String getPassword() {

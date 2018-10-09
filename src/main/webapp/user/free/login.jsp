@@ -51,8 +51,12 @@
 						onBlur="valPassword()"><span id="passwordspan"></span></td>
 				</tr>
 				<tr>
-					<td colspan="2" align="center"><input type="submit"
-						value="submit" /></td>
+					<td colspan="2" align="center"><input type="submit" value="login" /></td>
+				</tr>
+				<tr>
+					<td align="center"><a href="register.jsp">register</a></td>
+					<td align="right"><a href="findPassword.jsp">forget password</a>
+					</td>
 				</tr>
 			</table>
 		</div>

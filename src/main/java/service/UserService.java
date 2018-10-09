@@ -14,26 +14,36 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import bean.*;
 import dao.*;
+import tools.EMailTool;
+import tools.Encryption;
 import tools.FileTool;
 import tools.PageInformation;
 import tools.WebProperties;
 
 public class UserService {
 	public Integer register(User user) {
+		int result = 0;
 		try {
 			DatabaseDao databaseDao = new DatabaseDao();
 			UserDao userDao = new UserDao();
-			if (userDao.hasUser(user, databaseDao) == 0) {
-				if (userDao.register(user, databaseDao) > 0)
-					return 1;
-				else
-					return -1;
-			} else {
-				return 0; // 失败，用户已存在
+			// 有同名用户
+			if (databaseDao.hasStringValue("user", "name", user.getName()) == 1)
+				result = -1;
+			// email已被注册过
+			if (databaseDao.hasStringValue("user", "email", user.getEmail()) == 1) {
+				result += -10;
 			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return -1;
+			// 有同名用户或email被注册过
+			if (result < 0)
+				return result;
+
+			// 根据密码生成盐和加密密码
+			Encryption.encryptPasswd(user);
+
+			if (userDao.register(user, databaseDao) != 0)
+				return 1;// 成功创建用户
+			else
+				return 0;// 数据库操作失败
 		} catch (Exception e) {
 			e.printStackTrace();
 			return -2;
@@ -208,7 +218,7 @@ public class UserService {
 
 			if (oldHeadIconUrl.contains(FileTool.getFileName(WebProperties.propertiesMap.get("headIconFileDefault"))))
 				result = 5; // 表示上传文件成功，临时文件删除，且路径保存到数据库成功，老的图片是系统默认图片，不需要删除
-			else {	// 老的图片不是系统默认图片，需要删除
+			else { // 老的图片不是系统默认图片，需要删除
 				if (FileTool.deleteFile(
 						new File(FileTool.root.replace("\\" + WebProperties.propertiesMap.get("projectName"), "")
 								+ oldHeadIconUrl)))
@@ -223,4 +233,43 @@ public class UserService {
 
 		return result;
 	}
+
+	// 返回值：1成功发送邮件，-1发送邮件失败，-2邮箱未注册过
+	public Integer findPasswordByEmail(User user, Integer rand) {
+		Integer result = 0;
+
+		try {
+			DatabaseDao databaseDao = new DatabaseDao();
+			if (databaseDao.hasStringValue("user", "email", user.getEmail()) == 1)
+				// 该email存在
+				result = EMailTool.sendReturnPassword(user.getEmail(), rand);
+			else
+				result = -2;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return result;
+	}
+
+	public Integer updatePassword(User user) {
+		try {
+			DatabaseDao databaseDao = new DatabaseDao();
+			UserDao userDao = new UserDao();
+
+			// 根据密码生成盐和加密密码
+			Encryption.encryptPasswd(user);
+
+			if (userDao.updatePassword(user, databaseDao) > 0)// 修改密码成功
+				return 1;
+			else// 修改密码失败！
+				return -1;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return -1;
+		}
+	}
+
 }

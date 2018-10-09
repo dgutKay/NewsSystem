@@ -1,6 +1,12 @@
 package tools;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Date;
+
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 public class Tool {
 	// 从客户端获取分页、排序、删除等的参数
@@ -84,7 +90,7 @@ public class Tool {
 
 	public static String getStringByMaxLength(String text, Integer maxLength) {
 		int number = 0;
-		
+
 		String resultString = "";
 
 		for (int i = 0; i < text.length(); i++) {
@@ -95,7 +101,7 @@ public class Tool {
 						resultString += " ";
 						break;
 					}
-					number ++;
+					number++;
 				} else// 半角，英文
 					number++;
 
@@ -116,7 +122,28 @@ public class Tool {
 					resultString = resultString.substring(0, resultString.length() - 2) + "..";
 			}
 		}
-		
+
 		return resultString;
+	}
+
+	// 给ajax请求返回json格式的数据
+		static public void returnIntResult(HttpServletResponse response, Integer result)
+				throws ServletException, IOException {
+			response.setContentType("text/html;charset=UTF-8");
+			PrintWriter out = response.getWriter();
+			out.write("{\"result\":" + result.toString() + "}");
+			out.flush();
+		}
+
+	static public Integer getRandomInRangeInteger(Integer min, Integer max) {
+		int rand = min + (int) (Math.random() * ((max - min) + 1));
+		return rand;
+	}
+
+	static public Long getSecondFromNow(Date old) {// 当前时间领先old多少秒
+		Date now = new Date();
+		// 得到间隔秒数
+		Long between = (now.getTime() - old.getTime()) / 1000;
+		return between;
 	}
 }
