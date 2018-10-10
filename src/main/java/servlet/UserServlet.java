@@ -56,39 +56,36 @@ public class UserServlet extends HttpServlet {
 
 			// 将result返回客户端的 ajax 请求
 			Tool.returnIntResult(response, result);// 使用工具类的方法给ajax请求返回json格式的数据
-
-			/*
-			 * if (result == 1) {
-			 * message.setMessage("Registered successfully!");
-			 * message.setRedirectUrl("/NewsSystem/user/free/login.jsp"); } else
-			 * if (result == 0) {
-			 * message.setMessage("User already exist! Please register again!");
-			 * message.setRedirectUrl("/NewsSystem/user/free/register.jsp"); }
-			 * else {
-			 * message.setMessage("Fail to register! Please register again!");
-			 * message.setRedirectUrl("/NewsSystem/user/free/register.jsp"); }
-			 * request.setAttribute("message", message);
-			 * getServletContext().getRequestDispatcher("/message.jsp").forward(
-			 * request, response);
-			 */
 		} else if ("login".equals(condition)) {
-			result = userService.login(user);
-			if (result == 1) {
-				request.getSession().setAttribute("user", user);
-				getServletContext().getRequestDispatcher("/index.jsp").forward(request, response);
-				return;
-			} else if (result == 0) {
-				message.setMessage("The account exists, but has been stopped. Please contact the manager!");
-				message.setRedirectUrl("/NewsSystem/user/free/login.jsp");
-			} else if (result == -1) {
-				message.setMessage("Your account or password is incorrect. Please login again!");
-				message.setRedirectUrl("/NewsSystem/user/free/login.jsp");
-			} else {
-				message.setMessage("Fail to login! Please login again!");
-				message.setRedirectUrl("/NewsSystem/user/free/login.jsp");
+			String checkCode = request.getParameter("checkCode");
+			String severCheckCode = (String) session.getAttribute("checkCode");// 获取session中的验证码
+
+			if (severCheckCode == null) {// 服务器端验证图片验证码不存在
+				result = -4;
+			} else if (!severCheckCode.equals(checkCode)) {// 服务器端验证图片验证码验证失败
+				result = -5;
+			} else {// 验证码验证正确
+				result = userService.login(user);
+				if (result == 1) {
+					request.getSession().setAttribute("user", user);
+					getServletContext().getRequestDispatcher("/index.jsp").forward(request, response);
+					return;
+				} else if (result == 0) {
+					message.setMessage("The password is incorrect. Please login again!");
+					message.setRedirectUrl("/NewsSystem/user/free/login.jsp");
+				} else if (result == -1) {
+					message.setMessage("The account is not existed. Please login again!");
+					message.setRedirectUrl("/NewsSystem/user/free/login.jsp");
+				} else if (result == -2) {
+					message.setMessage("The account exists, but has been stopped. Please contact the manager!");
+					message.setRedirectUrl("/NewsSystem/user/free/login.jsp");
+				} else if (result == -3) {
+					message.setMessage("Fail to login! Please login again!");
+					message.setRedirectUrl("/NewsSystem/user/free/login.jsp");
+				}
+				request.setAttribute("message", message);
+				getServletContext().getRequestDispatcher("/message.jsp").forward(request, response);
 			}
-			request.setAttribute("message", message);
-			getServletContext().getRequestDispatcher("/message.jsp").forward(request, response);
 		} else if ("showPage".equals(condition)) {
 			PageInformation pageInformation = new PageInformation();
 			Tool.getPageInformation("user", request, pageInformation);
@@ -169,20 +166,6 @@ public class UserServlet extends HttpServlet {
 		} else if ("exit".equals(condition)) {
 			request.getSession().removeAttribute("user");
 			response.sendRedirect("/NewsSystem/index.jsp");
-			// } else if ("findPassword".equals(condition)) {
-			// // if ("email".equals(request.getParameter("type"))) {
-			// Integer rand = Tool.getRandomInRangeInteger(10, 100000);//
-			// 随机数作为验证修改密码用
-			// result = userService.findPasswordByEmail(user, rand);
-			// if (result == 1) {// 发送邮件成功
-			// session.setAttribute("email", user.getEmail());
-			// session.setAttribute("rand", rand);
-			// session.setAttribute("time", new Date());
-			// }
-			// Tool.returnIntResult(response, result);
-			// // } else if ("telephone".equals(request.getParameter("type"))) {
-			//
-			// // }
 		} else if ("newPassword".equals(condition)) {
 			String rand = (String) request.getParameter("rand");
 			Integer trueRand = (Integer) session.getAttribute("rand");

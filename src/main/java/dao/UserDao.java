@@ -42,10 +42,11 @@ public class UserDao {
 					user.setRegisterDate(databaseDao.getTimestamp("registerDate"));
 					return 1; // 可以登录
 				}
-				return 0; // 用户存在，但被停用
+				return -2; // 用户存在，但被停用
 			}
+			return 0; // 密码错误
 		}
-		return -1; // 该用户不存在或密码错误
+		return -1; // 该用户不存在
 	}
 
 	public List<User> getOnePage(PageInformation pageInformation, DatabaseDao databaseDao) throws SQLException {

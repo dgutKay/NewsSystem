@@ -51,7 +51,7 @@ public class UserService {
 	}
 
 	public Integer login(User user) {
-		int result = -2; // 出现异常，数据库操作失败
+		int result = -3; // 出现异常，数据库操作失败
 
 		try {
 			DatabaseDao databaseDao = new DatabaseDao();
