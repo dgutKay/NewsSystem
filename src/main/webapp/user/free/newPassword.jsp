@@ -40,54 +40,51 @@
 		}
 	}
 
-	$(document).ready(function() {//资源加载后才执行的 代码，就放到这个函数中，jquery能保证网页所有资源（html代码，图片，js文件，css文件等）都加载后，才执行此函数
-			$("#password").blur(function(){//为id是userName的标签绑定  失去焦点事件  的处理函数
-				passwordCheck();
-  			});
-			
-			$("#confirmPassword").blur(function(){//为id是userName的标签绑定  失去焦点事件  的处理函数
-				passwordSame();
-  			});				
-			
-	       $("#button").click( function() {
-	    	    if(!passwordCheck() )
-	    	    	alert("密码格式错误！");//阻止提交
-	    	    else if(!passwordSame())
-	    	    	alert("两次输入的密码不相同！");
-	    	    else{//客户端数据验证通过
-					$.ajax({//验证码检测
-						url : "/NewsSystem/servlet/UserServlet?condition=newPassword",
-						type: "post", 
-						data : $("#form").serialize(),//serialize():搜集表单元素数据，并形成查询字符串
-						dataType : "json",
-						cache : false,
-						error : function(textStatus, errorThrown) {//ajax请求失败时，将会执行此回调函数
-							alert("系统ajax交互错误: " + textStatus);
-						},
-						success : function(data, textStatus) {//ajax请求成功时，会执行此回调函数
-							if(data.result==1){//修改密码成功
-								var newHtml="修改密码成功！<br/>"+
-											"<a href='login.jsp'>登录</a><br/>"+
-											"<a href='/NewsSystem/index.jsp'>返回前端主页</a>";
-								$("#myDiv").html(newHtml);
-							}else if(data.result==-1){//修改密码失败
-								alert("修改密码失败！");
-							}else if(data.result==-2){
-								alert("修改密码超时！");		
-								location.href="findPassword.jsp";	
-							}else if(data.result==-3){//随机数错误
-								alert("无权限修改密码！");
-							}
-						}
-					});	
-				}					
-	       });
+	$(document).ready(function() { //资源加载后才执行的 代码，就放到这个函数中，jquery能保证网页所有资源（html代码，图片，js文件，css文件等）都加载后，才执行此函数
+		$("#password").blur(function() { //为id是userName的标签绑定  失去焦点事件  的处理函数
+			passwordCheck();
 		});
+
+		$("#confirmPassword").blur(function() { //为id是userName的标签绑定  失去焦点事件  的处理函数
+			passwordSame();
+		});
+
+		$("#button").click(function() {
+			if (!passwordCheck())
+				alert("密码格式错误！"); //阻止提交
+			else if (!passwordSame())
+				alert("两次输入的密码不相同！");else { //客户端数据验证通过
+				$.ajax({ //验证码检测
+					url : "/NewsSystem/servlet/UserServlet?condition=newPassword",
+					type : "post",
+					data : $("#form").serialize(), //serialize():搜集表单元素数据，并形成查询字符串
+					dataType : "json",
+					cache : false,
+					error : function(textStatus, errorThrown) { //ajax请求失败时，将会执行此回调函数
+						alert("系统ajax交互错误: " + textStatus);
+					},
+					success : function(data, textStatus) { //ajax请求成功时，会执行此回调函数
+						if (data.result == 1) { //修改密码成功
+							var newHtml = "修改密码成功！<br/>" + "<a href='login.jsp'>登录</a><br/>" + "<a href='/NewsSystem/index.jsp'>返回前端主页</a>";
+							$("#div").html(newHtml);
+						} else if (data.result == -1) { //修改密码失败
+							alert("修改密码失败！");
+						} else if (data.result == -2) {
+							alert("修改密码超时！");
+							location.href = "findPassword.jsp";
+						} else if (data.result == -3) { //随机数错误
+							alert("无权限修改密码！");
+						}
+					}
+				});
+			}
+		});
+	});
 </script>
 </head>
 
 <body>
-	<div id="myDiv">
+	<div id="div">
 		<form action="/NewsSystem/servlet/UserServlet?condition=newPassword"
 			id="form" name="form" method="post" onsubmit="return check()">
 			<div class="center" style="width:600px;margin-top:40px">
