@@ -5,67 +5,123 @@
 <head>
 <link href="/NewsSystem/css/1.css" rel="stylesheet" type="text/css">
 <meta charset="utf-8">
+<script type="text/javascript"
+	src="/NewsSystem/js/jquery/jquery-3.3.1.min.js"></script>
 <script type="text/javascript">
-	function getOnePage(type) {
-		var url1;
-		var page = document.getElementById("page");
-		var pageSize = document.getElementById("pageSize");
-		var totalPageCount = document.getElementById("totalPageCount");
+	//更新新闻列表
+	function refreshNews(data) {
+		if (data != null) {
+			$("#newsShowByTypeUL").empty(); //清空新闻列表的所有内容
+			var newsShow = "";
 
-		pageValue = parseInt(page.value);
-		if (type == "pre") {
-			pageValue -= 1;
-			page.value = pageValue.toString();
-		} else if (type == "next") {
-			pageValue += 1;
-			page.value = pageValue.toString();
+			for (var i = 2; i < data.length; i++) {
+				newsShow += "<li><a href='/NewsSystem/servlet/NewsServlet?condition=showANews&newsId=" + data[i].newsId + "&page=1&pageSize=5' target='_blank'>" + data[i].caption + "</a></li>";
+			}
+			$("#newsShowByTypeUL").html(newsShow);
+			//更新分页信息
+			$("#page").val(data[0].page);
+			$("#pageSize").val(data[0].pageSize);
+			$("#totalPageCount").val(data[0].totalPageCount);
+			$("#allRecordCount").val(data[0].allRecordCount);
+			$("#newsType").val(data[1]);
 		}
-		//提交
-		document.getElementById('myform').submit();
 	}
+
+	function changeNewsByType() {
+		$.ajax({
+			url : "/NewsSystem/servlet/NewsServlet?condition=showNewsByNewsTypeAjax",
+			type : "post",
+			data : $("#myform").serialize(),
+			dataType : "json",
+			cache : false,
+			error : function() {
+				alert("Wrong!");
+			},
+			success : function(data) {
+				refreshNews(data);
+			}
+		});
+	}
+
+	$(document).ready(function() {
+		$("#frameDiv").height($("#leftDiv").outerHeight());
+
+		$("#leftDiv li").hover(
+			function() {
+				$(this).css("color", "red");
+			},
+			function() {
+				$(this).css("color", "black");
+			}
+		);
+
+		$("#leftDiv li").click(function() {
+			var label = $(this).text();
+
+			if (label == "全部")
+				label = "all";
+
+			$.ajax({
+				url : "/NewsSystem/servlet/NewsServlet?condition=showNewsByNewsTypeAjax",
+				type : "post",
+				data : {
+					"newsType" : label,
+					"page" : "1",
+					"pageSize" : "10"
+				},
+				dataType : "json",
+				cache : false,
+				error : function() {
+					alert("Wrong!");
+				},
+				success : function(data) {
+					refreshNews(data);
+				}
+			});
+		});
+
+		$("#previous").click(function() {
+			var page = parseInt($("#page").val());
+			if (page != 1) {
+				page--;
+				$("#page").val(page.toString());
+			}
+			changeNewsByType();
+		});
+
+		$("#next").click(function() {
+			var pageCount = parseInt($("#totalPageCount").val());
+			var page = parseInt($("#page").val());
+			if (page < pageCount) {
+				page++;
+				$("#page").val(page.toString());
+			}
+			changeNewsByType();
+		});
+	});
 </script>
 </head>
 
 <body>
 	<div class="center" style="width:810px">
-		<form
-			action="/NewsSystem/servlet/NewsServlet?condition=showNewsByNewsType&newsType=${requestScope.newsType}"
-			id="myform" method="post">
-
+		<form action="" id="myform" method="post">
 			<div class="newsShowByType_frame center" id="frameDiv">
 				<div class="newsShowByType_left" id="leftDiv">
 					<ul style="list-style-type: none;">
-						<c:choose>
-							<c:when test="${requestScope.newsType=='all'}">
-								<li>全部</li>
-							</c:when>
-							<c:otherwise>
-								<li><a
-									href="/NewsSystem/servlet/NewsServlet?condition=showNewsByNewsType&newsType=all&page=1&pageSize=5">
-										全部</a></li>
-							</c:otherwise>
-						</c:choose>
-
-						<c:forEach items="${requestScope.newsTypes}" var="newsType1">
-							<c:choose>
-								<c:when test="${newsType1.name == requestScope.newsType}">
-									<li>${newsType}</li>
-								</c:when>
-								<c:otherwise>
-									<li><a
-										href="/NewsSystem/servlet/NewsServlet?condition=showNewsByNewsType&newsType=${newsType1.name}&page=1&pageSize=5">
-											${newsType1.name}</a></li>
-								</c:otherwise>
-							</c:choose>
-						</c:forEach>
+						<li>全部</li>
+						<li>国际</li>
+						<li>社会</li>
+						<li>体育</li>
+						<li>科学</li>
+						<li>汽车</li>
 					</ul>
 				</div>
-				<div class="newsShowByType_rightTop">
+				<div class="newsShowByType_rightTop" id="newsShowByType">
 					<div>
-						<ul>
+						<ul id="newsShowByTypeUL">
 							<c:forEach items="${requestScope.newses}" var="news">
 								<li><a
-									href="/NewsSystem/servlet/NewsServlet?condition=showANews&newsId=${news.newsId}&page=1&pageSize=2"
+									href="/NewsSystem/servlet/NewsServlet?condition=showANews&newsId=${news.newsId}&page=1&pageSize=5"
 									target="_blank">${news.caption}</a></li>
 							</c:forEach>
 						</ul>
@@ -73,15 +129,8 @@
 				</div>
 				<div class="newsShowByType_rightBottom">
 					<div class="center" style="width:150px;">
-						<c:if test="${requestScope.pageInformation.page > 1}">
-							<td><a href="javascript:void(0);"
-								onclick="getOnePage('pre');">上一页</a></td>
-						</c:if>
-						<c:if
-							test="${requestScope.pageInformation.page < requestScope.pageInformation.totalPageCount}">
-					&nbsp; &nbsp;<a href="javascript:void(0);"
-								onclick="getOnePage('next');">下一页</a>
-						</c:if>
+						<a id="previous" href="javascript:void(0);">上一页</a> <a id="next"
+							href="javascript:void(0);">下一页</a>
 					</div>
 				</div>
 			</div>
@@ -93,15 +142,10 @@
 				type="hidden" name="totalPageCount" id="totalPageCount"
 				value="${requestScope.pageInformation.totalPageCount}"> <input
 				type="hidden" name="allRecordCount" id="allRecordCount"
-				value="${requestScope.pageInformation.allRecordCount}">
+				value="${requestScope.pageInformation.allRecordCount}"> <input
+				type="hidden" name="newsType" id="newsType"
+				value="${requestScope.newsType}">
 		</form>
 	</div>
 </body>
 </html>
-<script type="text/javascript">
-  	//让父div与子div高度一致（这里因为子div是绝对定位，脱离了文档流，导致父div高度为0了，所以要手动设定父div高度。
-  	//否则下面父div后面的兄弟div就会往上移，因为父div的高度为0
-  	var father = document.getElementById('frameDiv');
-    var son = document.getElementById('leftDiv');
-    frameDiv.style.height=leftDiv.offsetHeight+'px';
-  </script>

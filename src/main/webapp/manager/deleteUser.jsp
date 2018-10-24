@@ -5,71 +5,68 @@
 <html>
 <head>
 <title>deleteUser.jsp</title>
+<script type="text/javascript"
+	src="/NewsSystem/js/jquery/jquery-3.3.1.min.js"></script>
 <script type="text/javascript">
-	function checkAll(obj) {
-		var checkboxs = document.getElementsByName('aCheckbox');
-		for (var i = 0; i < checkboxs.length; i++) {
-			checkboxs[i].checked = obj.checked;
-		}
+	function checkAll() {
+		$("#checkboxAll").click(function() {
+			$(":checkbox").attr("checked", this.checked);
+		});
 	}
 
 	function deleteUser() {
-		var checkboxs = document.getElementsByName("aCheckbox");
 		var ids = "";
 		// 拼接id为：1,2,
-		for (var i = 0; i < checkboxs.length; i++) {
-			if (checkboxs[i].checked == true)
-				ids += checkboxs[i].value + ",";
-		}
+		$("input[name='checkbox']:checked").each(function() {
+			ids += $(this).val() + ",";
+		})
+
 		if (ids.length < 1) {
 			alert("Please select at least one user that needs to be deleted!");
 			return false;
 		}
 		ids = ids.substring(0, ids.length - 1); // 删除最后的逗号
-		document.getElementById('ids').value = ids;
-		document.getElementById("myform").submit();
+		$("#ids").val(ids);
+		$("#rightDiv").load("/NewsSystem/servlet/UserServlet?condition=delete", $("#myform").serialize());
 	}
 
 	function getOnePage(type, orderFieldName) {
-		// var url;
-		var page = document.getElementById("page");
-		// var pageSize = document.getElementById("pageSize");
-		var totalPageCount = document.getElementById("totalPageCount");
-		var order = document.getElementById('order');
-		var orderField = document.getElementById("orderField");
+		var page = $("#page");
+		var totalPageCount = $("#totalPageCount");
+		var order = $("#order");
+		var orderField = $("#orderField");
 
 		if (orderFieldName != "") { //切换排序
-			orderField.value = orderFieldName; //设置排序字段名
-			if (order.value == "asc")
-				order.value = "desc";
+			orderField.val(orderFieldName); //设置排序字段名
+			if (order.val() == "asc")
+				order.val("desc");
 			else
-				order.value = "asc";
+				order.val("asc");
 
-			page.value = 1;
+			page.val("1");
 		}
 
 		pageValue = parseInt(page.value);
 		if (type == "first") {
-			page.value = 1;
+			page.val("1");
 		} else if (type == "pre") {
 			pageValue -= 1;
-			page.value = pageValue.toString();
+			page.val(pageValue.toString());
 		} else if (type == "next") {
 			pageValue += 1;
-			page.value = pageValue.toString();
+			page.val(pageValue.toString());
 		} else if (type == "last") {
-			page.value = totalPageCount.value;
+			page.val(totalPageCount.val());
 		}
 
 		//提交
-		document.getElementById('myform').submit();
+		$("#rightDiv").load("/NewsSystem/servlet/UserServlet?condition=delete", $("#myform").serialize());
 	}
-</script> 
+</script>
 </head>
 
 <body>
-	<form action="/NewsSystem/servlet/UserServlet?condition=delete"
-		id="myform" method="post">
+	<form action="" id="myform" method="post">
 		<table border="1" align="center">
 			<tr bgcolor='lightyellow'>
 				<td><input type="checkbox" id="checkboxAll"

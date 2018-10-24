@@ -5,6 +5,8 @@
 <html>
 <head>
 <title>addNews.jsp</title>
+<script type="text/javascript"
+	src="/NewsSystem/js/jquery/jquery-3.3.1.min.js"></script>
 <script src='<%=WebProperties.propertiesMap.get("ueditConfigJs")%>'
 	type="text/javascript"></script>
 <script src='<%=WebProperties.propertiesMap.get("ueditJs")%>'
@@ -13,9 +15,9 @@
 	type="text/javascript"></script>
 <script type="text/javascript">
 	function valEmpty(input) {
-		var inputValue = document.getElementById(input).value;
+		var inputValue = $("#" + input).val();
 		if (inputValue == null || inputValue == "") {
-			document.getElementById(input + "Span").innerHTML = "*Can not be empty";
+			$("#" + input + "Span").html("*Can not be empty");
 			return false;
 		}
 		return true;
@@ -31,6 +33,12 @@
 		else
 			return false; //阻止提交
 	}
+
+	$(document).ready(function() {
+		//实例化编辑器
+		//建议使用工厂方法getEditor创建和引用编辑器实例，如果在某个闭包下引用该编辑器，直接调用UE.getEditor('editor')就能拿到相关的实例
+		var ue = UE.getEditor('content');
+	});
 </script>
 </head>
 
@@ -77,10 +85,5 @@
 			</tr>
 		</table>
 	</form>
-	<script type="text/javascript">
-		//实例化编辑器
-		//建议使用工厂方法getEditor创建和引用编辑器实例，如果在某个闭包下引用该编辑器，直接调用UE.getEditor('editor')就能拿到相关的实例
-		var ue = UE.getEditor('content');
-	</script>
 </body>
 </html>

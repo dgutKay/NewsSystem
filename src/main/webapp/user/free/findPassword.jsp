@@ -65,13 +65,7 @@
 						alert("系统ajax交互错误: 222" + textStatus);
 					},
 					success : function(data, textStatus) { //ajax请求成功时，会执行此回调函数
-						if (data.result == -1) { //-1发送邮件失败
-							alert("发送邮件失败！");
-						} else if (data.result == -2) { //-2邮箱未注册过
-							alert("邮箱未注册过！");
-						} else if (data.result == 1) { //发送邮件成功
-							alert("请登录邮箱查看邮件，按邮件提示操作找回密码！");
-						}
+						alert(data.message);
 					}
 				});
 			}

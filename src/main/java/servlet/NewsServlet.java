@@ -9,8 +9,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gson.Gson;
+
+import bean.CommentUserView;
 import bean.News;
 import bean.NewsType;
+import service.CommentService;
 import service.NewsService;
 import tools.Message;
 import tools.PageInformation;
@@ -47,8 +51,17 @@ public class NewsServlet extends HttpServlet {
 			request.setAttribute("newses", newses);
 			getServletContext().getRequestDispatcher("/news/newsShow.jsp").forward(request, response);
 		} else if ("showANews".equals(condition)) {
+			CommentService commentService = new CommentService();
+			PageInformation pageInformation = new PageInformation();
 			Integer newsId = Integer.parseInt(request.getParameter("newsId"));
 			News news = newsService.getNewsById(newsId);
+			Tool.getPageInformation("commentUserView", request, pageInformation);
+			pageInformation.setSearchSql(" (newsId=" + newsId + ") ");
+			pageInformation.setOrder("desc");
+			pageInformation.setOrderField("time");
+			List<CommentUserView> commentUserViews = commentService.getOnePage(pageInformation);
+			request.setAttribute("pageInformation", pageInformation);
+			request.setAttribute("commentUserViews", commentUserViews);
 			request.setAttribute("news", news);
 			getServletContext().getRequestDispatcher("/news/aNewsShow.jsp").forward(request, response);
 		} else if ("manage".equals(condition)) {
@@ -66,7 +79,7 @@ public class NewsServlet extends HttpServlet {
 			request.setAttribute("newses", newses);
 			getServletContext().getRequestDispatcher("/news/manage/manage.jsp").forward(request, response);
 		} else if ("edit".equals(condition)) { // 显示编辑页面
-			Integer newsId = Integer.parseInt(request.getParameter("newsId"));
+			Integer newsId = Integer.parseInt(request.getParameter("ids"));
 			News news = newsService.getNewsById(newsId);
 			request.setAttribute("news", news);
 			getServletContext().getRequestDispatcher("/news/manage/edit.jsp").forward(request, response);
@@ -97,6 +110,7 @@ public class NewsServlet extends HttpServlet {
 			getServletContext().getRequestDispatcher("/homepage.jsp").include(request, response);
 			return;
 		} else if ("showNewsByNewsType".equals(condition)) {// 主页多个分类新闻区
+
 			List<NewsType> newsTypes = (List<NewsType>) this.getServletContext().getAttribute("newsTypes");
 			PageInformation pageInformation = new PageInformation();
 			Tool.getPageInformation("news", request, pageInformation);
@@ -112,6 +126,24 @@ public class NewsServlet extends HttpServlet {
 			request.setAttribute("newsType", newsType);
 			getServletContext().getRequestDispatcher("/news/newsShowByType.jsp").forward(request, response);
 			return;
+		} else if ("showNewsByNewsTypeAjax".equals(condition)) {// 主页多个分类新闻区
+			PageInformation pageInformation = new PageInformation();
+			Tool.getPageInformation("news", request, pageInformation);
+			String newsType = request.getParameter("newsType");
+
+			if (!("all").equals(newsType))
+				pageInformation.setSearchSql(" newsType='" + newsType + "' ");
+
+			List<News> newses = newsService.getOnePage(pageInformation);
+			List<Object> list = new ArrayList<Object>();
+			list.add(pageInformation);// 第一个对象保存分页信息
+			list.add(newsType);// 第二个对象保存新闻类别信息
+			for (int i = 0; i < newses.size(); i++)// 从第三个对象开始，保存新闻信息
+				list.add(newses.get(i));
+
+			Gson gson = new Gson();
+			String jsonString = gson.toJson(list);
+			Tool.returnJsonString(response, jsonString);
 		}
 	}
 

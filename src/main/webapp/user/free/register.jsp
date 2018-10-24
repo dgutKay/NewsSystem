@@ -17,68 +17,63 @@
 <script type="text/javascript">
 	function valName() {
 		var pattern = new RegExp("^[a-z]([a-z0-9])*[-_]?([a-z0-9]+)$", "i"); // 创建模式对象
-		var name = document.getElementById('name').value; // 获取文本框的内容
-		var namespan = document.getElementById("namespan");
+		var name = $("#name").val(); // 获取文本框的内容
+
 		if (name == null || name == "") {
-			namespan.innerHTML = "*Can not be empty";
+			$("#namespan").html("*Can not be empty");
 			return false;
 		} else if (name.length >= 8 && pattern.test(name)) { // pattern.test() 模式如果匹配，会返回true，不匹配返回false
-			namespan.innerHTML = "Ok";
+			$("#namespan").html("Ok");
 			return true;
 		} else {
-			namespan.innerHTML = "*User name requires at least 8 characters, starting with letters, ending with letters or numbers, and can have - and _.";
+			$("#namespan").html("*User name requires at least 8 characters, starting with letters, ending with letters or numbers, and can have - and _.");
 			return false;
 		}
 	}
 
 	function valPassword() {
 		var pattern = /^(\w){6,20}$/;
-		var password = document.getElementById("password").value;
-		var passwordspan = document.getElementById("passwordspan");
+		var password = $("#password").val();
+
 		if (password == null || password == "") {
-			passwordspan.innerHTML = "*Can not be empty";
+			$("#passwordspan").html("*Can not be empty");
 			return false;
 		} else if (password.match(pattern) == null) {
-			passwordspan.innerHTML = "*Password can only enter 6-20 letters, numbers or underscore.";
+			$("#passwordspan").html("*Password can only enter 6-20 letters, numbers or underscore.");
 			return false;
 		} else {
-			passwordspan.innerHTML = "Ok";
+			$("#passwordspan").html("Ok");
 			return true;
 		}
 	}
 
 	function passwordSame() {
-		var password = document.getElementById("password").value;
-		var confirmPassword = document.getElementById("confirmPassword").value;
-		var confirmPasswordSpan = document.getElementById("confirmPasswordSpan");
+		var password = $("#password").val();
+		var confirmPassword = $("#confirmPassword").val();
+
 		if (confirmPassword == null || confirmPassword == "") {
-			confirmPasswordSpan.innerHTML = "*Can not be empty";
+			$("#confirmPasswordSpan").html("*Can not be empty");
 			return false;
 		} else if (password == confirmPassword) {
-			confirmPasswordSpan.innerHTML = "Ok";
+			$("#confirmPasswordSpan").html("Ok");
 			return true;
 		} else {
-			confirmPasswordSpan.innerHTML = "*The two passwords are different.";
+			$("#confirmPasswordSpan").html("*The two passwords are different.");
 			return false;
 		}
 	}
 
 	function emailCheck() {
 		var pattern = new RegExp("^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$", "i"); //创建模式对象
-		var str1 = $("#email").val(); //获取文本框的内容
+		var email = $("#email").val(); //获取文本框的内容
 
-		if (str1.length >= 8 && pattern.test(str1)) { //pattern.test() 模式如果匹配，会返回true，不匹配返回false
+		if (email.length >= 8 && pattern.test(email)) { //pattern.test() 模式如果匹配，会返回true，不匹配返回false
 			$("#emailSpan").html("Ok");
 			return true;
 		} else {
 			$("#emailSpan").html("The format of the E-mail is wrong!");
 			return false;
 		}
-	}
-
-	function check() {
-		if (valName() && valPassword() && passwordSame()) return true; // 提交
-		else return false; // 阻止提交
 	}
 
 	$(document).ready(function() {
@@ -109,7 +104,7 @@
 			else if (!emailCheck())
 				alert("电子邮箱格式错误!"); //阻止提交	    	    	
 			else if ($("#checkCode").val() == "")
-				alert("必须输入验证码！"); //
+				alert("必须输入验证码！");
 			else { //客户端数据验证通过
 				$.ajax({ //验证码检测
 					url : "/NewsSystem/servlet/UserServlet?condition=register",
@@ -122,27 +117,9 @@
 					},
 					success : function(data, textStatus) { //ajax请求成功时，会执行此回调函数
 						if (data.result == 1) { //注册成功
-							var newHtml = "<p align='center'>注册成功！</p>";
-							$("#myDiv").html(newHtml);
-						} else if (data.result == 0) { //数据库操作失败
-							alert("数据库操作失败！");
-						} else if (data.result == -1) { //有同名用户
-							alert("有同名用户！");
-							$("#namespan").html("用户名已注册，请换一个用户名！");
-						} else if (data.result == -10) { //emai已被注册
-							alert("emai已被注册！");
-							$("#emailSpan").html("emai已被注册，请换一个email！");
-						} else if (data.result == -11) { //重名用户且email被注册
-							alert("有同名用户且emai已被注册！");
-							$("#namespan").html("用户名已注册，请换一个用户名！");
-							$("#emailSpan").html("emai已被注册，请换一个email！");
-						} else if (data.result == -3) { //服务器端验证图片验证码不存在
-							alert("验证码不存在！请点击验证码生成新的验证码");
-							$("#checkCode").val(""); //清空文本框
-						} else if (data.result == -4) { //验证码错误
-							alert("验证码错误，请重新输入验证码！");
-							$("#checkCode").val("");
-						}
+							alert(data.message);
+							window.location.href = data.redirectUrl; //跳转网页
+						} else alert(data.message);
 					}
 				});
 			}
@@ -153,8 +130,7 @@
 
 <body>
 	<div id="myDiv">
-		<form action="/NewsSystem/servlet/UserServlet?condition=register"
-			id="form" name="form" method="post" onsubmit="return check()">
+		<form id="form" name="form" method="post">
 			<div class="center" style="width:600px;margin-top:40px">
 				<table border="0" align="center" cellpadding="5" cellspacing="0">
 					<tr>
@@ -169,24 +145,23 @@
 						</select></td>
 					<tr>
 						<td align="right">Name:</td>
-						<td><input type="text" name="name" id="name"
-							onBlur="valName()"><span id="namespan"></span></td>
+						<td><input type="text" name="name" id="name"><span
+							id="namespan"></span></td>
 					</tr>
 					<tr>
 						<td align="right">E-mail:</td>
-						<td><input type="text" name="email" id="email"
-							onBlur="emailCheck()"><span id="emailSpan"></span></td>
+						<td><input type="text" name="email" id="email"><span
+							id="emailSpan"></span></td>
 					</tr>
 					<tr>
 						<td align="right">Password:</td>
-						<td><input type="password" name="password" id="password"
-							onBlur="valPassword()"><span id="passwordspan"></span></td>
+						<td><input type="password" name="password" id="password"><span
+							id="passwordspan"></span></td>
 					</tr>
 					<tr>
 						<td align="right">Confirm Password:</td>
 						<td><input type="password" name="confirmPassword"
-							id="confirmPassword" onBlur="passwordSame()"><span
-							id="confirmPasswordSpan"></span></td>
+							id="confirmPassword"><span id="confirmPasswordSpan"></span></td>
 					</tr>
 					<tr>
 						<td align="right">Verification Code:</td>

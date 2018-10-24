@@ -16,32 +16,25 @@
 </style>
 <script type="text/javascript">
 	function valName() {
-		var str = document.getElementById("name").value;
-		if (str == null || str == "") {
-			document.getElementById("namespan").innerHTML = "*Can not be empty";
+		var name = $("#name").val();
+		if (name == null || name == "") {
+			$("#namespan").html("*Can not be empty");
 			return false;
 		} else {
-			document.getElementById("namespan").innerHTML = "*ok";
+			$("#namespan").html("Ok");
 			return true;
 		}
 	}
 
 	function valPassword() {
-		var str = document.getElementById("password").value;
-		if (str == null || str == "") {
-			document.getElementById("passwordspan").innerHTML = "*Can not be empty";
+		var password = $("#password").val();
+		if (password == null || password == "") {
+			$("#passwordspan").html("*Can not be empty");
 			return false;
 		} else {
-			document.getElementById("passwordspan").innerHTML = "*ok";
+			$("#passwordspan").html("Ok");
 			return true;
 		}
-	}
-
-	function check() {
-		if (valName() && valPassword())
-			return true;
-		else
-			return false;
 	}
 
 	$(document).ready(function() {
@@ -66,16 +59,31 @@
 			else if (!valPassword())
 				alert("密码不符合规范!"); //阻止提交 	    	
 			else if ($("#checkCode").val() == "")
-				alert("必须输入验证码！");
-			else $("#form").submit();
+				alert("必须输入验证码！");else {
+				$.ajax({ //验证码检测
+					url : "/NewsSystem/servlet/UserServlet?condition=login",
+					type : "post",
+					data : $("#form").serialize(), //serialize():搜集表单元素数据，并形成查询字符串
+					dataType : "json",
+					cache : false,
+					error : function(textStatus, errorThrown) { //ajax请求失败时，将会执行此回调函数
+						alert("系统ajax交互错误: " + textStatus);
+					},
+					success : function(data, textStatus) { //ajax请求成功时，会执行此回调函数
+						if (data.result == 1) {
+							window.location.href = data.redirectUrl; //跳转网页
+						} else alert(data.message);
+					}
+				});
+			}
 		});
 	});
 </script>
 </head>
 
 <body>
-	<form action="/NewsSystem/servlet/UserServlet?condition=login" id="form" name="form"
-		method="post" onsubmit="return check()">
+	<form action="/NewsSystem/servlet/UserServlet?condition=login"
+		id="form" name="form" method="post">
 		<div class="center" style="width:400px;margin-top:40px">
 			<table border="0" align="center" cellpadding="5" cellspacing="0">
 				<tr>
@@ -83,13 +91,13 @@
 				</tr>
 				<tr>
 					<td align="right">Name:</td>
-					<td><input type="text" name="name" id="name"
-						onBlur="valName()"><span id="namespan"></span></td>
+					<td><input type="text" name="name" id="name"><span
+						id="namespan"></span></td>
 				</tr>
 				<tr>
 					<td align="right">Password:</td>
-					<td><input type="password" name="password" id="password"
-						onBlur="valPassword()"><span id="passwordspan"></span></td>
+					<td><input type="password" name="password" id="password"><span
+						id="passwordspan"></span></td>
 				</tr>
 				<tr>
 					<td align="right">Verification Code:</td>

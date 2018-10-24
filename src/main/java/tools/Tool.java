@@ -127,13 +127,13 @@ public class Tool {
 	}
 
 	// 给ajax请求返回json格式的数据
-		static public void returnIntResult(HttpServletResponse response, Integer result)
-				throws ServletException, IOException {
-			response.setContentType("text/html;charset=UTF-8");
-			PrintWriter out = response.getWriter();
-			out.write("{\"result\":" + result.toString() + "}");
-			out.flush();
-		}
+	static public void returnJsonString(HttpServletResponse response, String jsonString)
+			throws ServletException, IOException {
+		response.setHeader("Content-type", "text/html;charset=UTF-8");
+		PrintWriter out = response.getWriter();
+		out.write(jsonString);
+		out.flush();
+	}
 
 	static public Integer getRandomInRangeInteger(Integer min, Integer max) {
 		int rand = min + (int) (Math.random() * ((max - min) + 1));

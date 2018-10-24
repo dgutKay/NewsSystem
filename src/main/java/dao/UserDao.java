@@ -34,9 +34,9 @@ public class UserDao {
 		while (databaseDao.next()) {
 			user.setSalt(databaseDao.getString("salt"));
 			if (Encryption.checkPassword(user, databaseDao.getString("password"))) {
-
 				if ("use".equals(databaseDao.getString("usability"))) {
 					user.setUserId(databaseDao.getInt("userId"));
+					user.setEmail(databaseDao.getString("email"));
 					user.setType(databaseDao.getString("type"));
 					user.setHeadIconUrl(databaseDao.getString("headIconUrl"));
 					user.setRegisterDate(databaseDao.getTimestamp("registerDate"));

@@ -4,54 +4,51 @@
 <html>
 <head>
 <title>checkUser.jsp</title>
+<script type="text/javascript"
+	src="/NewsSystem/js/jquery/jquery-3.3.1.min.js"></script>
 <script type="text/javascript">
 	function checkAUser(userId) {
-		var ids = document.getElementById("ids");
-		ids.value = userId;
-		//提交
-		document.getElementById('myform').submit();
+		$("#ids").val(userId);
+		$("#rightDiv").load("/NewsSystem/servlet/UserServlet?condition=check", $("#myform").serialize());
 	}
 
 	function getOnePage(type, orderFieldName) {
-		// var url;
-		var page = document.getElementById("page");
-		// var pageSize = document.getElementById("pageSize");
-		var totalPageCount = document.getElementById("totalPageCount");
-		var order = document.getElementById('order');
-		var orderField = document.getElementById("orderField");
+		var page = $("#page");
+		var totalPageCount = $("#totalPageCount");
+		var order = $("#order");
+		var orderField = $("#orderField");
 
 		if (orderFieldName != "") { //切换排序
-			orderField.value = orderFieldName; //设置排序字段名
-			if (order.value == "asc")
-				order.value = "desc";
+			orderField.val(orderFieldName); //设置排序字段名
+			if (order.val() == "asc")
+				order.val("desc");
 			else
-				order.value = "asc";
+				order.val("asc");
 
-			page.value = 1;
+			page.val("1");
 		}
 
 		pageValue = parseInt(page.value);
 		if (type == "first") {
-			page.value = 1;
+			page.val("1");
 		} else if (type == "pre") {
 			pageValue -= 1;
-			page.value = pageValue.toString();
+			page.val(pageValue.toString());
 		} else if (type == "next") {
 			pageValue += 1;
-			page.value = pageValue.toString();
+			page.val(pageValue.toString());
 		} else if (type == "last") {
-			page.value = totalPageCount.value;
+			page.val(totalPageCount.val());
 		}
 
 		//提交
-		document.getElementById('myform').submit();
+		$("#rightDiv").load("/NewsSystem/servlet/UserServlet?condition=check", $("#myform").serialize());
 	}
 </script>
 </head>
 
 <body>
-	<form action="/NewsSystem/servlet/UserServlet?condition=check"
-		id="myform" method="post">
+	<form action="" id="myform" method="post">
 		<table border="1" align="center" cellpadding="5" cellspacing="0">
 			<tr bgcolor='lightyellow'>
 				<td><a href='javascript:void(0);'

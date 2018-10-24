@@ -4,68 +4,89 @@
 <html>
 <head>
 <title>changePassword.jsp</title>
+<script type="text/javascript"
+	src="/NewsSystem/js/jquery/jquery-3.3.1.min.js"></script>
 <script type="text/javascript">
 	function valPassword(input, span) {
-		var inputValue = document.getElementById(input).value;
-		var spanObj = document.getElementById(span);
+		var inputValue = $("#" + input).val();
 		var pattern = /^(\w){6,20}$/;
 
 		if (inputValue == null || inputValue == "") {
-			spanObj.innerHTML = "*Can not be empty";
+			$("#" + span).html("*Can not be empty");
 			return false;
 		} else if (inputValue.match(pattern) == null) {
-			spanObj.innerHTML = "*Password can only enter 6-20 letters, numbers or underscore.";
+			$("#" + span).html("*Password can only enter 6-20 letters, numbers or underscore.");
 			return false;
 		} else {
-			spanObj.innerHTML = "Ok";
+			$("#" + span).html("Ok");
 			return true;
 		}
 	}
 
 	function passwordDifferent(input1, input2, span2) {
-		var input1Value = document.getElementById(input1).value;
-		var input2Value = document.getElementById(input2).value;
-		var span2Obj = document.getElementById(span2);
+		var input1Value = $("#" + input1).val();
+		var input2Value = $("#" + input2).val();
 
 		if (input2Value == null || input2Value == "") {
-			span2Obj.innerHTML = "*Can not be empty";
+			$("#" + span2).html("*Can not be empty");
 			return false;
 		} else if (input1Value == input2Value) {
-			span2Obj.innerHTML = "*Please choose a password that you haven't used before.";
+			$("#" + span2).html("*Please choose a password that you haven't used before.");
 			return false;
 		} else {
-			span2Obj.innerHTML = "Ok";
+			$("#" + span2).html("Ok");
 			return true;
 		}
 	}
 
 	function passwordSame(input1, input2, span2) {
-		var input1Value = document.getElementById(input1).value;
-		var input2Value = document.getElementById(input2).value;
-		var span2Obj = document.getElementById(span2);
+		var input1Value = $("#" + input1).val();
+		var input2Value = $("#" + input2).val();
 
 		if (input2Value == null || input2Value == "") {
-			span2Obj.innerHTML = "*Can not be empty";
+			$("#" + span2).html("*Can not be empty");
 			return false;
 		} else if (input1Value == input2Value) {
-			span2Obj.innerHTML = "Ok";
+			$("#" + span2).html("Ok");
 			return true;
 		} else {
-			span2Obj.innerHTML = "*The two passwords are different.";
+			$("#" + span2).html("*The two passwords are different.");
 			return false;
 		}
 	}
 
-	function check() {
-		if (valPassword('curPassword', 'curPasswordSpan') && valPassword('newPassword', 'newPasswordSpan') && passwordSame('newPassword', 'confirmPassword', 'confirmPasswordSpan') && passwordDifferent('curPassword', 'newPassword', 'newPasswordSpan')) return true; // 提交
-		else return false; // 阻止提交 
-	}
+
+
+	$(document).ready(function() {
+		$("#button").click(function() {
+			if (valPassword('curPassword', 'curPasswordSpan') && valPassword('newPassword', 'newPasswordSpan') && passwordSame('newPassword', 'confirmPassword', 'confirmPasswordSpan') && passwordDifferent('curPassword', 'newPassword', 'newPasswordSpan')) {
+				$.ajax({
+					url : "/NewsSystem/servlet/UserServlet?condition=changePassword",
+					type : "post",
+					data : $("#form").serialize(),
+					dataType : "json",
+					cache : false,
+					error : function() {
+						alert("error!");
+					},
+					success : function(data) {
+						if (data != null)
+							//alert(data.message);
+							$("#rightDiv").html(data.message);
+						else
+							//alert(data.message);
+							$("#rightDiv").html("Wrong!");
+					}
+				});
+			}
+			else return false; // 阻止提交 
+		});
+	});
 </script>
 </head>
 
 <body>
-	<form action="/NewsSystem/servlet/UserServlet?condition=changePassword"
-		method="post" onsubmit="return check()">
+	<form action="" id="form" name="form" method="post">
 		<table border="0" align="center" cellpadding="5" cellspacing="0">
 			<tr>
 				<td colspan="2" align="center">Change Password</td>
@@ -90,8 +111,8 @@
 					id="confirmPasswordSpan"></span></td>
 			</tr>
 			<tr>
-				<td colspan="2" align="center"><input type="submit"
-					value="submit" /></td>
+				<td colspan="2" align="center"><input type="button"
+					name="button" id="button" value="confirm" /></td>
 			</tr>
 		</table>
 	</form>

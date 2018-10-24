@@ -1,7 +1,6 @@
 package servlet;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Date;
 import java.util.List;
 
@@ -10,6 +9,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import com.google.gson.Gson;
 
 import bean.User;
 import bean.UserInformation;
@@ -48,44 +49,65 @@ public class UserServlet extends HttpServlet {
 			String severCheckCode = (String) session.getAttribute("checkCode");// 获取session中的验证码
 			if (severCheckCode == null) {// 服务器端验证图片验证码不存在
 				result = -3;
+				message.setMessage("服务器端验证图片验证码不存在!");
 			} else if (!severCheckCode.equals(checkCode)) {// 服务器端验证图片验证码验证失败
 				result = -4;
+				message.setMessage("The check code is wrong!");
 			} else {// 验证码验证正确
 				result = userService.register(user);// 注册用户
+				if (result == 1) {
+					message.setMessage("Registered successfully!");
+					message.setRedirectUrl("/NewsSystem/user/free/login.jsp");
+				} else if (result == -1) {
+					message.setMessage("User already exist! Please register again!");
+				} else if (result == 0) {
+					message.setMessage("Fail to register! Please register again!");
+				} else if (result == -10) {
+					message.setMessage("The email was registered! Please change another email!");
+				} else if (result == -11) {
+					message.setMessage(
+							"The user is existed! And the email is registered! Please change another email!");
+				}
 			}
-
-			// 将result返回客户端的 ajax 请求
-			Tool.returnIntResult(response, result);// 使用工具类的方法给ajax请求返回json格式的数据
+			message.setResult(result);
+			Gson gson = new Gson();
+			String jsonString = gson.toJson(message);
+			Tool.returnJsonString(response, jsonString);
 		} else if ("login".equals(condition)) {
 			String checkCode = request.getParameter("checkCode");
 			String severCheckCode = (String) session.getAttribute("checkCode");// 获取session中的验证码
 
 			if (severCheckCode == null) {// 服务器端验证图片验证码不存在
 				result = -4;
+				message.setMessage("服务器端验证图片验证码不存在!");
 			} else if (!severCheckCode.equals(checkCode)) {// 服务器端验证图片验证码验证失败
 				result = -5;
+				message.setMessage("The check code is wrong!");
 			} else {// 验证码验证正确
 				result = userService.login(user);
 				if (result == 1) {
-					request.getSession().setAttribute("user", user);
-					getServletContext().getRequestDispatcher("/index.jsp").forward(request, response);
-					return;
+					user.setPassword(null);// 防止密码泄露
+					session.setAttribute("user", user);
+
+					String originalUrl = (String) session.getAttribute("originalUrl");
+					if (originalUrl == null)
+						message.setRedirectUrl("/NewsSystem/index.jsp");
+					else
+						message.setRedirectUrl(originalUrl);
 				} else if (result == 0) {
 					message.setMessage("The password is incorrect. Please login again!");
-					message.setRedirectUrl("/NewsSystem/user/free/login.jsp");
 				} else if (result == -1) {
 					message.setMessage("The account is not existed. Please login again!");
-					message.setRedirectUrl("/NewsSystem/user/free/login.jsp");
 				} else if (result == -2) {
 					message.setMessage("The account exists, but has been stopped. Please contact the manager!");
-					message.setRedirectUrl("/NewsSystem/user/free/login.jsp");
 				} else if (result == -3) {
 					message.setMessage("Fail to login! Please login again!");
-					message.setRedirectUrl("/NewsSystem/user/free/login.jsp");
 				}
-				request.setAttribute("message", message);
-				getServletContext().getRequestDispatcher("/message.jsp").forward(request, response);
 			}
+			message.setResult(result);
+			Gson gson = new Gson();
+			String jsonString = gson.toJson(message);
+			Tool.returnJsonString(response, jsonString);
 		} else if ("showPage".equals(condition)) {
 			PageInformation pageInformation = new PageInformation();
 			Tool.getPageInformation("user", request, pageInformation);
@@ -126,17 +148,20 @@ public class UserServlet extends HttpServlet {
 		} else if ("changePassword".equals(condition)) {
 			String newPassword = request.getParameter("newPassword");
 			user = (User) request.getSession().getAttribute("user");
+			user.setPassword(request.getParameter("curPassword"));
 			result = userService.changePassword(user, newPassword);
 			if (result == 1) {
 				message.setMessage("Changed successfully!");
-			} else if (result == 0) {
-				message.setMessage("Fail to change! Please contact the manager!");
+			} else if (result == -1) {
+				message.setMessage("The old password is wrong! Please try again!");
 			} else {
-				message.setMessage("Fail to change! Please try again!");
+				message.setMessage("Fail to change! Please contact the manager!");
 			}
-			message.setRedirectUrl("/NewsSystem/user/manage/showUserInformation.jsp");
-			request.setAttribute("message", message);
-			getServletContext().getRequestDispatcher("/message.jsp").forward(request, response);
+
+			message.setResult(result);
+			Gson gson = new Gson();
+			String jsonString = gson.toJson(message);
+			Tool.returnJsonString(response, jsonString);
 		} else if ("showUserInformation".equals(condition)) { // 显示普通用户个人信息
 			user = (User) request.getSession().getAttribute("user");
 			if ("user".equals(user.getType())) {
@@ -145,7 +170,7 @@ public class UserServlet extends HttpServlet {
 			}
 			getServletContext().getRequestDispatcher("/user/manage/showUserInformation.jsp").forward(request, response);
 		} else if ("changeUserInformation".equals(condition)) { // 修改普通用户个人信息的第一步：显示可修改信息
-			user = (User) request.getSession().getAttribute("user");
+			user = (User) session.getAttribute("user");
 			if ("user".equals(user.getType())) {
 				UserInformation userInformation = userService.getByUserId(user.getUserId());
 				request.setAttribute("userInformation", userInformation);
@@ -153,7 +178,7 @@ public class UserServlet extends HttpServlet {
 			getServletContext().getRequestDispatcher("/user/manage/changeUserInformation.jsp").forward(request,
 					response);
 		} else if ("changeInformation".equals(condition)) { // 修改普通用户个人信息的第二步：修改信息
-			user = (User) request.getSession().getAttribute("user");
+			user = (User) session.getAttribute("user");
 			result = userService.updateInformation(user, request);
 			if (result >= 3) {
 				message.setMessage("Changed successfully!");
@@ -161,28 +186,42 @@ public class UserServlet extends HttpServlet {
 				message.setMessage("Fail to change! Please contact the manager!");
 			}
 			message.setRedirectUrl("/NewsSystem/servlet/UserServlet?condition=showUserInformation");
-			request.setAttribute("message", message);
-			getServletContext().getRequestDispatcher("/message.jsp").forward(request, response);
+			message.setResult(result);
+			Gson gson = new Gson();
+			String jsonString = gson.toJson(message);
+			Tool.returnJsonString(response, jsonString);
 		} else if ("exit".equals(condition)) {
-			request.getSession().removeAttribute("user");
+			session.removeAttribute("user");
 			response.sendRedirect("/NewsSystem/index.jsp");
 		} else if ("newPassword".equals(condition)) {
 			String rand = (String) request.getParameter("rand");
 			Integer trueRand = (Integer) session.getAttribute("rand");
 			Date old = (Date) session.getAttribute("time");
-
-			if (!rand.equals(trueRand.toString()))
+			message.setRedirectUrl("/NewsSystem/user/free/findPassword.jsp");
+			if (!rand.equals(trueRand.toString())) {
 				// rand值不对，无权限修改密码
 				result = -3;
-			else if (old == null || Tool.getSecondFromNow(old) > 300)
+				message.setMessage("无权限修改密码！");
+			} else if (old == null || Tool.getSecondFromNow(old) > 300) {
 				// 修改密码超时
 				result = -2;
-			else
+				message.setMessage("修改密码超时！");
+			} else {
 				result = userService.updatePassword(user);
+				if (result == 1) {
+					message.setMessage("修改密码成功！");
+					message.setRedirectUrl("/NewsSystem/user/free/login.jsp");
+				} else if (result == -1) {
+					message.setMessage("修改密码失败！");
+				}
+			}
 			session.removeAttribute("email");// 删除session数据
 			session.removeAttribute("rand");
 			session.removeAttribute("time");
-			Tool.returnIntResult(response, result);
+			message.setResult(result);
+			Gson gson = new Gson();
+			String jsonString = gson.toJson(message);
+			Tool.returnJsonString(response, jsonString);
 		} else if (condition.equals("findPassword")) {// 找回密码
 			if ("email".equals(request.getParameter("type"))) {
 				user.setEmail(request.getParameter("wayInput"));
@@ -192,9 +231,16 @@ public class UserServlet extends HttpServlet {
 					session.setAttribute("email", user.getEmail());
 					session.setAttribute("rand", rand);
 					session.setAttribute("time", new Date());
+					message.setMessage("请登录邮箱查看邮件，按邮件提示操作找回密码！");
+				} else if (result == -1) {
+					message.setMessage("发送邮件失败！");
+				} else if (result == -2) {
+					message.setMessage("邮箱未注册过！");
 				}
-
-				Tool.returnIntResult(response, result);
+				message.setResult(result);
+				Gson gson = new Gson();
+				String jsonString = gson.toJson(message);
+				Tool.returnJsonString(response, jsonString);
 			} else if ("telephone".equals(request.getParameter("type"))) {
 
 			}

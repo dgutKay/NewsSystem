@@ -4,60 +4,58 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-<title>My JSP 'manage.jsp' starting page</title>
+<title>manage.jsp</title>
+<script type="text/javascript"
+	src="/NewsSystem/js/jquery/jquery-3.3.1.min.js"></script>
 <script type="text/javascript">
 	function getOnePage(type, orderFieldName) {
-		var page = document.getElementById("page");
-		var totalPageCount = document.getElementById("totalPageCount");
-		var order = document.getElementById('order');
-		var orderField = document.getElementById("orderField");
+		var page = $("#page");
+		var totalPageCount = $("#totalPageCount");
+		var order = $("#order");
+		var orderField = $("#orderField");
 
 		if (orderFieldName != "") { //切换排序
-			orderField.value = orderFieldName; //设置排序字段名
-			if (order.value == "asc")
-				order.value = "desc";
+			orderField.val(orderFieldName); //设置排序字段名
+			if (order.val() == "asc")
+				order.val("desc");
 			else
-				order.value = "asc";
+				order.val("asc");
 
-			page.value = 1;
+			page.val("1");
 		}
 
 		pageValue = parseInt(page.value);
 		if (type == "first") {
-			page.value = 1;
+			page.val("1");
 		} else if (type == "pre") {
 			pageValue -= 1;
-			page.value = pageValue.toString();
+			page.val(pageValue.toString());
 		} else if (type == "next") {
 			pageValue += 1;
-			page.value = pageValue.toString();
+			page.val(pageValue.toString());
 		} else if (type == "last") {
-			page.value = totalPageCount.value;
+			page.val(totalPageCount.val());
 		}
 
 		//提交
-		document.getElementById('myform').submit();
+		$("#rightDiv").load("/NewsSystem/servlet/NewsServlet?condition=manage", $("#myform").serialize());
 	}
 
 	function deleteANews(id) {
-		obj = document.getElementById("ids");
-		obj.value = id;
-
-		document.getElementById("myform").action = "/NewsSystem/servlet/NewsServlet?condition=delete";
-		document.getElementById('myform').submit();
+		$("#ids").val(id);
+		$("#rightDiv").load("/NewsSystem/servlet/UserServlet?condition=delete", $("#myform").serialize());
 	}
 
 	function editANews(id) {
-		document.getElementById('myform').setAttribute("target", "_blank");
-		document.getElementById("myform").action = "/NewsSystem/servlet/NewsServlet?condition=edit&newsId=" + id;
-		document.getElementById('myform').submit();
+		$("#ids").val(id);
+		$("#myform").attr("target", "_blank");
+		$("#myform").attr("action", "/NewsSystem/servlet/NewsServlet?condition=edit").submit();
 	}
 </script>
 </head>
 
 <body>
-	<form action="/NewsSystem/servlet/NewsServlet?condition=manage"
-		id="myform" method="post">
+	<form action="" id="myform" method="post">
 		<table border="1" align="center" cellpadding="5" cellspacing="0">
 			<tr bgcolor='lightyellow'>
 				<td><a href='javascript:void(0);'

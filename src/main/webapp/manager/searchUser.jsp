@@ -4,12 +4,18 @@
 <html>
 <head>
 <title>searchUser.jsp</title>
+<script type="text/javascript"
+	src="/NewsSystem/js/jquery/jquery-3.3.1.min.js"></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		$("#submit").click(function() {
+			$("#rightDiv").load("/NewsSystem/servlet/UserServlet?condition=search&page=1&pageSize=2", $("#myform").serialize());
+		});
+	});
+</script>
 </head>
-
 <body>
-	<form
-		action="/NewsSystem/servlet/UserServlet?condition=search&page=1&pageSize=2"
-		method="post">
+	<form action="" method="post" id="myform">
 		<table border="0" align="center" cellpadding="5" cellspacing="0">
 			<tr>
 				<td colspan="2" align="center">Search</td>
@@ -40,7 +46,7 @@
 					type="date" name="upDate"></td>
 			</tr>
 			<tr>
-				<td colspan="2" align="center"><input type="submit"
+				<td colspan="2" align="center"><input type="button" id="submit"
 					value="submit"></td>
 			</tr>
 		</table>

@@ -20,7 +20,7 @@
 				<a href="/NewsSystem/index.jsp">Home Page</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 				<c:choose>
 					<c:when test="${empty sessionScope.user}">
-						<a href="/NewsSystem/user/free/login.jsp">Login In</a>&nbsp;&nbsp;&nbsp;
+						<a href="/NewsSystem/user/free/login.jsp">Login</a>&nbsp;&nbsp;&nbsp;
 							&nbsp;<a href="/NewsSystem/user/free/register.jsp">Register</a>
 					</c:when>
 					<c:otherwise>

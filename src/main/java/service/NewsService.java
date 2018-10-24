@@ -118,4 +118,25 @@ public class NewsService {
 		return newsesList;
 	}
 
+	// 获取首页各类新闻的函数
+	public List<List<News>> getByTypesTopN2(String[] newsTypes, Integer n) {
+		// newsesList为数组元素为新闻数组的数组，newsesList的每个数组元素为一个数组（存放一类新闻），
+		List<List<News>> newsesList = new ArrayList<List<News>>();
+		try {
+			DatabaseDao databaseDao = new DatabaseDao();
+			NewsDao newsDao = new NewsDao();
+			for (String type : newsTypes) {// 遍历newsTypes
+				List<News> newses = newsDao.getByTypesTopN(type, n, databaseDao); // 获取相对应的类别的新闻
+				newsesList.add(newses);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		return newsesList;
+	}
+
 }

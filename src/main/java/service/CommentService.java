@@ -26,11 +26,11 @@ public class CommentService {
 		return commentUserViews;
 	}
 
-	public Integer paise(String commentId) {
+	public Integer praise(String commentId) {
 		try {
 			DatabaseDao databaseDao = new DatabaseDao();
 			CommentDao commentDao = new CommentDao();
-			if (commentDao.paise(commentId, databaseDao) > 0)
+			if (commentDao.praise(commentId, databaseDao) > 0)
 				return 1;
 			else
 				return 0;
@@ -78,6 +78,31 @@ public class CommentService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return -3;
+		}
+	}
+
+	public Integer getPraise(Integer commentId) {
+		try {
+			DatabaseDao databaseDao = new DatabaseDao();
+			CommentDao commentDao = new CommentDao();
+			return commentDao.getPraise(commentId, databaseDao);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return -2;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return -3;
+		}
+	}
+
+	public Comment getComment() {
+		try {
+			DatabaseDao databaseDao = new DatabaseDao();
+			CommentDao commentDao = new CommentDao();
+			return commentDao.getComment(databaseDao);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
 		}
 	}
 }

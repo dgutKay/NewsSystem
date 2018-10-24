@@ -122,13 +122,17 @@ public class UserService {
 		try {
 			DatabaseDao databaseDao = new DatabaseDao();
 			UserDao userDao = new UserDao();
-			if (userDao.hasUser(user, databaseDao) > 0) {
-				if (databaseDao.updateAStringFieldById("user", user.getUserId(), "password", newPassword) > 0)
+			if (userDao.login(user, databaseDao) == 1) {
+				user.setPassword(newPassword);
+				// 根据密码生成盐和加密密码
+				Encryption.encryptPasswd(user);
+
+				if (userDao.updatePassword(user, databaseDao) > 0)
 					return 1; // 修改成功
 				else
-					return 0; // 用户存在，但修改失败，可能是密码问题
+					return 0; // 用户存在，但修改失败
 			} else
-				return -1; // 用户不存在
+				return -1; // 用户不存在或旧密码错误
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return -2; // 数据库问题
@@ -180,21 +184,23 @@ public class UserService {
 					if ("hobby".equals(item.getFieldName()))
 						userInformation.setHobby(item.getString("UTF-8"));
 				} else { // 上传文件
-					File uploadedFile;
-					String randomFileName;
-					do {
-						randomFileName = FileTool.getRandomFileNameByCurrentTime(item.getName());
-						fullPath = request.getServletContext().getRealPath(
-								WebProperties.propertiesMap.get("headIconDirDefault")) + "\\" + randomFileName;
-						uploadedFile = new File(fullPath);
-					} while (uploadedFile.exists()); // 确保文件未存在
+					if (item.getName() != null && !item.getName().isEmpty()) {
+						File uploadedFile;
+						String randomFileName;
+						do {
+							randomFileName = FileTool.getRandomFileNameByCurrentTime(item.getName());
+							fullPath = request.getServletContext().getRealPath(
+									WebProperties.propertiesMap.get("headIconDirDefault")) + "\\" + randomFileName;
+							uploadedFile = new File(fullPath);
+						} while (uploadedFile.exists()); // 确保文件未存在
 
-					item.write(uploadedFile); // 将临时文件转存为新文件保存
-					result = 1; // 表示上传文件成功
-					item.delete(); // 删除临时文件
-					result = 2; // 表示上传文件成功，且临时文件删除
-					user.setHeadIconUrl("\\" + WebProperties.propertiesMap.get("projectName")
-							+ WebProperties.propertiesMap.get("headIconDirDefault") + "\\" + randomFileName);
+						item.write(uploadedFile); // 将临时文件转存为新文件保存
+						result = 1; // 表示上传文件成功
+						item.delete(); // 删除临时文件
+						result = 2; // 表示上传文件成功，且临时文件删除
+						user.setHeadIconUrl("\\" + WebProperties.propertiesMap.get("projectName")
+								+ WebProperties.propertiesMap.get("headIconDirDefault") + "\\" + randomFileName);
+					}
 				}
 			}
 

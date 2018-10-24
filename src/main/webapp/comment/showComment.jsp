@@ -31,18 +31,18 @@
 
 	function model(commentId) {
 		document.getElementById('myModel').innerHTML = "<form action='/NewsSystem/servlet/CommentServlet?condition=addComment' method='post'> \
-      				<div class='modelContent'>  \
-	      				<table><tbody><tr><td colspan='2'> \
-									<textarea name='content' cols='60' rows='8' id='textarea' required></textarea></td>\
-								</tr><tr>\
-								<td align='center'><input type='submit' name='submit' id='submit' value='提交'></td>\
-								<td align='center'><input type='submit' onclick='cancel();' value='取消'></td>\
-							</tr></tbody></table>\
-					</div>  \
-					<input type='hidden' name='newsId' id='newsId' value='${param.newsId}'>\
-					<input type='hidden' name='page' id='page' value='${param.page}'>\
-					<input type='hidden' name='pageSize' id='pageSize' value='${param.pageSize}'>\
-					<input type='hidden' name='commentId' id='commentId'>\
+      				<div class='modelContent'>
+	      				<table><tbody><tr><td colspan='2'>
+									<textarea name='content' cols='60' rows='8' id='textarea' required></textarea></td>
+								</tr><tr>
+								<td align='center'><input type='submit' name='submit' id='submit' value='提交'></td>
+								<td align='center'><input type='submit' onclick='cancel();' value='取消'></td>
+							</tr></tbody></table>
+					</div>
+					<input type='hidden' name='newsId' id='newsId' value='${param.newsId}'>
+					<input type='hidden' name='page' id='page' value='${param.page}'>
+					<input type='hidden' name='pageSize' id='pageSize' value='${param.pageSize}'>
+					<input type='hidden' name='commentId' id='commentId'>
 				</form>";
 		document.getElementById('commentId').value = commentId;
 		document.getElementById('myModel').style.display = "block";
@@ -64,7 +64,7 @@
 			<div class="commentsHead">最新评论</div>
 			<c:forEach items="${requestScope.commentUserViews}"
 				var="commentUserView">
-				<div style="margin-bottom: 10px;;">
+				<div style='margin-bottom: 10px;'>
 					<div>
 						<div class="commentIcon">
 							<img width="35" src="${commentUserView.headIconUrl}">

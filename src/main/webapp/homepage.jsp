@@ -17,14 +17,16 @@
 				<table class="invisibleTable">
 					<tbody>
 						<tr class="newsColumn">
-							<td><c:choose>
+							<td>
+								<c:choose>
 									<c:when test="${newsType == 'all'}">
-							New
-						</c:when>
+										New
+									</c:when>
 									<c:otherwise>
-					        ${newsType}
-					    </c:otherwise>
-								</c:choose></td>
+					        			${newsType}
+					    			</c:otherwise>
+								</c:choose>
+							</td>
 							<td align="right"><a
 								href="/NewsSystem/servlet/NewsServlet?condition=showNewsByNewsType&newsType=${newsType}&page=1&pageSize=5">More</a>
 							</td>

@@ -103,7 +103,6 @@ a:active {
 }
 
 .mainPageUl {
-	background-image: url(/news/images/item.png);
 	background-position: 0px 6px;
 	padding-left: 8px;
 	background-repeat: no-repeat;
@@ -292,7 +291,7 @@ a:active {
 	position:absolute;bottom:0px;padding:0px;margin:0px;
 }
 .logRight{
-	height:80px;width:330px;margin:0px;float:right;position:relative;
+	height:80px;width:350px;margin:0px;float:right;position:relative;
 }
 .logRightInner{
 	position:absolute;bottom:0px;padding:0px;margin:0px;

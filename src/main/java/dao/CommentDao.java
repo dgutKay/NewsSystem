@@ -36,7 +36,7 @@ public class CommentDao {
 		return commentUserViews;
 	}
 
-	public Integer paise(String commentId, DatabaseDao databaseDao) throws SQLException {
+	public Integer praise(String commentId, DatabaseDao databaseDao) throws SQLException {
 		String sql = "update comment set praise=praise+1 where commentId=" + commentId;
 		return databaseDao.update(sql);
 	}
@@ -66,7 +66,7 @@ public class CommentDao {
 			comment.setPraise(databaseDao.getInt("praise"));
 			comment.setStair(databaseDao.getInt("stair"));
 			comment.setTime(databaseDao.getTimestamp("time"));
-			comment.setUserId(databaseDao.getInt("userIde"));
+			comment.setUserId(databaseDao.getInt("userId"));
 			return comment;
 		}
 		return null;
@@ -91,4 +91,29 @@ public class CommentDao {
 		return null;
 	}
 
+	public Integer getPraise(Integer commentId, DatabaseDao databaseDao) throws SQLException {
+		String sql = "select * from comment where commentId=" + commentId;
+		databaseDao.query(sql);
+		if (databaseDao.next()) {
+			return databaseDao.getInt("praise");
+		}
+		return null;
+	}
+
+	public Comment getComment(DatabaseDao databaseDao) throws SQLException {
+		String sql = "select * from comment order by time desc";
+		databaseDao.query(sql);
+		if (databaseDao.next()) {
+			Comment comment = new Comment();
+			comment.setCommentId(databaseDao.getInt("commentId"));
+			comment.setContent(databaseDao.getString("content"));
+			comment.setNewsId(databaseDao.getInt("newsId"));
+			comment.setPraise(databaseDao.getInt("praise"));
+			comment.setStair(databaseDao.getInt("stair"));
+			comment.setTime(databaseDao.getTimestamp("time"));
+			comment.setUserId(databaseDao.getInt("userId"));
+			return comment;
+		}
+		return null;
+	}
 }

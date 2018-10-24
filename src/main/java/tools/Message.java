@@ -4,6 +4,7 @@ public class Message {
 	private String message;
 	private String redirectUrl;
 	private Integer redirectTime;
+	private Integer result;
 
 	public Message() {
 		redirectTime = 5;
@@ -33,4 +34,13 @@ public class Message {
 		this.redirectTime = redirectTime;
 	}
 
+	public Integer getResult() {
+		return result;
+	}
+
+	public void setResult(Integer result) {
+		this.result = result;
+	}
+	
+	
 }
