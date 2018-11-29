@@ -244,6 +244,21 @@ public class UserServlet extends HttpServlet {
 			} else if ("telephone".equals(request.getParameter("type"))) {
 
 			}
+		} else if (condition.equals("batchAdd")) {// 批量添加用户
+			String url = userService.batchAdd(request);
+
+			if (url.startsWith("-")) {
+				message.setResult(-1);
+				message.setMessage("操作失败！可能的失败原因：用户名与已有用户重名。");
+			} else {
+				message.setResult(1);
+				message.setMessage("success!请下载以下链接的excel文件，其中有每个用户的初始密码。<br><br><br>");
+				message.setRedirectUrl(url);
+			}
+
+			Gson gson = new Gson();
+			String jsonString = gson.toJson(message);
+			Tool.returnJsonString(response, jsonString);
 		}
 	}
 

@@ -2,7 +2,9 @@ package tools;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -146,4 +148,45 @@ public class Tool {
 		Long between = (now.getTime() - old.getTime()) / 1000;
 		return between;
 	}
+
+	static public Integer getRandomInRangInteger(Integer min, Integer max) {
+		return (min + (int) (Math.random() * ((max - min) + 1)));
+	}
+
+	// 生成符合条件的随机字符串
+	static public String getRandomString(Integer length, String firstChar, String remainString) {
+		int randomNum = getRandomInRangInteger(0, firstChar.length() - 1);
+		String result = firstChar.substring(randomNum, randomNum + 1);
+		length--;
+
+		for (int i = 0; i < length; i++) {
+			randomNum = getRandomInRangInteger(0, remainString.length() - 1);
+			result += remainString.substring(randomNum, randomNum + 1);
+		}
+
+		return result;
+	}
+
+	// 至少需要8个字符，以字母开头，以字母或数字结尾
+	static public String getRandomPassword() {
+		Integer length = 8;
+		String firstChar = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		String remainString = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+		return getRandomString(length, firstChar, remainString);
+	}
+
+	// 初始化数组 参数为数组长度和数组初始值
+	public static List<Integer> getListWithLengthInitIntValue(Integer length, Integer value) {
+		List<Integer> list = new ArrayList<Integer>();
+		for (int i = 0; i < length; i++) {
+			list.add(value);
+		}
+		return list;
+	}
+
+	// 保留两位小数，四舍五入
+	public static Double formatDouble(Double d) {
+		return new Double(Math.round(d * 100) * 1.0 / 100);
+	}
+
 }

@@ -10,8 +10,7 @@
 <style type="text/css">
 .hand {
 	cursor: pointer;
-	//
-	鼠标变成手的形状
+	//鼠标变成手的形状
 }
 </style>
 <script type="text/javascript">

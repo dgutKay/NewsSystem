@@ -1,6 +1,8 @@
 package service;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -9,8 +11,15 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import bean.*;
 import dao.*;
@@ -18,6 +27,7 @@ import tools.EMailTool;
 import tools.Encryption;
 import tools.FileTool;
 import tools.PageInformation;
+import tools.Tool;
 import tools.WebProperties;
 
 public class UserService {
@@ -276,6 +286,93 @@ public class UserService {
 			e.printStackTrace();
 			return -1;
 		}
+	}
+
+	public String batchAdd(HttpServletRequest request) {
+		DiskFileItemFactory factory = new DiskFileItemFactory();
+		String fullPath = request.getServletContext().getRealPath(WebProperties.propertiesMap.get("tempDir"));
+		File repository = new File(fullPath);
+		factory.setRepository(repository);
+		ServletFileUpload upload = new ServletFileUpload(factory);
+		try {
+			List<FileItem> items = upload.parseRequest(request);
+			Iterator<FileItem> iter = items.iterator();
+			while (iter.hasNext()) {
+				FileItem item = iter.next();
+				if (!item.isFormField()) { // 上传文件
+					String excelFileFullPath = fullPath + "\\" + item.getName();
+					item.write(new File(excelFileFullPath));
+
+					// excel文件读写
+					FileInputStream fileInputStream = new FileInputStream(excelFileFullPath);
+					String extend = FileTool.getExtendedFileName(item.getName());
+
+					Workbook workbook = null;
+					if (extend.equalsIgnoreCase("xls"))
+						workbook = new HSSFWorkbook(fileInputStream);
+					else if (extend.equalsIgnoreCase("xlsx"))
+						workbook = new XSSFWorkbook(fileInputStream);
+					else {// 文件后缀名不正确
+						fileInputStream.close();
+						return "-1";
+					}
+
+					fileInputStream.close();
+
+					Sheet sheet = workbook.getSheetAt(0);
+					Row row;
+
+					// 遍历excel行,插入数据库
+					List<User> users = new ArrayList<User>();
+					for (int i = 0; i < sheet.getPhysicalNumberOfRows(); i++) {
+						row = sheet.getRow(i);
+						String name = row.getCell(0).getRichStringCellValue().getString().trim();
+
+						if (name != null && !name.isEmpty()) {
+							User user = new User();
+							user.setName(name);
+							user.setUsability("use");
+							user.setPassword(Tool.getRandomPassword());
+
+							Cell cell = row.createCell(1);
+							cell.setCellValue(user.getPassword());
+
+							Encryption.encryptPasswd(user);
+							users.add(user);
+						}
+					}
+
+					DatabaseDao databaseDao = new DatabaseDao();
+					UserDao userDao = new UserDao();
+					if (userDao.batchAdd(users, databaseDao) != 1) {
+						workbook.close();
+						return "-2";
+					}
+
+					FileOutputStream fileOutputStream = new FileOutputStream(excelFileFullPath);
+					workbook.write(fileOutputStream);
+
+					fileOutputStream.flush();
+					fileOutputStream.close();
+					workbook.close();
+
+					String excelFile = "\\" + WebProperties.propertiesMap.get("projectName")
+							+ WebProperties.propertiesMap.get("tempDir") + "\\" + item.getName();
+					excelFile = excelFile.replace("\\", "/");
+					return excelFile;
+				}
+			}
+		} catch (FileUploadException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return "-3";
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return "-4";
+		}
+
+		return "-5";
 	}
 
 }

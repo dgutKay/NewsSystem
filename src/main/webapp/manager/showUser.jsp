@@ -21,7 +21,7 @@
 			page.val("1");
 		}
 
-		pageValue = parseInt(page.value);
+		pageValue = parseInt(page.val());
 		if (type == "first") {
 			page.val("1");
 		} else if (type == "pre") {

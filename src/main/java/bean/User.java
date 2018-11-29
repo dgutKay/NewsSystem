@@ -2,6 +2,8 @@ package bean;
 
 import java.sql.Timestamp;
 
+import tools.WebProperties;
+
 public class User {
 	private Integer userId;
 	private String name;
@@ -12,6 +14,11 @@ public class User {
 	private String headIconUrl;
 	private Timestamp registerDate;
 	private String usability;
+
+	public User() {
+		headIconUrl = "/" + WebProperties.propertiesMap.get("projectName")
+				+ WebProperties.propertiesMap.get("headIconFileDefault").replace("\\", "/");
+	}
 
 	public Integer getUserId() {
 		return userId;

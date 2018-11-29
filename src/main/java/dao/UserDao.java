@@ -20,11 +20,9 @@ public class UserDao {
 	}
 
 	public Integer register(User user, DatabaseDao databaseDao) throws SQLException {
-		user.setHeadIconUrl("\\" + WebProperties.propertiesMap.get("projectName")
-				+ WebProperties.propertiesMap.get("headIconFileDefault"));// 默认头像
 		String sql = "insert into user(type,name,email,password,salt,usability,headIconUrl) values('" + user.getType()
 				+ "','" + user.getName() + "','" + user.getEmail() + "','" + user.getPassword() + "','" + user.getSalt()
-				+ "','" + user.getUsability() + "','" + user.getHeadIconUrl().replace("\\", "\\\\") + "')";
+				+ "','" + user.getUsability() + "','" + user.getHeadIconUrl() + "')";
 		return databaseDao.update(sql);
 	}
 
@@ -104,5 +102,25 @@ public class UserDao {
 		String sql = "update user set password='" + user.getPassword() + "', salt='" + user.getSalt()
 				+ "' where email='" + user.getEmail() + "'";
 		return databaseDao.update(sql);
+	}
+
+	public Integer batchAdd(List<User> users, DatabaseDao databaseDao) throws SQLException {
+		databaseDao.setAutoCommit(false);
+		String sql = "insert into user(name,password,salt,usability,headIconUrl) values(?,?,?,?,?)";
+		databaseDao.createPreparedStatement(sql);
+
+		for (User user : users) {
+			databaseDao.setString(1, user.getName());
+			databaseDao.setString(2, user.getPassword());
+			databaseDao.setString(3, user.getSalt());
+			databaseDao.setString(4, user.getUsability());
+			databaseDao.setString(5, user.getHeadIconUrl());
+			databaseDao.addBatch();
+		}
+
+		databaseDao.executeBatch();
+		databaseDao.commit();
+		databaseDao.setAutoCommit(true);
+		return 1;
 	}
 }

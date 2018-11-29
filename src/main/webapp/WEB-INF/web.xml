@@ -63,6 +63,11 @@
     <servlet-name>UserServlet</servlet-name>
     <servlet-class>servlet.UserServlet</servlet-class>
   </servlet>
+  <servlet>
+    <servlet-name>StatisticServlet</servlet-name>
+    <servlet-class>servlet.StatisticServlet</servlet-class>
+  </servlet>
+
 
 
 
@@ -86,6 +91,10 @@
     <servlet-name>UserServlet</servlet-name>
     <url-pattern>/servlet/UserServlet</url-pattern>
   </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>StatisticServlet</servlet-name>
+    <url-pattern>/servlet/StatisticServlet</url-pattern>
+  </servlet-mapping>
 
 	<filter>
 		<filter-name>charencode</filter-name>
@@ -102,7 +111,7 @@
 	</filter>
 	<filter-mapping>
 		<filter-name>HeadFilter</filter-name>
-		<url-pattern>/news/manage/*</url-pattern>
+		<!-- <url-pattern>/news/manage/*</url-pattern> -->
 		<url-pattern>/news/*</url-pattern>
 		<url-pattern>/comment/*</url-pattern>
 		<url-pattern>/user/manageUIMain/*</url-pattern>
@@ -120,10 +129,12 @@
 		<filter-name>AuthorityFilter</filter-name>
 		<url-pattern>/news/manage/*</url-pattern>
 		<url-pattern>/manager/*</url-pattern>
+		<url-pattern>/statistic/*</url-pattern>
 		<url-pattern>/user/manage/*</url-pattern>
 		<servlet-name>UserServlet</servlet-name>
 		<servlet-name>NewsServlet</servlet-name>
 		<servlet-name>CommentServlet</servlet-name>
+		<servlet-name>StatisticServlet</servlet-name>
 		<dispatcher>FORWARD</dispatcher>
 		<dispatcher>REQUEST</dispatcher>
 	</filter-mapping>

@@ -10,32 +10,32 @@
 <script type="text/javascript">
 	function valPassword() {
 		var pattern = /^(\w){6,20}$/;
-		var password = document.getElementById("password").value;
-		var passwordspan = document.getElementById("passwordspan");
+		var password = $("#password").val();
+		var passwordspan = $("#passwordspan");
 		if (password == null || password == "") {
-			passwordspan.innerHTML = "*Can not be empty";
+			passwordspan.html("*Can not be empty");
 			return false;
 		} else if (password.match(pattern) == null) {
-			passwordspan.innerHTML = "*Password can only enter 6-20 letters, numbers or underscore.";
+			passwordspan.html("*Password can only enter 6-20 letters, numbers or underscore.");
 			return false;
 		} else {
-			passwordspan.innerHTML = "Ok";
+			passwordspan.html("Ok");
 			return true;
 		}
 	}
 
 	function passwordSame() {
-		var password = document.getElementById("password").value;
-		var confirmPassword = document.getElementById("confirmPassword").value;
-		var confirmPasswordSpan = document.getElementById("confirmPasswordSpan");
+		var password = $("#password").val();
+		var confirmPassword = $("#confirmPassword").val();
+		var confirmPasswordSpan = $("#confirmPasswordSpan");
 		if (confirmPassword == null || confirmPassword == "") {
-			confirmPasswordSpan.innerHTML = "*Can not be empty";
+			confirmPasswordSpan.html("*Can not be empty");
 			return false;
 		} else if (password == confirmPassword) {
-			confirmPasswordSpan.innerHTML = "Ok";
+			confirmPasswordSpan.html("Ok");
 			return true;
 		} else {
-			confirmPasswordSpan.innerHTML = "*The two passwords are different.";
+			confirmPasswordSpan.html("*The two passwords are different.");
 			return false;
 		}
 	}

@@ -18,7 +18,7 @@ public class HeadFilter implements Filter {
 			throws ServletException, IOException {
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;
-		if (!req.getRequestURI().endsWith("addNews.jsp")) {
+		if (!req.getRequestURI().endsWith("manage.jsp")) {
 			req.getServletContext().getRequestDispatcher(WebProperties.config.getString("headJsp")).include(req, res);
 		}
 		chain.doFilter(request, response);

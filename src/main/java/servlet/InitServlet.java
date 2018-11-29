@@ -65,6 +65,8 @@ public class InitServlet extends HttpServlet {
 			WebProperties.propertiesMap.put("ueditConfigJs", config.getString("ueditConfigJs"));
 			WebProperties.propertiesMap.put("ueditJs", config.getString("ueditJs"));
 			WebProperties.propertiesMap.put("ueditLang", config.getString("ueditLang"));
+			WebProperties.propertiesMap.put("excelTemplate", config.getString("excelTemplate"));
+			WebProperties.propertiesMap.put("wordTemplate", config.getString("wordTemplate"));
 
 			// 加载新闻类型
 			NewsTypeService newsTypeService = new NewsTypeService();

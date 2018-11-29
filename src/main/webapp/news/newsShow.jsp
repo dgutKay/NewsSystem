@@ -6,9 +6,7 @@
 <title>newsShow.jsp</title>
 <script type="text/javascript">
 	function getOnePage(type, orderFieldName) {
-		// var url;
 		var page = document.getElementById("page");
-		// var pageSize = document.getElementById("pageSize");
 		var totalPageCount = document.getElementById("totalPageCount");
 		var order = document.getElementById('order');
 		var orderField = document.getElementById("orderField");
@@ -23,7 +21,7 @@
 			page.value = 1;
 		}
 
-		pageValue = parseInt(page.value);
+		pageValue = parseInt(page.val());
 		if (type == "first") {
 			page.value = 1;
 		} else if (type == "pre") {
@@ -33,7 +31,7 @@
 			pageValue += 1;
 			page.value = pageValue.toString();
 		} else if (type == "last") {
-			page.value = totalPageCount.value;
+			page.value = totalPageCount.val();
 		}
 
 		//提交

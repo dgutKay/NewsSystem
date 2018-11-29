@@ -2,6 +2,7 @@ package dao;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -20,6 +21,7 @@ public class DatabaseDao {
 	private Connection connect = null;
 	private Statement stmt = null;
 	private ResultSet rs = null;
+	private PreparedStatement ps = null;
 
 	public DatabaseDao() throws Exception {
 		Class.forName(drv);
@@ -148,5 +150,21 @@ public class DatabaseDao {
 		while (next())
 			return 1;
 		return 0;
+	}
+
+	public void createPreparedStatement(String sql) throws SQLException {
+		ps = connect.prepareStatement(sql);
+	}
+
+	public void addBatch() throws SQLException {
+		ps.addBatch();
+	}
+
+	public int[] executeBatch() throws SQLException {
+		return ps.executeBatch();
+	}
+	
+	public void setString(int parameterIndex, String value)throws SQLException{		
+		ps.setString(parameterIndex, value);
 	}
 }

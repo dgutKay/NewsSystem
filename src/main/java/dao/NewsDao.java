@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import bean.ArticleNumberByMonthInAYear;
 import bean.News;
 import tools.PageInformation;
 import tools.Tool;
@@ -88,6 +89,49 @@ public class NewsDao {
 			newses.add(news);
 		}
 		return newses;
+	}
+
+	public List<Integer> articleNumberByMonthInAYear(String year, DatabaseDao databaseDao) throws SQLException {
+		List<Integer> articleNumberByMonthList = Tool.getListWithLengthInitIntValue(12, 0);
+		String sql = "select count(*) as articleNumber, MONTH(newsTime) as month from news where YEAR(newsTime)=" + year
+				+ " group by month order by month;";
+
+		databaseDao.query(sql);
+		while (databaseDao.next()) {
+			int month = databaseDao.getInt("month");
+			articleNumberByMonthList.set(month - 1, databaseDao.getInt("articleNumber"));
+		}
+		return articleNumberByMonthList;
+	}
+
+	public List<ArticleNumberByMonthInAYear> articleNumberByMonthInAYearEveryYear(String year, DatabaseDao databaseDao)
+			throws SQLException {
+		List<ArticleNumberByMonthInAYear> articleNumberByMonthInAYearEveryYearList = new ArrayList<ArticleNumberByMonthInAYear>();
+		String sql = "select count(*) as articleNumber, YEAR(newsTime) as year, MONTH(newsTime) as month from news group by year,month order by year,month";
+
+		databaseDao.query(sql);
+		int nowYear = 0;
+		ArticleNumberByMonthInAYear articleNumberByMonthInAYear = null;
+		while (databaseDao.next()) {
+			int DBYear = databaseDao.getInt("year");
+			if (nowYear != DBYear) {
+				nowYear = DBYear;
+				if (articleNumberByMonthInAYear != null) {
+					articleNumberByMonthInAYearEveryYearList.add(articleNumberByMonthInAYear);
+				}
+				articleNumberByMonthInAYear = new ArticleNumberByMonthInAYear();
+				articleNumberByMonthInAYear.setYear(nowYear);
+			}
+			// 加入该月的数据
+			articleNumberByMonthInAYear.getArticleNumberByMonthList().set(databaseDao.getInt("month") - 1,
+					databaseDao.getInt("articleNumber"));
+			articleNumberByMonthInAYear.setTotalNewsNumber(
+					articleNumberByMonthInAYear.getTotalNewsNumber() + databaseDao.getInt("articleNumber"));
+		}
+		if (articleNumberByMonthInAYear != null) {
+			articleNumberByMonthInAYearEveryYearList.add(articleNumberByMonthInAYear);
+		}
+		return articleNumberByMonthInAYearEveryYearList;
 	}
 
 }

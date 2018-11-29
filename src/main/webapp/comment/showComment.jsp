@@ -7,50 +7,52 @@
 <head>
 <link href="/NewsSystem/css/1.css" rel="stylesheet" type="text/css">
 <title>showComment.jsp</title>
+<script type="text/javascript"
+	src="/NewsSystem/js/jquery/jquery-3.3.1.min.js"></script>
 <script type="text/javascript">
 	function getOnePage(type, orderFieldName) {
-		var pages = document.getElementsByClassName("page");
+		var pages = $("#page");
 		var page = pages[0];
 
-		pageValue = parseInt(page.value);
+		pageValue = parseInt(page.val());
 		if (type == "pre") {
 			pageValue -= 1;
-			page.value = pageValue.toString();
+			page.val(pageValue.toString());
 		} else if (type == "next") {
 			pageValue += 1;
-			page.value = pageValue.toString();
+			page.val(pageValue.toString());
 		}
 		//提交
-		document.getElementById('myform').submit();
+		$("#myform").submit();
 	}
 
 	function praise(commentId, newsId) {
-		document.getElementById('myform').action = "/NewsSystem/servlet/CommentServlet?condition=praise&commentId=" + commentId + "&newsId=" + newsId;
-		document.getElementById('myform').submit();
+		$("#myform").action = "/NewsSystem/servlet/CommentServlet?condition=praise&commentId=" + commentId + "&newsId=" + newsId;
+		$("#myform").submit();
 	}
 
 	function model(commentId) {
-		document.getElementById('myModel').innerHTML = "<form action='/NewsSystem/servlet/CommentServlet?condition=addComment' method='post'> \
-      				<div class='modelContent'>
-	      				<table><tbody><tr><td colspan='2'>
-									<textarea name='content' cols='60' rows='8' id='textarea' required></textarea></td>
-								</tr><tr>
-								<td align='center'><input type='submit' name='submit' id='submit' value='提交'></td>
-								<td align='center'><input type='submit' onclick='cancel();' value='取消'></td>
-							</tr></tbody></table>
-					</div>
-					<input type='hidden' name='newsId' id='newsId' value='${param.newsId}'>
-					<input type='hidden' name='page' id='page' value='${param.page}'>
-					<input type='hidden' name='pageSize' id='pageSize' value='${param.pageSize}'>
-					<input type='hidden' name='commentId' id='commentId'>
-				</form>";
-		document.getElementById('commentId').value = commentId;
-		document.getElementById('myModel').style.display = "block";
+		$("#myModel").html("<form action='/NewsSystem/servlet/CommentServlet?condition=addComment' method='post'> \
+      				<div class='modelContent'> \
+	      				<table><tbody><tr><td colspan='2'> \
+									<textarea name='content' cols='60' rows='8' id='textarea' required></textarea></td> \
+								</tr><tr> \
+								<td align='center'><input type='submit' name='submit' id='submit' value='提交'></td> \
+								<td align='center'><input type='submit' onclick='cancel();' value='取消'></td> \
+							</tr></tbody></table> \
+					</div> \
+					<input type='hidden' name='newsId' id='newsId' value='${param.newsId}'> \
+					<input type='hidden' name='page' id='page' value='${param.page}'> \
+					<input type='hidden' name='pageSize' id='pageSize' value='${param.pageSize}'> \
+					<input type='hidden' name='commentId' id='commentId'> \
+				</form>");
+		$("#commentId").val(commentId);
+		$("#myModel").css("display", "block");
 	}
 
 	function cancel() {
-		document.getElementById('myModel').innerHTML = "";
-		document.getElementById('myModel').style.display = "none";
+		$("#myModel").html("");
+		$("#myModel").css("display", "none");
 	}
 </script>
 </head>
