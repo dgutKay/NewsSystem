@@ -1,14 +1,32 @@
 package service;
 
+import static org.hamcrest.CoreMatchers.nullValue;
+
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import com.jacob.com.ComThread;
+
 import bean.Comment;
 import bean.CommentUserView;
+import bean.FirstTenCommentNumberAYear;
 import dao.CommentDao;
 import dao.DatabaseDao;
+import tools.JacobExcelTool;
+import tools.JacobWordManager;
 import tools.PageInformation;
+import tools.Tool;
+import tools.WebProperties;
 
 public class CommentService {
 
@@ -104,5 +122,116 @@ public class CommentService {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	public String firstTenCommentNumberAYearEveryYear(HttpServletRequest request) {
+		CommentDao commentDao = new CommentDao();
+		List<FirstTenCommentNumberAYear> firstTenCommentNumberAYearEveryYearList = null;
+
+		try {
+			DatabaseDao databaseDao = new DatabaseDao();
+			firstTenCommentNumberAYearEveryYearList = commentDao.firstTenCommentNumberAYearEveryYear(databaseDao);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return "-1";
+		}
+
+		Workbook workbook = null;
+		FileInputStream fileInputStream = null;
+		String wordFile = "-";
+
+		// 打开word
+		ComThread.InitMTA(true);
+		JacobWordManager jacobWordManager = null;
+
+		try {
+			int first = 1;
+
+			for (FirstTenCommentNumberAYear firstTenCommentNumberAYear : firstTenCommentNumberAYearEveryYearList) {
+				String fullPath = request.getServletContext()
+						.getRealPath(WebProperties.propertiesMap.get("excelTemplate"));
+				String excelFileFullPath = fullPath + "\\firstTenCommentNumberAYear.xlsm";
+
+				fileInputStream = new FileInputStream(excelFileFullPath);
+				workbook = new XSSFWorkbook(fileInputStream);
+				fileInputStream.close();
+
+				Sheet sheet = workbook.getSheetAt(0);
+				Row row;
+				// 修改年度
+				row = sheet.getRow(1);
+				row.getCell(1).setCellValue(firstTenCommentNumberAYear.getYear() + "年前十名评论数");
+				for (int i = 2; i <= 11; i++) {
+					row = sheet.getRow(i);
+					row.getCell(0).setCellValue(
+							firstTenCommentNumberAYear.getFirstTenCommentNumberList().get(i - 2).getUserName());
+					row.getCell(1).setCellValue(
+							firstTenCommentNumberAYear.getFirstTenCommentNumberList().get(i - 2).getCommentNumber());
+				}
+
+				FileOutputStream fileOutputStream = new FileOutputStream(excelFileFullPath);
+				workbook.write(fileOutputStream);
+				fileOutputStream.flush();
+				fileOutputStream.close();
+				workbook.close();
+
+				JacobExcelTool tool = new JacobExcelTool();
+				// 打开
+				tool.OpenExcel(excelFileFullPath, false, false);
+				// 调用Excel宏
+				tool.callMacro("firstTenCommentNumber");
+				// 关闭并保存，释放对象
+				tool.CloseExcel(true, true);
+
+				jacobWordManager = new JacobWordManager(false);
+
+				fullPath = request.getServletContext().getRealPath(WebProperties.propertiesMap.get("wordTemplate"));
+				String copySentence = fullPath + "\\firstTenCommentNumberCopySentence.docx";
+				String oneYear = fullPath + "\\oneYear.docm";
+
+				// 先粘贴图表，再在图表前粘贴句子 // 因为先前处理Excel已复制了图表，所以应先粘贴图表
+				jacobWordManager.openDocument(oneYear);
+				jacobWordManager.callMacro("deleteAll");
+				jacobWordManager.callMacro("pasteChart");
+				jacobWordManager.copyContentFromAnotherDocInsertBefore(copySentence);
+				jacobWordManager.goToBegin();
+				jacobWordManager.replaceAllText("#year", firstTenCommentNumberAYear.getYear().toString());
+				jacobWordManager.goToBegin();
+				jacobWordManager.replaceText("#total", firstTenCommentNumberAYear.getTotalCommentNumber().toString());
+				jacobWordManager.goToBegin();
+				jacobWordManager.replaceText("#averageByMonth",
+						Tool.formatDouble(firstTenCommentNumberAYear.getTotalCommentNumber() * 1.0 / 12).toString());
+				jacobWordManager.callMacro("println");
+				jacobWordManager.closeDocumentWithSave();
+
+				String wordFileFullPath = fullPath + "\\firstTenCommentNumberInAYearEveryYearAll.docm";
+				jacobWordManager.openDocument(wordFileFullPath);
+
+				if (first == 1) {
+					jacobWordManager.callMacro("deleteAll");
+					first++;
+				}
+
+				jacobWordManager.goToEnd();
+				jacobWordManager.copyContentFromAnotherDocInsertAfter(oneYear);
+				jacobWordManager.closeDocumentWithSave();
+				jacobWordManager.close();
+			}
+
+			wordFile = "\\" + WebProperties.propertiesMap.get("projectName")
+					+ WebProperties.propertiesMap.get("wordTemplate")
+					+ "\\firstTenCommentNumberInAYearEveryYearAll.docm";
+			wordFile.replace("\\", "/");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return "-2";
+		} finally {
+			jacobWordManager.close();// 关闭word程序
+			ComThread.Release();
+		}
+
+		return wordFile;
 	}
 }

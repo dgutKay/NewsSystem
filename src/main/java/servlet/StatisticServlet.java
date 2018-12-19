@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
 
+import service.CommentService;
 import service.NewsService;
 import tools.Message;
 import tools.Tool;
@@ -43,6 +44,21 @@ public class StatisticServlet extends HttpServlet {
 			Tool.returnJsonString(response, jsonString);
 		} else if ("articleNumberByMonthInAYearEveryYear".equals(condition)) {
 			result = newsService.articleNumberByMonthInAYearEveryYear(request);
+
+			if (result.startsWith("-")) {
+				message.setResult(-1);
+				message.setMessage("操作失败！");
+			} else {
+				message.setResult(1);
+				message.setMessage("成功！请下载以下链接的excel文件。");
+				message.setRedirectUrl(result);
+			}
+
+			String jsonString = gson.toJson(message);
+			Tool.returnJsonString(response, jsonString);
+		} else if ("firstTenCommentNumberAYearEveryYear".equals(condition)) {
+			CommentService commentService = new CommentService();
+			result = commentService.firstTenCommentNumberAYearEveryYear(request);
 
 			if (result.startsWith("-")) {
 				message.setResult(-1);

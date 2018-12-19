@@ -6,8 +6,11 @@ import java.util.List;
 
 import tools.PageInformation;
 import tools.Tool;
+import bean.ArticleNumberByMonthInAYear;
 import bean.Comment;
 import bean.CommentUserView;
+import bean.FirstTenCommentNumberAYear;
+import bean.UsernameCommentnumber;
 
 public class CommentDao {
 
@@ -115,5 +118,45 @@ public class CommentDao {
 			return comment;
 		}
 		return null;
+	}
+
+	public List<FirstTenCommentNumberAYear> firstTenCommentNumberAYearEveryYear(DatabaseDao databaseDao)
+			throws SQLException {
+		List<FirstTenCommentNumberAYear> firstTenCommentNumberAYearEveryYearList = new ArrayList<FirstTenCommentNumberAYear>();
+		String sql = "select name, count(*) as commentNumber, year(time) as year from commentuserview group by year,name order by year,commentNumber desc";
+		databaseDao.query(sql);
+
+		Integer nowYear = -1, index = -1, totalCommentNumber = 0;
+		FirstTenCommentNumberAYear firstTenCommentNumberAYear = null;
+		while (databaseDao.next()) {
+			int DBYear = databaseDao.getInt("year");
+			if (nowYear != DBYear) {
+				nowYear = DBYear;
+				index = 0;
+				if (firstTenCommentNumberAYear != null) {
+					firstTenCommentNumberAYear.setTotalCommentNumber(totalCommentNumber);
+					firstTenCommentNumberAYearEveryYearList.add(firstTenCommentNumberAYear);
+					totalCommentNumber = 0;
+				}
+				firstTenCommentNumberAYear = new FirstTenCommentNumberAYear();
+				firstTenCommentNumberAYear.setYear(nowYear);
+			}
+
+			if (index < 10) {
+				UsernameCommentnumber usernameCommentnumber = new UsernameCommentnumber();
+				usernameCommentnumber.setUserName(databaseDao.getString("name"));
+				usernameCommentnumber.setCommentNumber(databaseDao.getInt("commentNumber"));
+
+				firstTenCommentNumberAYear.getFirstTenCommentNumberList().set(index, usernameCommentnumber);
+				index++;
+			}
+			totalCommentNumber += databaseDao.getInt("commentNumber");
+		}
+		if (firstTenCommentNumberAYear != null) {
+			firstTenCommentNumberAYear.setTotalCommentNumber(totalCommentNumber);
+			firstTenCommentNumberAYearEveryYearList.add(firstTenCommentNumberAYear);
+		}
+		return firstTenCommentNumberAYearEveryYearList;
+
 	}
 }

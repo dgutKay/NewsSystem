@@ -123,4 +123,32 @@ public class UserDao {
 		databaseDao.setAutoCommit(true);
 		return 1;
 	}
+
+	public void getUserByOpenId(DatabaseDao databaseDao, User user) throws SQLException {
+		databaseDao.getByStringField("user", "openId", user.getOpenId());
+		while (databaseDao.next()) {
+			user.setUsability(databaseDao.getString("usability"));
+			user.setPassword(databaseDao.getString("password"));
+			user.setSalt(databaseDao.getString("salt"));
+			user.setType(databaseDao.getString("type"));
+			user.setName(databaseDao.getString("name"));
+			user.setAccessToken(databaseDao.getString("accessToken"));
+			user.setUserId(databaseDao.getInt("userId"));
+			user.setRegisterDate(databaseDao.getTimestamp("registerDate"));
+			user.setHeadIconUrl(databaseDao.getString("headIconUrl"));
+		}
+	}
+
+	public void getUserByName(DatabaseDao databaseDao, User user) throws SQLException {
+		databaseDao.getByStringField("user", "name", user.getName());
+		while (databaseDao.next()) {
+			user.setUsability(databaseDao.getString("usability"));
+			user.setPassword(databaseDao.getString("password"));
+			user.setSalt(databaseDao.getString("salt"));
+			user.setType(databaseDao.getString("type"));
+			user.setUserId(databaseDao.getInt("userId"));
+			user.setRegisterDate(databaseDao.getTimestamp("registerDate"));
+			user.setHeadIconUrl(databaseDao.getString("headIconUrl"));
+		}
+	}
 }

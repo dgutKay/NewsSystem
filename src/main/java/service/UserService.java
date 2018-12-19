@@ -375,4 +375,63 @@ public class UserService {
 		return "-5";
 	}
 
+	public Integer qqLogin(User user) {
+		try {
+			DatabaseDao databaseDao = new DatabaseDao();
+			UserDao userDao = new UserDao();
+			if (databaseDao.hasStringValue("user", "openId", user.getOpenId()) == 1) {// 该Openid存在
+				// 说明此openId登录已与本地user表中的用户绑定，可以登录
+				userDao.getUserByOpenId(databaseDao, user);
+				return 1;
+			}
+			return -1; // 不可以登录，必须手动绑定
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return -2;
+		}
+	}
+
+	// 系统自动创建一个用户（用户名和密码随机，无电子邮箱），今后允许用户在登录状态下修改一次用户名，修改一次邮箱，并验证，然后再不允许用户修改用户名和电子邮箱
+	public Integer qqBindNewUser(User user) {
+		try {
+			DatabaseDao databaseDao = new DatabaseDao();
+			UserDao userDao = new UserDao();
+
+			Integer maxId = databaseDao.getMaxId("user");
+			maxId++;
+			user.setName(user.getName() + maxId.toString());// 新用户名为：qq昵称+（用户表最大id值+1）
+			user.setPassword(Tool.getRandomPassword());// 设置一个随机密码，可以把该密码告诉用户，让他登录系统后去修改密码或找回密码
+			user.setType("user");//
+			user.setUsability("use");
+			// 根据密码生成盐和加密密码
+			Encryption.encryptPasswd(user);
+
+			if (userDao.register(user, databaseDao) > 0) {
+				userDao.getUserByName(databaseDao, user);// 查询同名用户的信息
+				user.setPassword(null);
+				user.setSalt(null);
+				return 1; // 绑定用户成功
+			} else
+				return -1;// 绑定用户失败
+		} catch (Exception e) {
+			e.printStackTrace();
+			return -2;// 绑定用户失败
+		}
+	}
+
+	// 手动绑定已有用户（需要输入用户名，且要用本系统的密码验证）
+	public Integer qqBindOldUser(User user) {
+		Integer result = 0;
+		try {
+			DatabaseDao databaseDao = new DatabaseDao();
+			UserDao userDao = new UserDao();
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return result;
+	}
 }

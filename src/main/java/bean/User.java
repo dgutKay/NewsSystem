@@ -8,12 +8,15 @@ public class User {
 	private Integer userId;
 	private String name;
 	private String type;
-	private String email;
+	private String email = "";
 	private String password;
 	private String salt;
 	private String headIconUrl;
 	private Timestamp registerDate;
 	private String usability;
+
+	private String openId = "";
+	private String accessToken = "";
 
 	public User() {
 		headIconUrl = "/" + WebProperties.propertiesMap.get("projectName")
@@ -90,6 +93,22 @@ public class User {
 
 	public void setUsability(String usability) {
 		this.usability = usability;
+	}
+
+	public String getOpenId() {
+		return openId;
+	}
+
+	public void setOpenId(String openId) {
+		this.openId = openId;
+	}
+
+	public String getAccessToken() {
+		return accessToken;
+	}
+
+	public void setAccessToken(String accessToken) {
+		this.accessToken = accessToken;
 	}
 
 }

@@ -7,10 +7,14 @@
 <title>login.jsp</title>
 <script type="text/javascript"
 	src="/NewsSystem/js/jquery/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" charset="utf-8"
+	src="http://connect.qq.com/qc_jssdk.js" data-appid="101504585"
+	data-redirecturi="http://220a27a0.nat123.cc:19537/news2/user/public/qqLoginCallback.jsp"></script>
 <style type="text/css">
 .hand {
 	cursor: pointer;
-	//鼠标变成手的形状
+	//
+	鼠标变成手的形状
 }
 </style>
 <script type="text/javascript">
@@ -113,6 +117,16 @@
 					<td align="center"><a href="register.jsp">register</a></td>
 					<td align="right"><a href="findPassword.jsp">forget
 							password</a></td>
+				</tr>
+				<tr>
+					<td>其他账号登录：</td>
+					<td><span id="qqLoginBtn"></span> <script
+							type="text/javascript">
+						QC.Login({
+							btnId : "qqLoginBtn", //插入按钮的节点id
+							showModal : true
+						});
+					</script></td>
 				</tr>
 			</table>
 		</div>

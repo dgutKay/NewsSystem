@@ -67,6 +67,11 @@
     <servlet-name>StatisticServlet</servlet-name>
     <servlet-class>servlet.StatisticServlet</servlet-class>
   </servlet>
+  <servlet>
+    <servlet-name>AutoGeneratorServlet</servlet-name>
+    <servlet-class>servlet.AutoGeneratorServlet</servlet-class>
+  </servlet>
+
 
 
 
@@ -94,6 +99,10 @@
   <servlet-mapping>
     <servlet-name>StatisticServlet</servlet-name>
     <url-pattern>/servlet/StatisticServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>AutoGeneratorServlet</servlet-name>
+    <url-pattern>/servlet/AutoGeneratorServlet</url-pattern>
   </servlet-mapping>
 
 	<filter>

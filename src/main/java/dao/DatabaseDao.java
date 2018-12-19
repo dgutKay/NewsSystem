@@ -163,8 +163,27 @@ public class DatabaseDao {
 	public int[] executeBatch() throws SQLException {
 		return ps.executeBatch();
 	}
-	
-	public void setString(int parameterIndex, String value)throws SQLException{		
+
+	public void setString(int parameterIndex, String value) throws SQLException {
 		ps.setString(parameterIndex, value);
+	}
+
+	public void getByStringField(String tableName, String field, String value) throws SQLException {
+		String sql = "select * from " + tableName.toLowerCase() + " where " + field + "='" + value + "';";
+		query(sql);
+	}
+
+	public void getByIntegerField(String tableName, String field, Integer value) throws SQLException {
+		String sql = "select * from " + tableName.toLowerCase() + " where " + field + "=" + value.toString();
+		query(sql);
+	}
+
+	public Integer getMaxId(String tableName) throws SQLException {
+		String sql = "select max(" + tableName + "Id) as id from " + tableName;
+		query(sql);
+		while (next()) {
+			return this.getInt("id");
+		}
+		return -1;
 	}
 }

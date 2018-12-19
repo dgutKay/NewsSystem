@@ -259,6 +259,43 @@ public class UserServlet extends HttpServlet {
 			Gson gson = new Gson();
 			String jsonString = gson.toJson(message);
 			Tool.returnJsonString(response, jsonString);
+		} else if ("qqLogin".equals(condition)) {
+			user.setName(request.getParameter("nickname"));
+			user.setOpenId(request.getParameter("openId"));
+			user.setAccessToken(request.getParameter("accessToken"));
+
+			if (userService.qqLogin(user) == 1) {
+				user.setPassword(null); // 防止密码泄露
+				session.setAttribute("user", user);
+				getServletContext().getRequestDispatcher("index.jsp").forward(request, response);
+			} else {
+				// 如果已有用户登录，可以强行将原有用户注销
+				session.removeAttribute("user");
+				// 保存qq用户信息
+				session.setAttribute("qqUser", user);
+				message.setResult(-1);
+				// 绑定用户的页面
+				getServletContext().getRequestDispatcher("/user/free/qqBindUser.jsp").forward(request, response);
+				return;
+			}
+		} else if ("qqBindUser".equals(condition)) {// qq登录 回调后
+			user = (User) session.getAttribute("qqUser");
+			String qqType = request.getParameter("qqType");
+
+			if ("bindNewUser".equals(qqType)) {
+				result = userService.qqBindNewUser(user);
+				if (result == 1) {// 登录成功
+					session.setAttribute("user", user);
+					response.sendRedirect("/NewsSystem/index.jsp");
+					return;
+				} else {// 绑定失败，需要重新登录
+					response.sendRedirect("/user/free/login.jsp");
+					return;
+				}
+			} else if ("bindOldUser".equals(qqType)) {
+				userService.qqBindOldUser(user);
+				return;
+			}
 		}
 	}
 

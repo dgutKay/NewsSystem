@@ -44,7 +44,7 @@
 				$("#rightDiv").load("/NewsSystem/servlet/NewsServlet?condition=manage&page=1&pageSize=2");
 			else if (label === "添加新闻")
 				window.open("/NewsSystem/news/manage/addNews.jsp", '_blank');
-			else if (label === "年度各月份发布的新闻")
+			else if (label === "年度新闻数")
 				$("#rightDiv").load("/NewsSystem/statistic/articleNumberByMonthInAYear.jsp");
 			else if (label === "各年新闻数") {
 				$("#rightDiv").html("正在处理！");
@@ -60,9 +60,30 @@
 						}
 					}, "json");
 			} else if (label === "生成静态html") {
-
+				$("#rightDiv").html("正在处理！");
+				$.post("/NewsSystem/servlet/AutoGeneratorServlet?condition=newsHtml", {},
+					function(data, textStatus, jqXHR) {
+						if (data != null) {
+							if (data.result > 0) {
+								$("#rightDiv").html("<br><br><a href='" + data.redirectUrl + "'>成功！</a>");
+							} else {
+								$("#rightDiv").html(data.message);
+							}
+						}
+					}, "json");
 			} else if (label === "各年评论前十") {
-
+				$("#rightDiv").html("正在处理！");
+				$.post("/NewsSystem/servlet/StatisticServlet?condition=firstTenCommentNumberAYearEveryYear", {},
+					function(data, textStatus, jqXHR) {
+						if (data != null) {
+							if (data.result == 1) {
+								alert("success!");
+								$("#rightDiv").html("<br><br><a href='" + data.redirectUrl + "'>各年评论前十情况</a>");
+							} else {
+								$("#rightDiv").html(data.message);
+							}
+						}
+					}, "json");
 			}
 		});
 	});
@@ -84,8 +105,10 @@
 				<br>
 				<li>管理新闻</li>
 				<br>
-				<li>年度各月份发布的新闻</li>
+				<li>年度新闻数</li>
 				<li>各年新闻数</li>
+				<li>各年评论前十</li>
+				<li>生成静态html</li>
 			</c:if>
 			<c:if test="${sessionScope.user.type=='newsAuthor'}">
 				<br>
