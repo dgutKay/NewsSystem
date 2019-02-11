@@ -4,13 +4,20 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public class Tool {
+	static public Random random = new Random();
+	static public Map<String, String> pathMap = new Hashtable<String, String>();
+	static public boolean isMaintain = false;// 维护
+
 	// 从客户端获取分页、排序、删除等的参数
 	public static void getPageInformation(String tableName, HttpServletRequest request,
 			PageInformation pageInformation) {
@@ -137,11 +144,6 @@ public class Tool {
 		out.flush();
 	}
 
-	static public Integer getRandomInRangeInteger(Integer min, Integer max) {
-		int rand = min + (int) (Math.random() * ((max - min) + 1));
-		return rand;
-	}
-
 	static public Long getSecondFromNow(Date old) {// 当前时间领先old多少秒
 		Date now = new Date();
 		// 得到间隔秒数
@@ -149,18 +151,18 @@ public class Tool {
 		return between;
 	}
 
-	static public Integer getRandomInRangInteger(Integer min, Integer max) {
+	static public Integer getRandomInRangeInteger(Integer min, Integer max) {
 		return (min + (int) (Math.random() * ((max - min) + 1)));
 	}
 
 	// 生成符合条件的随机字符串
 	static public String getRandomString(Integer length, String firstChar, String remainString) {
-		int randomNum = getRandomInRangInteger(0, firstChar.length() - 1);
+		int randomNum = getRandomInRangeInteger(0, firstChar.length() - 1);
 		String result = firstChar.substring(randomNum, randomNum + 1);
 		length--;
 
 		for (int i = 0; i < length; i++) {
-			randomNum = getRandomInRangInteger(0, remainString.length() - 1);
+			randomNum = getRandomInRangeInteger(0, remainString.length() - 1);
 			result += remainString.substring(randomNum, randomNum + 1);
 		}
 

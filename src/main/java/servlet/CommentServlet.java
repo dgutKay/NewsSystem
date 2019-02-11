@@ -16,6 +16,7 @@ import bean.Comment;
 import bean.CommentUserView;
 import bean.User;
 import service.CommentService;
+import tools.Message;
 import tools.PageInformation;
 import tools.Tool;
 
@@ -29,6 +30,7 @@ public class CommentServlet extends HttpServlet {
 		String condition = request.getParameter("condition");
 		String newsId = request.getParameter("newsId");
 		CommentService commentService = new CommentService();
+		Message message=new Message();
 
 		if ("showComment".equals(condition)) {
 			PageInformation pageInformation = new PageInformation();
@@ -37,28 +39,20 @@ public class CommentServlet extends HttpServlet {
 			pageInformation.setOrder("desc");
 			pageInformation.setOrderField("time");
 			List<CommentUserView> commentUserViews = commentService.getOnePage(pageInformation);
-
-			List<Object> list = new ArrayList<Object>();
-			list.add(pageInformation);
-			for (int i = 0; i < commentUserViews.size(); i++) {
-				list.add(commentUserViews.get(i));
-			}
-			Gson gson = new Gson();
-			String jsonString = gson.toJson(list);
-			Tool.returnJsonString(response, jsonString);
+			
+			request.setAttribute("pageInformation", pageInformation);
+			request.setAttribute("commentUserViews", commentUserViews);
+			request.getServletContext().getRequestDispatcher("/comment/showComment.jsp").include(request,response);
+			return;
 		} else if ("praise".equals(condition)) {
 			String commentId = request.getParameter("commentId");
 			commentService.praise(commentId);
-			Integer praise = commentService.getPraise(Integer.parseInt(commentId));
+			Integer praise = commentService.getPraise(commentId);
+			message.setResult(praise);
 			Gson gson = new Gson();
-			String jsonString = gson.toJson(praise);
+			String jsonString = gson.toJson(message);
 			Tool.returnJsonString(response, jsonString);
 		} else if ("addComment".equals(condition)) {
-			PageInformation pageInformation = new PageInformation();
-			pageInformation.setPage(Integer.parseInt(request.getParameter("page")));
-			pageInformation.setPageSize(Integer.parseInt(request.getParameter("pageSize")));
-			Integer allRecordCount = Integer.parseInt(request.getParameter("allRecordCount"));
-
 			Comment comment = new Comment();
 			comment.setContent(request.getParameter("content"));
 			comment.setNewsId(Integer.parseInt(newsId));
@@ -68,23 +62,12 @@ public class CommentServlet extends HttpServlet {
 			String commentId = request.getParameter("commentId");
 			if (commentId == null || commentId.isEmpty()) {
 				commentService.addComment(comment);// 对新闻的回复
-				
 			} else {
 				comment.setCommentId(Integer.parseInt(commentId));
 				commentService.addCommentToComment(comment);// 对回复的回复
 			}
 			
-			comment = commentService.getComment();
-			allRecordCount++;
-			Tool.setPageInformation(allRecordCount, pageInformation);
-
-			List<Object> list = new ArrayList<Object>();
-			list.add(user);
-			list.add(comment);
-			list.add(pageInformation);
-			Gson gson = new Gson();
-			String jsonString = gson.toJson(list);
-			Tool.returnJsonString(response, jsonString);
+			getServletContext().getRequestDispatcher("/servlet/CommentServlet?condition=showComment").forward(request, response);
 		}
 	}
 }

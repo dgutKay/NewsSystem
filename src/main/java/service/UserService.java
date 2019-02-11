@@ -176,7 +176,7 @@ public class UserService {
 		// Create a factory for disk-based file items
 		DiskFileItemFactory factory = new DiskFileItemFactory();
 		// Configure a repository (to ensure a secure temp location is used)
-		String fullPath = request.getServletContext().getRealPath(WebProperties.propertiesMap.get("tempDir"));// 获取相对路径的绝对路径
+		String fullPath = request.getServletContext().getRealPath(WebProperties.config.getString("tempDir"));// 获取相对路径的绝对路径
 		File repository = new File(fullPath);
 		factory.setRepository(repository);// 设置临时文件存放的文件夹
 		// Create a new file upload handler
@@ -200,7 +200,7 @@ public class UserService {
 						do {
 							randomFileName = FileTool.getRandomFileNameByCurrentTime(item.getName());
 							fullPath = request.getServletContext().getRealPath(
-									WebProperties.propertiesMap.get("headIconDirDefault")) + "\\" + randomFileName;
+									WebProperties.config.getString("headIconDirDefault")) + "\\" + randomFileName;
 							uploadedFile = new File(fullPath);
 						} while (uploadedFile.exists()); // 确保文件未存在
 
@@ -208,8 +208,8 @@ public class UserService {
 						result = 1; // 表示上传文件成功
 						item.delete(); // 删除临时文件
 						result = 2; // 表示上传文件成功，且临时文件删除
-						user.setHeadIconUrl("\\" + WebProperties.propertiesMap.get("projectName")
-								+ WebProperties.propertiesMap.get("headIconDirDefault") + "\\" + randomFileName);
+						user.setHeadIconUrl("\\" + WebProperties.config.getString("projectName")
+								+ WebProperties.config.getString("headIconDirDefault") + "\\" + randomFileName);
 					}
 				}
 			}
@@ -232,11 +232,11 @@ public class UserService {
 			databaseDao.setAutoCommit(true);
 			result = 3; // 表示上传文件成功，临时文件删除，且路径保存到数据库成功
 
-			if (oldHeadIconUrl.contains(FileTool.getFileName(WebProperties.propertiesMap.get("headIconFileDefault"))))
+			if (oldHeadIconUrl.contains(FileTool.getFileName(WebProperties.config.getString("headIconFileDefault"))))
 				result = 5; // 表示上传文件成功，临时文件删除，且路径保存到数据库成功，老的图片是系统默认图片，不需要删除
 			else { // 老的图片不是系统默认图片，需要删除
 				if (FileTool.deleteFile(
-						new File(FileTool.root.replace("\\" + WebProperties.propertiesMap.get("projectName"), "")
+						new File(FileTool.root.replace("\\" + WebProperties.config.getString("projectName"), "")
 								+ oldHeadIconUrl)))
 					result = 5; // 表示上传文件成功，临时文件删除，且路径保存到数据库成功，老的图片被删除
 				else
@@ -290,7 +290,7 @@ public class UserService {
 
 	public String batchAdd(HttpServletRequest request) {
 		DiskFileItemFactory factory = new DiskFileItemFactory();
-		String fullPath = request.getServletContext().getRealPath(WebProperties.propertiesMap.get("tempDir"));
+		String fullPath = request.getServletContext().getRealPath(WebProperties.config.getString("tempDir"));
 		File repository = new File(fullPath);
 		factory.setRepository(repository);
 		ServletFileUpload upload = new ServletFileUpload(factory);
@@ -356,8 +356,8 @@ public class UserService {
 					fileOutputStream.close();
 					workbook.close();
 
-					String excelFile = "\\" + WebProperties.propertiesMap.get("projectName")
-							+ WebProperties.propertiesMap.get("tempDir") + "\\" + item.getName();
+					String excelFile = "\\" + WebProperties.config.getString("projectName")
+							+ WebProperties.config.getString("tempDir") + "\\" + item.getName();
 					excelFile = excelFile.replace("\\", "/");
 					return excelFile;
 				}

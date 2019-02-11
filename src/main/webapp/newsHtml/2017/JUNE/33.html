@@ -1,0 +1,175 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<link href="/NewsSystem/css/1.css" rel="stylesheet" type="text/css">
+<script type="text/javascript"
+	src="/NewsSystem/js/jquery/jquery-3.3.1.min.js"></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		//提交用户对文章的评论
+		$("#addCommentForm").on("submit", function(ev) {
+			var url = "/NewsSystem/servlet/CommentServlet?condition=addComment";
+			$("#page").val("1");
+			var data = $("#pageInfo").serialize() + "&" + $("#addCommentForm").serialize();
+			//jQuery.post(url, [data], [callback], [type])
+			//callback:发送成功时回调函数。
+			//type:返回内容格式，xml, html, script, json, text, _default。
+			$.post(url, data, function(data, textStatus) {
+				if (textStatus == "success") {
+					$("#showComment").html(data);
+					$("#addCommentTextarea").val(""); //清空内容
+				} else
+					alert("添加失败！");
+			}, "html");
+
+			ev.preventDefault();
+		});
+	});
+
+	function getOnePage(type, orderFieldName) {
+		var page = $("#page");
+
+		pageValue = parseInt(page.val());
+		if (type == "first") {
+			page.val("1");
+		} else if (type == "pre") {
+			pageValue -= 1;
+			page.val(pageValue.toString());
+		} else if (type == "next") {
+			pageValue += 1;
+			page.val(pageValue.toString());
+		} else if (type == "last") {
+			page.val($("#totalPageCount").val());
+		}
+
+		//提交
+		$("#showComment").load("/NewsSystem/servlet/CommentServlet?condition=showComment", $("#pageInfo").serialize());
+	}
+
+	function praise(commentId, thisobj) { //thisobj表示当前被点击的元素（标签）对象
+		$.ajax({
+			type : "post",
+			dataType : "json",
+			url : "/NewsSystem/servlet/CommentServlet?condition=praise&commentId=" + commentId,
+			data : $("#pageInfo").serialize(),
+			success : function(data) {
+				if (data != null) {
+					if (data.result > 0) {
+						$(thisobj).next().html(data.result); //next（）：下一个兄弟节点，text(data)：设置元素内部文字内容为data
+					} else alert("点赞失败！");
+				}
+			},
+			error : function() {
+				alert("无权限！");
+			}
+		});
+	}
+
+	function model(commentId) {
+		$("#model").show();
+		$("#replyCommentForm").on("submit", function(ev) {
+			var url = "/NewsSystem/servlet/CommentServlet?condition=addComment" + "&commentId=" + commentId;
+			$("#page").val("1");
+			var data = $("#pageInfo").serialize() + "&" + $("#replyCommentForm").serialize();
+
+			$("#showComment").load(url, data);
+			ev.preventDefault();
+		});
+	}
+</script>
+</head>
+<body>
+	<!--新闻内容 -->
+	<div class="center" style="width:800px;margin-top:30px;">
+		<table width="800" border="0">
+			<tbody>
+				<tr>
+					<td class="newsCaption">ios 11上手体验：这次终于有流量开关了</td>
+				<tr>
+					<td align="center" height="50">作者：中关村在线&nbsp;
+						&nbsp;&nbsp; &nbsp;&nbsp; &nbsp; <myTag:LocalDateTimeTag
+							dateTime="2017-06-06T03:03" type="YMDHM" />
+					</td>
+				</tr>
+				<tr>
+					<td height="30"><hr></td>
+				</tr>
+				<tr>
+					<td><p style="margin-top: 15px; margin-bottom: 15px; padding: 0px; font-size: 14px; line-height: 23px; font-family: &quot;Microsoft Yahei&quot;, &quot;Helvetica Neue&quot;, &quot;Luxi Sans&quot;, &quot;DejaVu Sans&quot;, Tahoma, &quot;Hiragino Sans GB&quot;, 宋体; white-space: normal; background-color: rgb(255, 255, 255); text-indent: 2em;">6月6日凌晨，苹果举行了WWDC2017开发者大会，当天晚上就推送了iOS&nbsp;11开发者预览版的更新。会上讲了那么多高大上的新功能，相信很多果粉已经跃跃欲试了。但是千万不要着急，目前推送的版本为iOS&nbsp;11&nbsp;Developer&nbsp;beta，也就是所谓的开发者预览版，是给开发者测试Bug用的，普通用户升级的话，可能会有很多Bug影响日常使用。iOS&nbsp;11正式版要等到今年秋天新iPhone发布的时候才会推送。但是大家现在又特别想知道iOS&nbsp;11到底更新了什么好玩的东西，那就让编辑身先士卒，为大家带来这篇iOS&nbsp;11的上手体验。</p><p style="margin-top: 15px; margin-bottom: 15px; padding: 0px; font-size: 14px; line-height: 23px; font-family: &quot;Microsoft Yahei&quot;, &quot;Helvetica Neue&quot;, &quot;Luxi Sans&quot;, &quot;DejaVu Sans&quot;, Tahoma, &quot;Hiragino Sans GB&quot;, 宋体; white-space: normal; background-color: rgb(255, 255, 255);">　　首先我们来看看哪些设备可以更新iOS&nbsp;11：</p><p style="margin-top: 15px; margin-bottom: 15px; padding: 0px; font-size: 14px; line-height: 23px; font-family: &quot;Microsoft Yahei&quot;, &quot;Helvetica Neue&quot;, &quot;Luxi Sans&quot;, &quot;DejaVu Sans&quot;, Tahoma, &quot;Hiragino Sans GB&quot;, 宋体; white-space: normal; background-color: rgb(255, 255, 255); text-indent: 2em;">这次控制中心终于可以自定义部分模块了，虽然左上角的几个开关依然不能改变，但是这次终于加上了数据流量的开关。知道这个消息后，网友们果粉们都已经无力吐槽了。“想起了被流量支配的恐惧”，“这个功能大概就比安卓晚了七八年吧”，“苹果越来越重视用户体验，在听到用户的呼声后，只用了七八年就加上了！”然而笔者想说，现在加上这个开关意义不大，我们的流量已经按GB算了，而且运营商也提速降费了，这个改变来得实在太晚。</p><p style="margin-top: 15px; margin-bottom: 15px; padding: 0px; font-size: 14px; line-height: 23px; font-family: &quot;Microsoft Yahei&quot;, &quot;Helvetica Neue&quot;, &quot;Luxi Sans&quot;, &quot;DejaVu Sans&quot;, Tahoma, &quot;Hiragino Sans GB&quot;, 宋体; white-space: normal; background-color: rgb(255, 255, 255);">　　控制中心各模块还可以搭配3D&nbsp;Touch使用，从而实现更多的功能。例如重按左上角开关区域，右上角音乐播放区域等。</p><p style="text-indent: 2em;"><br/></p></td>
+				</tr>
+				<tr>
+					<td height="30"><hr></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<!--回复评论 -->
+	<div id="addComment">
+		<div class="center" style="width:800px;margin-top:30px;">
+			<form id="addCommentForm">
+				<div class="center" style="width:500px">
+					<textarea name="content" cols="72" rows="8" id="addCommentTextarea"
+						required></textarea>
+				</div>
+				<p>
+				<div class="center" style="width:50px;height:80px;">
+					<br> <input type="submit" value="  提 交 评 论  ">
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<div id="showComment"> 
+		<form id="showCommnentForm">
+			<div class="center" style="width:600px">
+			  <a name="commentsStart"></a>
+			  <div class="commentsHead">最新评论</div>
+				<div class="commentsHead" style="text-align:center;">
+					<table align="center" cellpadding="5" cellspacing="0" width="600px">
+						<tr>
+   
+						</tr>
+						<tr align="center">
+							<td colspan="4">total: 0
+								pages</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</form>
+
+		<div id="model" style="display: none;">
+			<form id="replyCommentForm">
+				<div class="modelContent">
+					<table>
+						<tbody>
+							<tr>
+								<td colspan="2"><textarea name="content" cols="60" rows="8"
+										id="content" required></textarea></td>
+							</tr>
+							<tr>
+								<td align="center"><input type="submit" name="submit"
+									id="submit" value="提交"></td>
+								<td align="center"><input type="button"
+									onclick="$('#model').hide();" value="取消"></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</form>
+		</div>
+
+		<form id="pageInfo">
+			<input type="hidden" name="newsId" id="newsId" value="33">
+			<input type="hidden" name="page" id="page"
+				value="0"> <input type="hidden"
+				name="pageSize" id="pageSize" value="2">
+			<input type="hidden" name="totalPageCount" id="totalPageCount"
+				value="0" /> <input type="hidden"
+				name="allRecordCount" id="allRecordCount"
+				value="0">
+		</form>
+	</div>
+</body>
+</html>

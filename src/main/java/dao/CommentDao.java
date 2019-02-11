@@ -94,13 +94,13 @@ public class CommentDao {
 		return null;
 	}
 
-	public Integer getPraise(Integer commentId, DatabaseDao databaseDao) throws SQLException {
-		String sql = "select * from comment where commentId=" + commentId;
+	public Integer getPraise(String commentId, DatabaseDao databaseDao) throws SQLException {
+		String sql = "select praise from comment where commentId=" + commentId;
 		databaseDao.query(sql);
-		if (databaseDao.next()) {
+		while (databaseDao.next()) {
 			return databaseDao.getInt("praise");
 		}
-		return null;
+		return -1;
 	}
 
 	public Comment getComment(DatabaseDao databaseDao) throws SQLException {

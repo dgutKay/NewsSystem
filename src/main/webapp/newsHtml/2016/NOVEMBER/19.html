@@ -1,0 +1,175 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<link href="/NewsSystem/css/1.css" rel="stylesheet" type="text/css">
+<script type="text/javascript"
+	src="/NewsSystem/js/jquery/jquery-3.3.1.min.js"></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		//提交用户对文章的评论
+		$("#addCommentForm").on("submit", function(ev) {
+			var url = "/NewsSystem/servlet/CommentServlet?condition=addComment";
+			$("#page").val("1");
+			var data = $("#pageInfo").serialize() + "&" + $("#addCommentForm").serialize();
+			//jQuery.post(url, [data], [callback], [type])
+			//callback:发送成功时回调函数。
+			//type:返回内容格式，xml, html, script, json, text, _default。
+			$.post(url, data, function(data, textStatus) {
+				if (textStatus == "success") {
+					$("#showComment").html(data);
+					$("#addCommentTextarea").val(""); //清空内容
+				} else
+					alert("添加失败！");
+			}, "html");
+
+			ev.preventDefault();
+		});
+	});
+
+	function getOnePage(type, orderFieldName) {
+		var page = $("#page");
+
+		pageValue = parseInt(page.val());
+		if (type == "first") {
+			page.val("1");
+		} else if (type == "pre") {
+			pageValue -= 1;
+			page.val(pageValue.toString());
+		} else if (type == "next") {
+			pageValue += 1;
+			page.val(pageValue.toString());
+		} else if (type == "last") {
+			page.val($("#totalPageCount").val());
+		}
+
+		//提交
+		$("#showComment").load("/NewsSystem/servlet/CommentServlet?condition=showComment", $("#pageInfo").serialize());
+	}
+
+	function praise(commentId, thisobj) { //thisobj表示当前被点击的元素（标签）对象
+		$.ajax({
+			type : "post",
+			dataType : "json",
+			url : "/NewsSystem/servlet/CommentServlet?condition=praise&commentId=" + commentId,
+			data : $("#pageInfo").serialize(),
+			success : function(data) {
+				if (data != null) {
+					if (data.result > 0) {
+						$(thisobj).next().html(data.result); //next（）：下一个兄弟节点，text(data)：设置元素内部文字内容为data
+					} else alert("点赞失败！");
+				}
+			},
+			error : function() {
+				alert("无权限！");
+			}
+		});
+	}
+
+	function model(commentId) {
+		$("#model").show();
+		$("#replyCommentForm").on("submit", function(ev) {
+			var url = "/NewsSystem/servlet/CommentServlet?condition=addComment" + "&commentId=" + commentId;
+			$("#page").val("1");
+			var data = $("#pageInfo").serialize() + "&" + $("#replyCommentForm").serialize();
+
+			$("#showComment").load(url, data);
+			ev.preventDefault();
+		});
+	}
+</script>
+</head>
+<body>
+	<!--新闻内容 -->
+	<div class="center" style="width:800px;margin-top:30px;">
+		<table width="800" border="0">
+			<tbody>
+				<tr>
+					<td class="newsCaption">詹皇称自己抱团和KD不同 球迷讽刺：你才是鼻祖</td>
+				<tr>
+					<td align="center" height="50">作者：凤凰体育&nbsp;
+						&nbsp;&nbsp; &nbsp;&nbsp; &nbsp; <myTag:LocalDateTimeTag
+							dateTime="2016-11-09T12:02" type="YMDHM" />
+					</td>
+				</tr>
+				<tr>
+					<td height="30"><hr></td>
+				</tr>
+				<tr>
+					<td><p style="margin-top: 0px; margin-bottom: 25px; padding: 0px; text-indent: 28px; font-size: 14px; text-align: justify; word-wrap: break-word; word-break: normal; color: rgb(43, 43, 43); font-family: simsun, arial, helvetica, clean, sans-serif; white-space: normal; background-color: rgb(255, 255, 255);">勇士队总比分3-0领先，距离夺冠只剩下一步之遥。去年夏天的决定让杜兰特背负了极大的压力，但是和结果比起来，一切都不值一提。很多人都说杜兰特选择了和詹姆斯一样的道路，不过詹姆斯站了出来表示，他和杜兰特并不一样。</p><p style="margin-top: 0px; margin-bottom: 25px; padding: 0px; text-indent: 28px; font-size: 14px; text-align: justify; word-wrap: break-word; word-break: normal; color: rgb(43, 43, 43); font-family: simsun, arial, helvetica, clean, sans-serif; white-space: normal; background-color: rgb(255, 255, 255);">詹姆斯在训练时表示：“。我不认为我们职业生涯中的换队是一样的，他们的球队已经很好地组合在一起了，你只需要一名愿意牺牲的球员，一位伟大的天才，一名愿意做任何事情去帮助球队赢球的球员。但是那支球队，他们知道他们在干什么，杜兰特只需要加入球队做他该做的事情就行了，这就是他一直在做的。杜兰特他加入的球队是一支已经成功的球队，我当时是自己组建一支球队，我们有八九个新球员。”</p><p style="margin-top: 0px; margin-bottom: 25px; padding: 0px; text-indent: 28px; font-size: 14px; text-align: justify; word-wrap: break-word; word-break: normal; color: rgb(43, 43, 43); font-family: simsun, arial, helvetica, clean, sans-serif; white-space: normal; background-color: rgb(255, 255, 255);">很快詹姆斯补充道：“我的意思是，在像勇士、马刺或骑士这样的球队中打球，你知道最终的结果是你可以真正去争夺总冠军，谁不愿意做出牺牲？”</p><p style="margin-top: 0px; margin-bottom: 25px; padding: 0px; text-indent: 28px; font-size: 14px; text-align: justify; word-wrap: break-word; word-break: normal; color: rgb(43, 43, 43); font-family: simsun, arial, helvetica, clean, sans-serif; white-space: normal; background-color: rgb(255, 255, 255);">当然詹姆斯认为杜兰特的选择十分成功：“由于他在职业生涯中取得的所有成就，我一直为他感到骄傲，我很高兴看到他作为一名球员在成长。”</p><p style="margin-top: 0px; margin-bottom: 25px; padding: 0px; text-indent: 28px; font-size: 14px; text-align: justify; word-wrap: break-word; word-break: normal; color: rgb(43, 43, 43); font-family: simsun, arial, helvetica, clean, sans-serif; white-space: normal; background-color: rgb(255, 255, 255);">外界普遍认为，詹姆斯才是抱团的鼻祖，当年他跟随韦德和波什组建了豪华三巨头，四个赛季里全部杀入总决赛，拿到了两个总决赛。他们最大的不同是：“詹姆斯是我打不过你，我和兄弟一起打你；杜兰特是我打不过你，我加入你，和你一起打我的兄弟。”</p><p style="margin-top: 0px; margin-bottom: 25px; padding: 0px; text-indent: 28px; font-size: 14px; text-align: justify; word-wrap: break-word; word-break: normal; color: rgb(43, 43, 43); font-family: simsun, arial, helvetica, clean, sans-serif; white-space: normal; background-color: rgb(255, 255, 255);">詹姆斯当时离开骑士时也备受争议，而今被许多球迷称赞敢于追逐自己的NBA冠军梦，对此，杜兰特在接受美国媒体《Bleacher Report》采访时表示：“詹姆斯开了先河，随着时间流逝和球队间日益频繁的人员交换，人们会把这看做是平常事。我希望球员们能够做出对自己最好的选择，而不是对其他任何人。”</p><p style="margin-top: 0px; margin-bottom: 25px; padding: 0px; text-indent: 28px; font-size: 14px; text-align: justify; word-wrap: break-word; word-break: normal; color: rgb(43, 43, 43); font-family: simsun, arial, helvetica, clean, sans-serif; white-space: normal; background-color: rgb(255, 255, 255);">球迷们并不认同詹姆斯的观点，因为詹姆斯的队友，是热火老大韦德、猛龙老大波什、森林狼老大乐福和骑士老大乐福，都是组超级队伍，就最核心而言，都是为了胜利走了捷径，没啥不同的。</p><p><br/></p></td>
+				</tr>
+				<tr>
+					<td height="30"><hr></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<!--回复评论 -->
+	<div id="addComment">
+		<div class="center" style="width:800px;margin-top:30px;">
+			<form id="addCommentForm">
+				<div class="center" style="width:500px">
+					<textarea name="content" cols="72" rows="8" id="addCommentTextarea"
+						required></textarea>
+				</div>
+				<p>
+				<div class="center" style="width:50px;height:80px;">
+					<br> <input type="submit" value="  提 交 评 论  ">
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<div id="showComment"> 
+		<form id="showCommnentForm">
+			<div class="center" style="width:600px">
+			  <a name="commentsStart"></a>
+			  <div class="commentsHead">最新评论</div>
+				<div class="commentsHead" style="text-align:center;">
+					<table align="center" cellpadding="5" cellspacing="0" width="600px">
+						<tr>
+   
+						</tr>
+						<tr align="center">
+							<td colspan="4">total: 0
+								pages</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</form>
+
+		<div id="model" style="display: none;">
+			<form id="replyCommentForm">
+				<div class="modelContent">
+					<table>
+						<tbody>
+							<tr>
+								<td colspan="2"><textarea name="content" cols="60" rows="8"
+										id="content" required></textarea></td>
+							</tr>
+							<tr>
+								<td align="center"><input type="submit" name="submit"
+									id="submit" value="提交"></td>
+								<td align="center"><input type="button"
+									onclick="$('#model').hide();" value="取消"></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</form>
+		</div>
+
+		<form id="pageInfo">
+			<input type="hidden" name="newsId" id="newsId" value="19">
+			<input type="hidden" name="page" id="page"
+				value="0"> <input type="hidden"
+				name="pageSize" id="pageSize" value="2">
+			<input type="hidden" name="totalPageCount" id="totalPageCount"
+				value="0" /> <input type="hidden"
+				name="allRecordCount" id="allRecordCount"
+				value="0">
+		</form>
+	</div>
+</body>
+</html>

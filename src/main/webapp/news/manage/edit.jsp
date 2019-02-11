@@ -6,11 +6,11 @@
 <html>
 <head>
 <title>edit.jsp</title>
-<script src='<%=WebProperties.propertiesMap.get("ueditConfigJs")%>'
+<script src='<%=WebProperties.config.getString("ueditConfigJs")%>'
 	type="text/javascript"></script>
-<script src='<%=WebProperties.propertiesMap.get("ueditJs")%>'
+<script src='<%=WebProperties.config.getString("ueditJs")%>'
 	type="text/javascript"></script>
-<script src='<%=WebProperties.propertiesMap.get("ueditLang")%>'
+<script src='<%=WebProperties.config.getString("ueditLang")%>'
 	type="text/javascript"></script>
 <script type="text/javascript">
 	function valEmpty(input) {

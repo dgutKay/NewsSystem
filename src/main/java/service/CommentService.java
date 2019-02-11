@@ -32,21 +32,26 @@ public class CommentService {
 
 	public List<CommentUserView> getOnePage(PageInformation pageInformation) {
 		List<CommentUserView> commentUserViews = new ArrayList<CommentUserView>();
+		DatabaseDao databaseDao = null;
 		try {
-			DatabaseDao databaseDao = new DatabaseDao();
+			databaseDao = new DatabaseDao();
 			CommentDao commentDao = new CommentDao();
 			commentUserViews = commentDao.getOnePage(pageInformation, databaseDao);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			if (databaseDao.close() < 0)
+				commentUserViews = null;
 		}
 		return commentUserViews;
 	}
 
 	public Integer praise(String commentId) {
+		DatabaseDao databaseDao = null;
 		try {
-			DatabaseDao databaseDao = new DatabaseDao();
+			databaseDao = new DatabaseDao();
 			CommentDao commentDao = new CommentDao();
 			if (commentDao.praise(commentId, databaseDao) > 0)
 				return 1;
@@ -58,13 +63,17 @@ public class CommentService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return -3;
+		} finally {
+			if (databaseDao.close() < 0)
+				return -4;
 		}
 	}
 
 	public Integer addComment(Comment comment) {
+		CommentDao commentDao = new CommentDao();
+		DatabaseDao databaseDao = null;
 		try {
-			DatabaseDao databaseDao = new DatabaseDao();
-			CommentDao commentDao = new CommentDao();
+			databaseDao = new DatabaseDao();
 			comment.setStair(commentDao.getStairByNewsId(comment.getNewsId(), databaseDao) + 1);
 			return commentDao.addComment(comment, databaseDao);
 		} catch (SQLException e) {
@@ -73,13 +82,17 @@ public class CommentService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return -3;
+		} finally {
+			if (databaseDao.close() < 0)
+				return -4;
 		}
 	}
 
 	public Integer addCommentToComment(Comment comment) {
+		CommentDao commentDao = new CommentDao();
+		DatabaseDao databaseDao = null;
 		try {
-			DatabaseDao databaseDao = new DatabaseDao();
-			CommentDao commentDao = new CommentDao();
+			databaseDao = new DatabaseDao();
 			CommentUserView oldCommentUserView = commentDao.getByIdFromView(comment.getCommentId(), databaseDao);
 			String content = oldCommentUserView.getContent();
 			if (content.contains("<br><br>")) {// 消除之前的留言
@@ -96,12 +109,16 @@ public class CommentService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return -3;
+		} finally {
+			if (databaseDao.close() < 0)
+				return -4;
 		}
 	}
 
-	public Integer getPraise(Integer commentId) {
+	public Integer getPraise(String commentId) {
+		DatabaseDao databaseDao = null;
 		try {
-			DatabaseDao databaseDao = new DatabaseDao();
+			databaseDao = new DatabaseDao();
 			CommentDao commentDao = new CommentDao();
 			return commentDao.getPraise(commentId, databaseDao);
 		} catch (SQLException e) {
@@ -110,6 +127,9 @@ public class CommentService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return -3;
+		} finally {
+			if (databaseDao.close() < 0)
+				return -4;
 		}
 	}
 
@@ -150,7 +170,7 @@ public class CommentService {
 
 			for (FirstTenCommentNumberAYear firstTenCommentNumberAYear : firstTenCommentNumberAYearEveryYearList) {
 				String fullPath = request.getServletContext()
-						.getRealPath(WebProperties.propertiesMap.get("excelTemplate"));
+						.getRealPath(WebProperties.config.getString("excelTemplate"));
 				String excelFileFullPath = fullPath + "\\firstTenCommentNumberAYear.xlsm";
 
 				fileInputStream = new FileInputStream(excelFileFullPath);
@@ -186,7 +206,7 @@ public class CommentService {
 
 				jacobWordManager = new JacobWordManager(false);
 
-				fullPath = request.getServletContext().getRealPath(WebProperties.propertiesMap.get("wordTemplate"));
+				fullPath = request.getServletContext().getRealPath(WebProperties.config.getString("wordTemplate"));
 				String copySentence = fullPath + "\\firstTenCommentNumberCopySentence.docx";
 				String oneYear = fullPath + "\\oneYear.docm";
 
@@ -219,8 +239,8 @@ public class CommentService {
 				jacobWordManager.close();
 			}
 
-			wordFile = "\\" + WebProperties.propertiesMap.get("projectName")
-					+ WebProperties.propertiesMap.get("wordTemplate")
+			wordFile = "\\" + WebProperties.config.getString("projectName")
+					+ WebProperties.config.getString("wordTemplate")
 					+ "\\firstTenCommentNumberInAYearEveryYearAll.docm";
 			wordFile.replace("\\", "/");
 		} catch (Exception e) {

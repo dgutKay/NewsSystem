@@ -11,6 +11,8 @@ public class News {
 	private String content;
 	private LocalDateTime newsTime;
 	private Timestamp publishTime;
+	private Integer staticHtml;
+	private String url;
 
 	public Integer getNewsId() {
 		return newsId;
@@ -66,6 +68,22 @@ public class News {
 
 	public void setPublishTime(Timestamp publishTime) {
 		this.publishTime = publishTime;
+	}
+
+	public Integer getStaticHtml() {
+		return staticHtml;
+	}
+
+	public void setStaticHtml(Integer staticHtml) {
+		this.staticHtml = staticHtml;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
 	}
 
 }

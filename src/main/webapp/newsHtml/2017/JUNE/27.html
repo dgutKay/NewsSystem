@@ -1,0 +1,175 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<link href="/NewsSystem/css/1.css" rel="stylesheet" type="text/css">
+<script type="text/javascript"
+	src="/NewsSystem/js/jquery/jquery-3.3.1.min.js"></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		//提交用户对文章的评论
+		$("#addCommentForm").on("submit", function(ev) {
+			var url = "/NewsSystem/servlet/CommentServlet?condition=addComment";
+			$("#page").val("1");
+			var data = $("#pageInfo").serialize() + "&" + $("#addCommentForm").serialize();
+			//jQuery.post(url, [data], [callback], [type])
+			//callback:发送成功时回调函数。
+			//type:返回内容格式，xml, html, script, json, text, _default。
+			$.post(url, data, function(data, textStatus) {
+				if (textStatus == "success") {
+					$("#showComment").html(data);
+					$("#addCommentTextarea").val(""); //清空内容
+				} else
+					alert("添加失败！");
+			}, "html");
+
+			ev.preventDefault();
+		});
+	});
+
+	function getOnePage(type, orderFieldName) {
+		var page = $("#page");
+
+		pageValue = parseInt(page.val());
+		if (type == "first") {
+			page.val("1");
+		} else if (type == "pre") {
+			pageValue -= 1;
+			page.val(pageValue.toString());
+		} else if (type == "next") {
+			pageValue += 1;
+			page.val(pageValue.toString());
+		} else if (type == "last") {
+			page.val($("#totalPageCount").val());
+		}
+
+		//提交
+		$("#showComment").load("/NewsSystem/servlet/CommentServlet?condition=showComment", $("#pageInfo").serialize());
+	}
+
+	function praise(commentId, thisobj) { //thisobj表示当前被点击的元素（标签）对象
+		$.ajax({
+			type : "post",
+			dataType : "json",
+			url : "/NewsSystem/servlet/CommentServlet?condition=praise&commentId=" + commentId,
+			data : $("#pageInfo").serialize(),
+			success : function(data) {
+				if (data != null) {
+					if (data.result > 0) {
+						$(thisobj).next().html(data.result); //next（）：下一个兄弟节点，text(data)：设置元素内部文字内容为data
+					} else alert("点赞失败！");
+				}
+			},
+			error : function() {
+				alert("无权限！");
+			}
+		});
+	}
+
+	function model(commentId) {
+		$("#model").show();
+		$("#replyCommentForm").on("submit", function(ev) {
+			var url = "/NewsSystem/servlet/CommentServlet?condition=addComment" + "&commentId=" + commentId;
+			$("#page").val("1");
+			var data = $("#pageInfo").serialize() + "&" + $("#replyCommentForm").serialize();
+
+			$("#showComment").load(url, data);
+			ev.preventDefault();
+		});
+	}
+</script>
+</head>
+<body>
+	<!--新闻内容 -->
+	<div class="center" style="width:800px;margin-top:30px;">
+		<table width="800" border="0">
+			<tbody>
+				<tr>
+					<td class="newsCaption">小偷行窃留“卖萌”纸条:修门钱我会还 么么哒</td>
+				<tr>
+					<td align="center" height="50">作者：中国经济网&nbsp;
+						&nbsp;&nbsp; &nbsp;&nbsp; &nbsp; <myTag:LocalDateTimeTag
+							dateTime="2017-06-07T03:03" type="YMDHM" />
+					</td>
+				</tr>
+				<tr>
+					<td height="30"><hr></td>
+				</tr>
+				<tr>
+					<td><p style="margin-top: 15px; margin-bottom: 15px; padding: 0px; line-height: 2em; font-family: &quot;Microsoft YaHei&quot;, u5FAEu8F6Fu96C5u9ED1, Arial, SimSun, u5B8Bu4F53; white-space: normal; text-indent: 2em;">中安在线讯 据安徽商报消息，5月31日凌晨，合肥市北一环附近某写字楼内一公司失窃，让人大跌眼镜的是，胆大妄为的小偷还留下如此一张“卖萌”纸条。 6月9日记者从合肥庐阳警方获悉，该奇葩小偷已被抓获。</p><p style="margin-top: 15px; margin-bottom: 15px; padding: 0px; line-height: 2em; font-family: &quot;Microsoft YaHei&quot;, u5FAEu8F6Fu96C5u9ED1, Arial, SimSun, u5B8Bu4F53; white-space: normal;">　　<strong>小偷留下“卖萌”纸条</strong></p><p style="margin-top: 15px; margin-bottom: 15px; padding: 0px; line-height: 2em; font-family: &quot;Microsoft YaHei&quot;, u5FAEu8F6Fu96C5u9ED1, Arial, SimSun, u5B8Bu4F53; white-space: normal;">　　5月31日上午，合肥市公安局庐阳分局责任区刑警一队民警接到报警电话称，在辖区北一环附近一写字楼内，一家公司几部电脑和手机卡都被盗了，就连放在公司的烟花爆竹，这名小偷都不放过，其还在公司内上了半个小时网，下载了软件。</p><p style="margin-top: 15px; margin-bottom: 15px; padding: 0px; line-height: 2em; font-family: &quot;Microsoft YaHei&quot;, u5FAEu8F6Fu96C5u9ED1, Arial, SimSun, u5B8Bu4F53; white-space: normal;">　　更让人觉得诧异的是，小偷还留下了一张“卖萌”的纸条，表示自己酒喝多了才过来行窃，以后会将修门的钱还过来，末尾还注明了“么么哒”。</p><p style="margin-top: 15px; margin-bottom: 15px; padding: 0px; line-height: 2em; font-family: &quot;Microsoft YaHei&quot;, u5FAEu8F6Fu96C5u9ED1, Arial, SimSun, u5B8Bu4F53; white-space: normal;">　　接到报警后民警立即赶赴现场进行勘查走访，发现在同一栋写字楼内多家公司有被盗的情况。民警调取了大量的视频监控资料，发现一名头戴帽子的男子形迹可疑。民警发现该男子在进入案发现场一个多小时后才离开，随后沿着路边步行道走到北一环新天地广场，两个小时后，当嫌疑人离开新天地广场时手中又多出了一个白色物品。经调查，新天地广场写字楼一家公司被盗，丢失笔记本电脑一台。6月6日晚，民警在阜阳路一网吧内将犯罪嫌疑人陈某成功抓获。</p><p style="margin-top: 15px; margin-bottom: 15px; padding: 0px; line-height: 2em; font-family: &quot;Microsoft YaHei&quot;, u5FAEu8F6Fu96C5u9ED1, Arial, SimSun, u5B8Bu4F53; white-space: normal;">　　<strong>作案前喝了不少酒</strong></p><p style="margin-top: 15px; margin-bottom: 15px; padding: 0px; line-height: 2em; font-family: &quot;Microsoft YaHei&quot;, u5FAEu8F6Fu96C5u9ED1, Arial, SimSun, u5B8Bu4F53; white-space: normal;">　　嫌疑人陈某对盗窃事实供认不讳，陈某表示，他曾在北一环附近一家网吧做网管，但因他平时开销大，他就辞去了工作，在网吧附近转悠准备伺机盗窃。案发当晚，陈某喝了2瓶白酒，喝完酒后他便来到北一环附近的一写字楼，用钝器将一家公司的大门撬开盗窃公司内财物。对于为何他会盗窃后还留下如此“萌”的留言，陈某交代说，当时酒喝多了，觉得行窃很有自豪感，又想着警察找不到自己，就想“显摆显摆”。此案件正在进一步侦办当中。</p><p style="margin-top: 15px; margin-bottom: 15px; padding: 0px; line-height: 2em; font-family: &quot;Microsoft YaHei&quot;, u5FAEu8F6Fu96C5u9ED1, Arial, SimSun, u5B8Bu4F53; white-space: normal;">　　来源：中安在线</p><p><br/></p></td>
+				</tr>
+				<tr>
+					<td height="30"><hr></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<!--回复评论 -->
+	<div id="addComment">
+		<div class="center" style="width:800px;margin-top:30px;">
+			<form id="addCommentForm">
+				<div class="center" style="width:500px">
+					<textarea name="content" cols="72" rows="8" id="addCommentTextarea"
+						required></textarea>
+				</div>
+				<p>
+				<div class="center" style="width:50px;height:80px;">
+					<br> <input type="submit" value="  提 交 评 论  ">
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<div id="showComment"> 
+		<form id="showCommnentForm">
+			<div class="center" style="width:600px">
+			  <a name="commentsStart"></a>
+			  <div class="commentsHead">最新评论</div>
+				<div class="commentsHead" style="text-align:center;">
+					<table align="center" cellpadding="5" cellspacing="0" width="600px">
+						<tr>
+   
+						</tr>
+						<tr align="center">
+							<td colspan="4">total: 0
+								pages</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</form>
+
+		<div id="model" style="display: none;">
+			<form id="replyCommentForm">
+				<div class="modelContent">
+					<table>
+						<tbody>
+							<tr>
+								<td colspan="2"><textarea name="content" cols="60" rows="8"
+										id="content" required></textarea></td>
+							</tr>
+							<tr>
+								<td align="center"><input type="submit" name="submit"
+									id="submit" value="提交"></td>
+								<td align="center"><input type="button"
+									onclick="$('#model').hide();" value="取消"></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</form>
+		</div>
+
+		<form id="pageInfo">
+			<input type="hidden" name="newsId" id="newsId" value="27">
+			<input type="hidden" name="page" id="page"
+				value="0"> <input type="hidden"
+				name="pageSize" id="pageSize" value="2">
+			<input type="hidden" name="totalPageCount" id="totalPageCount"
+				value="0" /> <input type="hidden"
+				name="allRecordCount" id="allRecordCount"
+				value="0">
+		</form>
+	</div>
+</body>
+</html>

@@ -1,0 +1,241 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<link href="/NewsSystem/css/1.css" rel="stylesheet" type="text/css">
+<script type="text/javascript"
+	src="/NewsSystem/js/jquery/jquery-3.3.1.min.js"></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		//提交用户对文章的评论
+		$("#addCommentForm").on("submit", function(ev) {
+			var url = "/NewsSystem/servlet/CommentServlet?condition=addComment";
+			$("#page").val("1");
+			var data = $("#pageInfo").serialize() + "&" + $("#addCommentForm").serialize();
+			//jQuery.post(url, [data], [callback], [type])
+			//callback:发送成功时回调函数。
+			//type:返回内容格式，xml, html, script, json, text, _default。
+			$.post(url, data, function(data, textStatus) {
+				if (textStatus == "success") {
+					$("#showComment").html(data);
+					$("#addCommentTextarea").val(""); //清空内容
+				} else
+					alert("添加失败！");
+			}, "html");
+
+			ev.preventDefault();
+		});
+	});
+
+	function getOnePage(type, orderFieldName) {
+		var page = $("#page");
+
+		pageValue = parseInt(page.val());
+		if (type == "first") {
+			page.val("1");
+		} else if (type == "pre") {
+			pageValue -= 1;
+			page.val(pageValue.toString());
+		} else if (type == "next") {
+			pageValue += 1;
+			page.val(pageValue.toString());
+		} else if (type == "last") {
+			page.val($("#totalPageCount").val());
+		}
+
+		//提交
+		$("#showComment").load("/NewsSystem/servlet/CommentServlet?condition=showComment", $("#pageInfo").serialize());
+	}
+
+	function praise(commentId, thisobj) { //thisobj表示当前被点击的元素（标签）对象
+		$.ajax({
+			type : "post",
+			dataType : "json",
+			url : "/NewsSystem/servlet/CommentServlet?condition=praise&commentId=" + commentId,
+			data : $("#pageInfo").serialize(),
+			success : function(data) {
+				if (data != null) {
+					if (data.result > 0) {
+						$(thisobj).next().html(data.result); //next（）：下一个兄弟节点，text(data)：设置元素内部文字内容为data
+					} else alert("点赞失败！");
+				}
+			},
+			error : function() {
+				alert("无权限！");
+			}
+		});
+	}
+
+	function model(commentId) {
+		$("#model").show();
+		$("#replyCommentForm").on("submit", function(ev) {
+			var url = "/NewsSystem/servlet/CommentServlet?condition=addComment" + "&commentId=" + commentId;
+			$("#page").val("1");
+			var data = $("#pageInfo").serialize() + "&" + $("#replyCommentForm").serialize();
+
+			$("#showComment").load(url, data);
+			ev.preventDefault();
+		});
+	}
+</script>
+</head>
+<body>
+	<!--新闻内容 -->
+	<div class="center" style="width:800px;margin-top:30px;">
+		<table width="800" border="0">
+			<tbody>
+				<tr>
+					<td class="newsCaption">民警追捕嫌犯遇其送孙子高考 延迟5小时抓获</td>
+				<tr>
+					<td align="center" height="50">作者：中国新闻网&nbsp;
+						&nbsp;&nbsp; &nbsp;&nbsp; &nbsp; <myTag:LocalDateTimeTag
+							dateTime="2017-06-02T03:03" type="YMDHM" />
+					</td>
+				</tr>
+				<tr>
+					<td height="30"><hr></td>
+				</tr>
+				<tr>
+					<td><p style="margin-top: 15px; margin-bottom: 15px; padding: 0px; line-height: 2em; font-family: &quot;Microsoft YaHei&quot;, u5FAEu8F6Fu96C5u9ED1, Arial, SimSun, u5B8Bu4F53; white-space: normal; text-align: left; text-indent: 2em;"><span style="text-indent: 2em;">中新网恩施6月10日电 （胡良志）民警准备对一名网上嫌犯进行抓捕时，发现他正在送考，于是暂缓行动蹲守5小时，直至其送考结束后才实施抓捕。6月9日，湖北恩施市公安局通报称，该男子因涉嫌非法经营被依法羁押。</span><br/></p><p style="margin-top: 15px; margin-bottom: 15px; padding: 0px; line-height: 2em; font-family: &quot;Microsoft YaHei&quot;, u5FAEu8F6Fu96C5u9ED1, Arial, SimSun, u5B8Bu4F53; white-space: normal; text-indent: 2em;">今年53岁的黄某是恩施州宣恩县椿木营人。今年4月，他在恩施板桥非法出售烟叶给人倒卖至河北，非法运烟车途中被湖北襄阳市烟草稽查部门拦截，当地警方立案调查后将黄某网上追逃。</p><p style="margin-top: 15px; margin-bottom: 15px; padding: 0px; line-height: 2em; font-family: &quot;Microsoft YaHei&quot;, u5FAEu8F6Fu96C5u9ED1, Arial, SimSun, u5B8Bu4F53; white-space: normal;">　　6月8日，恩施市公安局土桥坝派出所副所长舒波在梳理比对恩施籍在逃人员信息时，意外发现黄某于本月6日已入住恩施市舞阳大道某酒店。</p><p style="margin-top: 15px; margin-bottom: 15px; padding: 0px; line-height: 2em; font-family: &quot;Microsoft YaHei&quot;, u5FAEu8F6Fu96C5u9ED1, Arial, SimSun, u5B8Bu4F53; white-space: normal;">　　民警立即前往酒店准备抓捕，经在前台查询，服务员说黄某已离开。民警叫服务员打开其房门，发现房间里行李还在，一个大箱子里装满了高三复习备考的书籍资料。经过调查，民警初步确定黄某是来陪孙子高考。</p><p style="margin-top: 15px; margin-bottom: 15px; padding: 0px; line-height: 2em; font-family: &quot;Microsoft YaHei&quot;, u5FAEu8F6Fu96C5u9ED1, Arial, SimSun, u5B8Bu4F53; white-space: normal;">　　既然黄某是来送考，抓捕要人性化进行，尽量不影响考生情绪。民警向上级请示后，决定暂缓抓捕行动，尤其是避免当着黄某家人进行抓捕。于是，警方一边在宾馆大堂守候，一边在恩施市一中考点附近搜寻。</p><p style="margin-top: 15px; margin-bottom: 15px; padding: 0px; line-height: 2em; font-family: &quot;Microsoft YaHei&quot;, u5FAEu8F6Fu96C5u9ED1, Arial, SimSun, u5B8Bu4F53; white-space: normal;">　　当天中午，黄某带着一名男生一起回到宾馆，民警看在眼里却不动声色。下午2点多，黄某陪着男生离开宾馆去考场，民警跟随观察，看到黄某不断叮嘱和鼓励那名男生，并将男生送至考场。</p><p style="margin-top: 15px; margin-bottom: 15px; padding: 0px; line-height: 2em; font-family: &quot;Microsoft YaHei&quot;, u5FAEu8F6Fu96C5u9ED1, Arial, SimSun, u5B8Bu4F53; white-space: normal;">　　目送黄某将男生送进考场后，民警这才将其抓捕。得知民警延迟对其抓捕，黄某非常感激，接连向民警鞠躬。他称自己虽然被抓，但是要感谢警方没在孩子面前抓捕他，没有影响孩子考试的情绪。（完）</p><p><br/></p></td>
+				</tr>
+				<tr>
+					<td height="30"><hr></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<!--回复评论 -->
+	<div id="addComment">
+		<div class="center" style="width:800px;margin-top:30px;">
+			<form id="addCommentForm">
+				<div class="center" style="width:500px">
+					<textarea name="content" cols="72" rows="8" id="addCommentTextarea"
+						required></textarea>
+				</div>
+				<p>
+				<div class="center" style="width:50px;height:80px;">
+					<br> <input type="submit" value="  提 交 评 论  ">
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<div id="showComment"> 
+		<form id="showCommnentForm">
+			<div class="center" style="width:600px">
+			  <a name="commentsStart"></a>
+			  <div class="commentsHead">最新评论</div>
+				<div style="margin-bottom: 10px;;">
+					<div>
+						<div class="commentIcon">
+							<img width="35" src="\NewsSystem\upload\images\headIcon\user\1540276267146.jpg">
+						</div>
+						<div class="comment1">
+							<div class="commentAuthor">cccccccc</div>
+							<div class="commentTime">
+								<myTag:TimestampTag dateTime="2019-1-23 18:17:34" type="latest"/>
+							</div>
+						</div>
+						<div class="comment2">
+							<div class="comment3">
+								<a class="commentReply" href="javascript:void(0);" onclick="model(80);">
+									回复
+								</a>
+							</div>			
+							<div class="comment4">
+								<span class="commentPraiseText">第20楼</span>
+								<a class="commentPraiseA" href="javascript:void(0);" onclick="praise(this,80,29);">							
+								</a><span class="commentPraiseText">1</span>
+							</div>			
+						</div>
+					</div>	
+					<div class="clear">
+						<div class="comment5 ">
+							<div class="commentContent">
+								reply to No 18 floor: cccccccc:<br>uu<br><br>mm
+							</div>
+						</div>
+					</div>
+				</div>
+				<div style="margin-bottom: 10px;;">
+					<div>
+						<div class="commentIcon">
+							<img width="35" src="\NewsSystem\upload\images\headIcon\user\1540276267146.jpg">
+						</div>
+						<div class="comment1">
+							<div class="commentAuthor">cccccccc</div>
+							<div class="commentTime">
+								<myTag:TimestampTag dateTime="2019-1-23 18:17:22" type="latest"/>
+							</div>
+						</div>
+						<div class="comment2">
+							<div class="comment3">
+								<a class="commentReply" href="javascript:void(0);" onclick="model(79);">
+									回复
+								</a>
+							</div>			
+							<div class="comment4">
+								<span class="commentPraiseText">第19楼</span>
+								<a class="commentPraiseA" href="javascript:void(0);" onclick="praise(this,79,29);">							
+								</a><span class="commentPraiseText">0</span>
+							</div>			
+						</div>
+					</div>	
+					<div class="clear">
+						<div class="comment5 ">
+							<div class="commentContent">
+								ii
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="commentsHead" style="text-align:center;">
+					<table align="center" cellpadding="5" cellspacing="0" width="600px">
+						<tr>
+  							<td><a href="javascript:void(0);"
+								onclick="getOnePage('next','');">Next</a>  							<td><a href="javascript:void(0);"
+								onclick="getOnePage('last','');">Last</a> 
+						</tr>
+						<tr align="center">
+							<td colspan="4">total: 8
+								pages</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</form>
+
+		<div id="model" style="display: none;">
+			<form id="replyCommentForm">
+				<div class="modelContent">
+					<table>
+						<tbody>
+							<tr>
+								<td colspan="2"><textarea name="content" cols="60" rows="8"
+										id="content" required></textarea></td>
+							</tr>
+							<tr>
+								<td align="center"><input type="submit" name="submit"
+									id="submit" value="提交"></td>
+								<td align="center"><input type="button"
+									onclick="$('#model').hide();" value="取消"></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</form>
+		</div>
+
+		<form id="pageInfo">
+			<input type="hidden" name="newsId" id="newsId" value="29">
+			<input type="hidden" name="page" id="page"
+				value="1"> <input type="hidden"
+				name="pageSize" id="pageSize" value="2">
+			<input type="hidden" name="totalPageCount" id="totalPageCount"
+				value="8" /> <input type="hidden"
+				name="allRecordCount" id="allRecordCount"
+				value="16">
+		</form>
+	</div>
+</body>
+</html>

@@ -1,0 +1,175 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<link href="/NewsSystem/css/1.css" rel="stylesheet" type="text/css">
+<script type="text/javascript"
+	src="/NewsSystem/js/jquery/jquery-3.3.1.min.js"></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		//提交用户对文章的评论
+		$("#addCommentForm").on("submit", function(ev) {
+			var url = "/NewsSystem/servlet/CommentServlet?condition=addComment";
+			$("#page").val("1");
+			var data = $("#pageInfo").serialize() + "&" + $("#addCommentForm").serialize();
+			//jQuery.post(url, [data], [callback], [type])
+			//callback:发送成功时回调函数。
+			//type:返回内容格式，xml, html, script, json, text, _default。
+			$.post(url, data, function(data, textStatus) {
+				if (textStatus == "success") {
+					$("#showComment").html(data);
+					$("#addCommentTextarea").val(""); //清空内容
+				} else
+					alert("添加失败！");
+			}, "html");
+
+			ev.preventDefault();
+		});
+	});
+
+	function getOnePage(type, orderFieldName) {
+		var page = $("#page");
+
+		pageValue = parseInt(page.val());
+		if (type == "first") {
+			page.val("1");
+		} else if (type == "pre") {
+			pageValue -= 1;
+			page.val(pageValue.toString());
+		} else if (type == "next") {
+			pageValue += 1;
+			page.val(pageValue.toString());
+		} else if (type == "last") {
+			page.val($("#totalPageCount").val());
+		}
+
+		//提交
+		$("#showComment").load("/NewsSystem/servlet/CommentServlet?condition=showComment", $("#pageInfo").serialize());
+	}
+
+	function praise(commentId, thisobj) { //thisobj表示当前被点击的元素（标签）对象
+		$.ajax({
+			type : "post",
+			dataType : "json",
+			url : "/NewsSystem/servlet/CommentServlet?condition=praise&commentId=" + commentId,
+			data : $("#pageInfo").serialize(),
+			success : function(data) {
+				if (data != null) {
+					if (data.result > 0) {
+						$(thisobj).next().html(data.result); //next（）：下一个兄弟节点，text(data)：设置元素内部文字内容为data
+					} else alert("点赞失败！");
+				}
+			},
+			error : function() {
+				alert("无权限！");
+			}
+		});
+	}
+
+	function model(commentId) {
+		$("#model").show();
+		$("#replyCommentForm").on("submit", function(ev) {
+			var url = "/NewsSystem/servlet/CommentServlet?condition=addComment" + "&commentId=" + commentId;
+			$("#page").val("1");
+			var data = $("#pageInfo").serialize() + "&" + $("#replyCommentForm").serialize();
+
+			$("#showComment").load(url, data);
+			ev.preventDefault();
+		});
+	}
+</script>
+</head>
+<body>
+	<!--新闻内容 -->
+	<div class="center" style="width:800px;margin-top:30px;">
+		<table width="800" border="0">
+			<tbody>
+				<tr>
+					<td class="newsCaption">特朗普1收紧美国公民赴古巴限制 驻古使馆仍开放</td>
+				<tr>
+					<td align="center" height="50">作者：新华社&nbsp;
+						&nbsp;&nbsp; &nbsp;&nbsp; &nbsp; <myTag:LocalDateTimeTag
+							dateTime="2017-06-14T03:03" type="YMDHM" />
+					</td>
+				</tr>
+				<tr>
+					<td height="30"><hr></td>
+				</tr>
+				<tr>
+					<td><p style="margin-top: 15px; margin-bottom: 15px; padding: 0px; line-height: 2em; font-family: &quot;Microsoft YaHei&quot;, u5FAEu8F6Fu96C5u9ED1, Arial, SimSun, u5B8Bu4F53; white-space: normal; text-indent: 2em;">海外网6月17日电当地时间16日，美国总统特朗普宣布，取消奥巴马政府与古巴达成的“单方面协定”，立即生效。</p><p style="margin-top: 15px; margin-bottom: 15px; padding: 0px; line-height: 2em; font-family: &quot;Microsoft YaHei&quot;, u5FAEu8F6Fu96C5u9ED1, Arial, SimSun, u5B8Bu4F53; white-space: normal;">　　据英国广播公司（BBC）报道，特朗普在弗罗里达州的迈阿密宣布，禁止美国企业与古巴军方控制的企业有生意往来，同时收紧对美国公民前往古巴旅游的限制。</p><p style="margin-top: 15px; margin-bottom: 15px; padding: 0px; line-height: 2em; font-family: &quot;Microsoft YaHei&quot;, u5FAEu8F6Fu96C5u9ED1, Arial, SimSun, u5B8Bu4F53; white-space: normal;">　　据报道，特朗普的这一举措没有扭转与古巴的外交和商业关系，不会撤销美国在哈瓦那的大使馆，美国与古巴之间的商业航班也仍将继续。</p><p style="margin-top: 15px; margin-bottom: 15px; padding: 0px; line-height: 2em; font-family: &quot;Microsoft YaHei&quot;, u5FAEu8F6Fu96C5u9ED1, Arial, SimSun, u5B8Bu4F53; white-space: normal;">　　去年12月7日，古巴外交部表示，希望尽快与美国达成多个协议，涉及两国合作诸多方面。媒体普遍认为，这是古巴希望在美国当选总统特朗普2017年正式就任之前“赶时间”、推动两国关系正常化进程。</p><p style="margin-top: 15px; margin-bottom: 15px; padding: 0px; line-height: 2em; font-family: &quot;Microsoft YaHei&quot;, u5FAEu8F6Fu96C5u9ED1, Arial, SimSun, u5B8Bu4F53; white-space: normal;">　　此前，特朗普曾多次表示要推翻奥巴马政府与古巴达成的协议，这为美古两国关系带来了不小变数。因此，多名美国国会议员和100多名古巴企业家12月7日联合发声，呼吁特朗普维持目前美古关系缓和的势头。</p><p style="margin-top: 15px; margin-bottom: 15px; padding: 0px; line-height: 2em; font-family: &quot;Microsoft YaHei&quot;, u5FAEu8F6Fu96C5u9ED1, Arial, SimSun, u5B8Bu4F53; white-space: normal;">　　特朗普上任后，多次废除奥巴马时期的政策和法案。</p><p style="margin-top: 15px; margin-bottom: 15px; padding: 0px; line-height: 2em; font-family: &quot;Microsoft YaHei&quot;, u5FAEu8F6Fu96C5u9ED1, Arial, SimSun, u5B8Bu4F53; white-space: normal;">　　今年1月，就职未够24小时，特朗普便签发首道行政命令，叫停“奥巴马医改”（Obamacare）计划，践行了其竞选期间的承诺。</p><p style="margin-top: 15px; margin-bottom: 15px; padding: 0px; line-height: 2em; font-family: &quot;Microsoft YaHei&quot;, u5FAEu8F6Fu96C5u9ED1, Arial, SimSun, u5B8Bu4F53; white-space: normal;">　　3月28日，特朗普在华盛顿美国环境保护局签署行政令，暂停、撤销或评估多项奥巴马政府时期防止环境污染、阻止温室气体排放的措施，同时放松美国化石能源开采限制，意欲制造更多就业岗位。</p><p style="margin-top: 15px; margin-bottom: 15px; padding: 0px; line-height: 2em; font-family: &quot;Microsoft YaHei&quot;, u5FAEu8F6Fu96C5u9ED1, Arial, SimSun, u5B8Bu4F53; white-space: normal;">　　另据美国媒体报道，特朗普政府将于当地时间6月14日宣布废除奥巴马时期的一项规定，该规定旨在关闭让学生背负高额学贷且就业前景黯淡的营利大学。（编译/海外网 吴潇）</p><p><br/></p></td>
+				</tr>
+				<tr>
+					<td height="30"><hr></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<!--回复评论 -->
+	<div id="addComment">
+		<div class="center" style="width:800px;margin-top:30px;">
+			<form id="addCommentForm">
+				<div class="center" style="width:500px">
+					<textarea name="content" cols="72" rows="8" id="addCommentTextarea"
+						required></textarea>
+				</div>
+				<p>
+				<div class="center" style="width:50px;height:80px;">
+					<br> <input type="submit" value="  提 交 评 论  ">
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<div id="showComment"> 
+		<form id="showCommnentForm">
+			<div class="center" style="width:600px">
+			  <a name="commentsStart"></a>
+			  <div class="commentsHead">最新评论</div>
+				<div class="commentsHead" style="text-align:center;">
+					<table align="center" cellpadding="5" cellspacing="0" width="600px">
+						<tr>
+   
+						</tr>
+						<tr align="center">
+							<td colspan="4">total: 0
+								pages</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</form>
+
+		<div id="model" style="display: none;">
+			<form id="replyCommentForm">
+				<div class="modelContent">
+					<table>
+						<tbody>
+							<tr>
+								<td colspan="2"><textarea name="content" cols="60" rows="8"
+										id="content" required></textarea></td>
+							</tr>
+							<tr>
+								<td align="center"><input type="submit" name="submit"
+									id="submit" value="提交"></td>
+								<td align="center"><input type="button"
+									onclick="$('#model').hide();" value="取消"></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</form>
+		</div>
+
+		<form id="pageInfo">
+			<input type="hidden" name="newsId" id="newsId" value="35">
+			<input type="hidden" name="page" id="page"
+				value="0"> <input type="hidden"
+				name="pageSize" id="pageSize" value="2">
+			<input type="hidden" name="totalPageCount" id="totalPageCount"
+				value="0" /> <input type="hidden"
+				name="allRecordCount" id="allRecordCount"
+				value="0">
+		</form>
+	</div>
+</body>
+</html>

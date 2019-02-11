@@ -24,7 +24,7 @@ public class AuthorityFilter implements Filter {
 
 		if (authority == null) {// 无权限
 			Message message = new Message();
-			message.setMessage("Limited authority!");
+			message.setMessage("无权限!");
 			message.setRedirectTime(1000);
 			request.setAttribute("message", message);
 			request.getServletContext().getRequestDispatcher("/message.jsp").forward(request, response);

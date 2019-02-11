@@ -5,43 +5,6 @@
 	id="WebApp_ID" version="3.1">
 	<display-name>NewsSystem</display-name>
 
-	<context-param>
-		<param-name>drv</param-name>
-		<param-value>com.mysql.jdbc.Driver</param-value>
-	</context-param>
-	<context-param>
-		<param-name>url</param-name>
-		<param-value>jdbc:mysql://localhost:3306/NewsSystem</param-value>
-	</context-param>
-	<context-param>
-		<param-name>usr</param-name>
-		<param-value>root</param-value>
-	</context-param>
-	<context-param>
-		<param-name>pwd</param-name>
-		<param-value>659zxcvbnm</param-value>
-	</context-param>
-	<context-param>
-		<param-name>domain</param-name>
-		<param-value>http://localhost:8080/NewsSystem</param-value>
-	</context-param>
-	<context-param>
-		<param-name>emailHost</param-name>
-		<param-value>smtp.163.com</param-value>
-	</context-param>
-	<context-param>
-		<param-name>emailUserEmail</param-name>
-		<param-value>yemeiqistudy@163.com</param-value>
-	</context-param>
-	<context-param>
-		<param-name>emailUserName</param-name>
-		<param-value>yemeiqistudy</param-value>
-	</context-param>
-	<context-param>
-		<param-name>emailPassword</param-name>
-		<param-value>study123</param-value>
-	</context-param>
-
 	<servlet>
 		<servlet-name>InitServlet</servlet-name>
 		<servlet-class>servlet.InitServlet</servlet-class>
@@ -71,6 +34,11 @@
     <servlet-name>AutoGeneratorServlet</servlet-name>
     <servlet-class>servlet.AutoGeneratorServlet</servlet-class>
   </servlet>
+  <servlet>
+    <servlet-name>DatabaseServlet</servlet-name>
+    <servlet-class>servlet.DatabaseServlet</servlet-class>
+  </servlet>
+
 
 
 
@@ -103,6 +71,10 @@
   <servlet-mapping>
     <servlet-name>AutoGeneratorServlet</servlet-name>
     <url-pattern>/servlet/AutoGeneratorServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>DatabaseServlet</servlet-name>
+    <url-pattern>/servlet/DatabaseServlet</url-pattern>
   </servlet-mapping>
 
 	<filter>

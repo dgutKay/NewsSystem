@@ -1,10 +1,10 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<!doctype html>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <link href="/NewsSystem/css/1.css" rel="stylesheet" type="text/css">
-<meta charset="utf-8">
+
 <script type="text/javascript"
 	src="/NewsSystem/js/jquery/jquery-3.3.1.min.js"></script>
 <script type="text/javascript">
@@ -84,6 +84,10 @@
 							}
 						}
 					}, "json");
+			} else if (label === "数据库备份") {
+				$("#rightDiv").load("/NewsSystem/manager/databaseBackup.jsp");
+			} else if (label === "数据库还原") {
+				$("#rightDiv").load("/NewsSystem/servlet/DatabaseServlet?condition=getAll");
 			}
 		});
 	});
@@ -109,6 +113,9 @@
 				<li>各年新闻数</li>
 				<li>各年评论前十</li>
 				<li>生成静态html</li>
+				<br>
+				<li>数据库备份</li>
+				<li>数据库还原</li>
 			</c:if>
 			<c:if test="${sessionScope.user.type=='newsAuthor'}">
 				<br>

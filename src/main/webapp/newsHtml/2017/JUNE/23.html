@@ -1,0 +1,175 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<link href="/NewsSystem/css/1.css" rel="stylesheet" type="text/css">
+<script type="text/javascript"
+	src="/NewsSystem/js/jquery/jquery-3.3.1.min.js"></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		//提交用户对文章的评论
+		$("#addCommentForm").on("submit", function(ev) {
+			var url = "/NewsSystem/servlet/CommentServlet?condition=addComment";
+			$("#page").val("1");
+			var data = $("#pageInfo").serialize() + "&" + $("#addCommentForm").serialize();
+			//jQuery.post(url, [data], [callback], [type])
+			//callback:发送成功时回调函数。
+			//type:返回内容格式，xml, html, script, json, text, _default。
+			$.post(url, data, function(data, textStatus) {
+				if (textStatus == "success") {
+					$("#showComment").html(data);
+					$("#addCommentTextarea").val(""); //清空内容
+				} else
+					alert("添加失败！");
+			}, "html");
+
+			ev.preventDefault();
+		});
+	});
+
+	function getOnePage(type, orderFieldName) {
+		var page = $("#page");
+
+		pageValue = parseInt(page.val());
+		if (type == "first") {
+			page.val("1");
+		} else if (type == "pre") {
+			pageValue -= 1;
+			page.val(pageValue.toString());
+		} else if (type == "next") {
+			pageValue += 1;
+			page.val(pageValue.toString());
+		} else if (type == "last") {
+			page.val($("#totalPageCount").val());
+		}
+
+		//提交
+		$("#showComment").load("/NewsSystem/servlet/CommentServlet?condition=showComment", $("#pageInfo").serialize());
+	}
+
+	function praise(commentId, thisobj) { //thisobj表示当前被点击的元素（标签）对象
+		$.ajax({
+			type : "post",
+			dataType : "json",
+			url : "/NewsSystem/servlet/CommentServlet?condition=praise&commentId=" + commentId,
+			data : $("#pageInfo").serialize(),
+			success : function(data) {
+				if (data != null) {
+					if (data.result > 0) {
+						$(thisobj).next().html(data.result); //next（）：下一个兄弟节点，text(data)：设置元素内部文字内容为data
+					} else alert("点赞失败！");
+				}
+			},
+			error : function() {
+				alert("无权限！");
+			}
+		});
+	}
+
+	function model(commentId) {
+		$("#model").show();
+		$("#replyCommentForm").on("submit", function(ev) {
+			var url = "/NewsSystem/servlet/CommentServlet?condition=addComment" + "&commentId=" + commentId;
+			$("#page").val("1");
+			var data = $("#pageInfo").serialize() + "&" + $("#replyCommentForm").serialize();
+
+			$("#showComment").load(url, data);
+			ev.preventDefault();
+		});
+	}
+</script>
+</head>
+<body>
+	<!--新闻内容 -->
+	<div class="center" style="width:800px;margin-top:30px;">
+		<table width="800" border="0">
+			<tbody>
+				<tr>
+					<td class="newsCaption">中国品牌车何时能在国际上站稳脚跟？</td>
+				<tr>
+					<td align="center" height="50">作者：罗兰&nbsp;
+						&nbsp;&nbsp; &nbsp;&nbsp; &nbsp; <myTag:LocalDateTimeTag
+							dateTime="2017-06-13T04:04" type="YMDHM" />
+					</td>
+				</tr>
+				<tr>
+					<td height="30"><hr></td>
+				</tr>
+				<tr>
+					<td><hr/><p style="margin-top: 0px; margin-bottom: 25px; padding: 0px; line-height: 24px; text-indent: 28px; font-size: 14px; color: rgb(43, 43, 43); font-family: simsun, arial, helvetica, clean, sans-serif; white-space: normal; background-color: rgb(255, 255, 255); text-align: justify;">通过四大中国品牌车细分车型上牌数据，可清晰判断目前我国车企在俄罗斯处于何等状态，其中<a href="http://car.auto.ifeng.com/brand/10012/" class="kw-link" target="_blank" style="text-decoration-line: none; color: rgb(0, 66, 118); line-height: 24px; font-weight: bold;">长城</a>的数据属于独家披露，因为长城目前并未出现在欧商协会的数据报表中。凤凰汽车评论 俄罗斯车市已经缓慢复苏，但中国品牌车似乎并未有复苏迹象，依然处在低迷状态中，何时能够扭转如此不利局面，尚待观察。近日，笔者独家渠道获悉俄罗斯上牌数据，四月份登记注册总数为120412辆车，同比上涨7.7%，前四个月登记注册总数为396956辆车，同比上升5.1%。作为对比，俄罗斯欧商协会汽车制造商委员会发布的数据显示，四月份俄罗斯车市售出129476辆车，销量同比上涨6.9%，前四个月共计售出451945辆车，同比上涨2.6%。综合来看，上牌数据更有说服力，毕竟终端销售量对于解读车市，优于欧商协会厂家自报的出货量数据。</p><p style="margin-top: 0px; margin-bottom: 25px; padding: 0px; line-height: 24px; text-indent: 28px; font-size: 14px; color: rgb(43, 43, 43); font-family: simsun, arial, helvetica, clean, sans-serif; white-space: normal; background-color: rgb(255, 255, 255);"><a href="http://car.auto.ifeng.com/brand/10042/" class="kw-link" target="_blank" style="text-decoration: none; color: rgb(0, 66, 118); line-height: 24px; font-weight: bold;">奇瑞</a>今年前四个月在俄罗斯登记注册共计1197辆车，同比下跌7.6%。</p><p style="margin-top: 0px; margin-bottom: 25px; padding: 0px; line-height: 24px; text-indent: 28px; font-size: 14px; color: rgb(43, 43, 43); font-family: simsun, arial, helvetica, clean, sans-serif; white-space: normal; background-color: rgb(255, 255, 255);"><a href="http://car.auto.ifeng.com/series/1622/" class="kw-link" target="_blank" style="text-decoration-line: none; color: rgb(0, 66, 118); line-height: 24px; font-weight: bold;">奇瑞A1</a>9售出49辆，同比下跌56.2%；<a href="http://car.auto.ifeng.com/series/10040/" class="kw-link" target="_blank" style="text-decoration-line: none; color: rgb(0, 66, 118); line-height: 24px; font-weight: bold;">艾瑞泽7</a>销量为零；奇瑞Bonus售出1辆车，同比下跌97.9%；奇瑞Indis售出1辆车，同比下跌99.1%；奇瑞T21售出329辆车，同比上涨21.7%；奇瑞瑞虎售出754辆车，同比上涨9.3%。</p><p style="margin-top: 0px; margin-bottom: 25px; padding: 0px; line-height: 24px; text-indent: 28px; font-size: 14px; color: rgb(43, 43, 43); font-family: simsun, arial, helvetica, clean, sans-serif; white-space: normal; background-color: rgb(255, 255, 255);">奇瑞在俄罗斯的销量目前完全由SUV车型支撑，一直以来奇瑞旗下在俄罗斯最畅销的就是SUV车型，瑞虎2(3x)目前已经在俄罗斯上市，瑞虎系列SUV车型似乎也未给奇瑞带来突破口，已经进入俄罗斯车市11年的奇瑞，就目前这份销量而言，处于挣扎求存阶段。</p><p style="margin-top: 0px; margin-bottom: 25px; padding: 0px; line-height: 24px; text-indent: 28px; font-size: 14px; color: rgb(43, 43, 43); font-family: simsun, arial, helvetica, clean, sans-serif; white-space: normal; background-color: rgb(255, 255, 255);"><a href="http://car.auto.ifeng.com/brand/20148/" class="kw-link" target="_blank" style="text-decoration: none; color: rgb(0, 66, 118); line-height: 24px; font-weight: bold;">吉利</a>今年前四个月在俄罗斯登记注册总数为611辆车。</p><p style="text-align: center;"><br/></p></td>
+				</tr>
+				<tr>
+					<td height="30"><hr></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<!--回复评论 -->
+	<div id="addComment">
+		<div class="center" style="width:800px;margin-top:30px;">
+			<form id="addCommentForm">
+				<div class="center" style="width:500px">
+					<textarea name="content" cols="72" rows="8" id="addCommentTextarea"
+						required></textarea>
+				</div>
+				<p>
+				<div class="center" style="width:50px;height:80px;">
+					<br> <input type="submit" value="  提 交 评 论  ">
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<div id="showComment"> 
+		<form id="showCommnentForm">
+			<div class="center" style="width:600px">
+			  <a name="commentsStart"></a>
+			  <div class="commentsHead">最新评论</div>
+				<div class="commentsHead" style="text-align:center;">
+					<table align="center" cellpadding="5" cellspacing="0" width="600px">
+						<tr>
+   
+						</tr>
+						<tr align="center">
+							<td colspan="4">total: 0
+								pages</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</form>
+
+		<div id="model" style="display: none;">
+			<form id="replyCommentForm">
+				<div class="modelContent">
+					<table>
+						<tbody>
+							<tr>
+								<td colspan="2"><textarea name="content" cols="60" rows="8"
+										id="content" required></textarea></td>
+							</tr>
+							<tr>
+								<td align="center"><input type="submit" name="submit"
+									id="submit" value="提交"></td>
+								<td align="center"><input type="button"
+									onclick="$('#model').hide();" value="取消"></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</form>
+		</div>
+
+		<form id="pageInfo">
+			<input type="hidden" name="newsId" id="newsId" value="23">
+			<input type="hidden" name="page" id="page"
+				value="0"> <input type="hidden"
+				name="pageSize" id="pageSize" value="2">
+			<input type="hidden" name="totalPageCount" id="totalPageCount"
+				value="0" /> <input type="hidden"
+				name="allRecordCount" id="allRecordCount"
+				value="0">
+		</form>
+	</div>
+</body>
+</html>

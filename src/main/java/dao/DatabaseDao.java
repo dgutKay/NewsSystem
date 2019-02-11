@@ -1,7 +1,6 @@
 package dao;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -11,21 +10,19 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
+import com.mchange.v2.c3p0.ComboPooledDataSource;
+
 public class DatabaseDao {
+	// 数据库连接池
+	static ComboPooledDataSource dataSource = new ComboPooledDataSource("mysql");
 
-	public static String drv;// 数据库类型
-	public static String url;// 数据库网址
-	public static String usr;// 用户名
-	public static String pwd;// 密码
-
-	private Connection connect = null;
-	private Statement stmt = null;
-	private ResultSet rs = null;
-	private PreparedStatement ps = null;
+	Connection connect = null;
+	Statement stmt = null;
+	ResultSet rs = null;
+	PreparedStatement ps = null;
 
 	public DatabaseDao() throws Exception {
-		Class.forName(drv);
-		connect = DriverManager.getConnection(url, usr, pwd);
+		connect = dataSource.getConnection();
 		stmt = connect.createStatement();
 	}
 
@@ -122,10 +119,6 @@ public class DatabaseDao {
 		this.rs = rs;
 	}
 
-	public void close() throws SQLException {
-		connect.close();
-	}
-
 	public LocalDateTime getLocalDateTime(String field) throws SQLException {
 		return rs.getTimestamp(field).toLocalDateTime();
 	}
@@ -168,6 +161,10 @@ public class DatabaseDao {
 		ps.setString(parameterIndex, value);
 	}
 
+	public void setInt(int parameterIndex, int value) throws SQLException {
+		ps.setInt(parameterIndex, value);
+	}
+
 	public void getByStringField(String tableName, String field, String value) throws SQLException {
 		String sql = "select * from " + tableName.toLowerCase() + " where " + field + "='" + value + "';";
 		query(sql);
@@ -185,5 +182,22 @@ public class DatabaseDao {
 			return this.getInt("id");
 		}
 		return -1;
+	}
+
+	public int close() {// 类似析构函数
+		try {
+			if (rs != null) {
+				rs.close();
+			}
+			if (ps != null) {
+				ps.close();
+			}
+			if (connect != null) {
+				connect.close();
+			}
+		} catch (SQLException e) {
+			return -10000;
+		}
+		return 10000;
 	}
 }

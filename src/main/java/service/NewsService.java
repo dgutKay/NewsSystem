@@ -172,7 +172,7 @@ public class NewsService {
 		String excelFileFullPath = "";
 
 		try {
-			String fullPath = request.getServletContext().getRealPath(WebProperties.propertiesMap.get("excelTemplate"));
+			String fullPath = request.getServletContext().getRealPath(WebProperties.config.getString("excelTemplate"));
 			excelFileFullPath = fullPath + "\\articleNumberByMonthInAYear.xlsm";
 
 			fileInputStream = new FileInputStream(excelFileFullPath);
@@ -207,8 +207,8 @@ public class NewsService {
 			// 关闭并保存，释放对象
 			tool.CloseExcel(true, true);
 
-			String excelFile = "\\" + WebProperties.propertiesMap.get("projectName")
-					+ WebProperties.propertiesMap.get("excelTemplate") + "\\articleNumberByMonthInAYear.xlsm";
+			String excelFile = "\\" + WebProperties.config.getString("projectName")
+					+ WebProperties.config.getString("excelTemplate") + "\\articleNumberByMonthInAYear.xlsm";
 			return excelFile.replace("\\", "/");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -246,7 +246,7 @@ public class NewsService {
 
 			for (ArticleNumberByMonthInAYear ArticleNumberByMonthInAYear : articleNumberByMonthInAYearEveryYearList) {
 				String fullPath = request.getServletContext()
-						.getRealPath(WebProperties.propertiesMap.get("excelTemplate"));
+						.getRealPath(WebProperties.config.getString("excelTemplate"));
 				String excelFileFullPath = fullPath + "\\articleNumberByMonthInAYearEveryYear.xlsm";
 
 				fileInputStream = new FileInputStream(excelFileFullPath);
@@ -279,7 +279,7 @@ public class NewsService {
 
 				jacobWordManager = new JacobWordManager(false);
 
-				fullPath = request.getServletContext().getRealPath(WebProperties.propertiesMap.get("wordTemplate"));
+				fullPath = request.getServletContext().getRealPath(WebProperties.config.getString("wordTemplate"));
 				String copySentence = fullPath + "\\copySentence.docm";
 				String oneYear = fullPath + "\\oneYear.docm";
 
@@ -312,8 +312,8 @@ public class NewsService {
 				jacobWordManager.close();
 			}
 
-			wordFile = "\\" + WebProperties.propertiesMap.get("projectName")
-					+ WebProperties.propertiesMap.get("wordTemplate")
+			wordFile = "\\" + WebProperties.config.getString("projectName")
+					+ WebProperties.config.getString("wordTemplate")
 					+ "\\articleNumberByMonthInAYearEveryYearAll.docm";
 			wordFile.replace("\\", "/");
 		} catch (Exception e) {

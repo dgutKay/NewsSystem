@@ -1,32 +1,38 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jstl/core_rt" prefix="c"%>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib uri="/myTagLib" prefix="myTag"%>
 
 <!doctype html>
 <html>
 <head>
 <link href="/NewsSystem/css/1.css" rel="stylesheet" type="text/css">
+<script type="text/javascript"
+	src="/NewsSystem/js/jquery/jquery-3.3.1.min.js"></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		//设置下标为奇数的div的类样式为：newsRight
+		$(".newsleft:odd").each(function() {
+			$(this).attr("class", "newsRight");
+		});
+	});
+</script>
 </head>
 <body>
 	<div class="news">
 		<c:forEach items="${requestScope.newsTypes}" var="newsType"
 			varStatus="newsTypeStatus">
-			<div class="newsleft" name="news1">
+			<div class="newsleft">
 				<table class="invisibleTable">
 					<tbody>
 						<tr class="newsColumn">
-							<td>
-								<c:choose>
+							<td><c:choose>
 									<c:when test="${newsType == 'all'}">
 										New
 									</c:when>
 									<c:otherwise>
 					        			${newsType}
 					    			</c:otherwise>
-								</c:choose>
-							</td>
+								</c:choose></td>
 							<td align="right"><a
 								href="/NewsSystem/servlet/NewsServlet?condition=showNewsByNewsType&newsType=${newsType}&page=1&pageSize=5">More</a>
 							</td>
@@ -35,8 +41,7 @@
 							items="${requestScope.newsesList[newsTypeStatus.index]}"
 							var="news" varStatus="status">
 							<tr>
-								<td class="mainPageUl"><a
-									href="/NewsSystem/servlet/NewsServlet?condition=showANews&newsId=${news.newsId}&page=1&pageSize=2"
+								<td class="mainPageUl"><a href="${news.url}"
 									title="${news.caption}">
 										${requestScope.newsCaptionsList[newsTypeStatus.index].get(status.index)}
 								</a></td>
@@ -54,14 +59,4 @@
 			value="${requestScope.newsTypesNumber}">
 	</form>
 </body>
-<script type="text/javascript">
-	a = document.getElementById('newsTypeNumber');
-	var newsTypeNumber = parseInt(a.value);
-	var divs = document.getElementsByName("news1");
-	for (var i = 0; i < divs.length; i++) {
-		if (i % 2 == 1)
-			divs[i].setAttribute("class", "newsRight");
-	}
-</script>
-
 </html>

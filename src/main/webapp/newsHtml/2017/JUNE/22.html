@@ -1,0 +1,175 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<link href="/NewsSystem/css/1.css" rel="stylesheet" type="text/css">
+<script type="text/javascript"
+	src="/NewsSystem/js/jquery/jquery-3.3.1.min.js"></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		//提交用户对文章的评论
+		$("#addCommentForm").on("submit", function(ev) {
+			var url = "/NewsSystem/servlet/CommentServlet?condition=addComment";
+			$("#page").val("1");
+			var data = $("#pageInfo").serialize() + "&" + $("#addCommentForm").serialize();
+			//jQuery.post(url, [data], [callback], [type])
+			//callback:发送成功时回调函数。
+			//type:返回内容格式，xml, html, script, json, text, _default。
+			$.post(url, data, function(data, textStatus) {
+				if (textStatus == "success") {
+					$("#showComment").html(data);
+					$("#addCommentTextarea").val(""); //清空内容
+				} else
+					alert("添加失败！");
+			}, "html");
+
+			ev.preventDefault();
+		});
+	});
+
+	function getOnePage(type, orderFieldName) {
+		var page = $("#page");
+
+		pageValue = parseInt(page.val());
+		if (type == "first") {
+			page.val("1");
+		} else if (type == "pre") {
+			pageValue -= 1;
+			page.val(pageValue.toString());
+		} else if (type == "next") {
+			pageValue += 1;
+			page.val(pageValue.toString());
+		} else if (type == "last") {
+			page.val($("#totalPageCount").val());
+		}
+
+		//提交
+		$("#showComment").load("/NewsSystem/servlet/CommentServlet?condition=showComment", $("#pageInfo").serialize());
+	}
+
+	function praise(commentId, thisobj) { //thisobj表示当前被点击的元素（标签）对象
+		$.ajax({
+			type : "post",
+			dataType : "json",
+			url : "/NewsSystem/servlet/CommentServlet?condition=praise&commentId=" + commentId,
+			data : $("#pageInfo").serialize(),
+			success : function(data) {
+				if (data != null) {
+					if (data.result > 0) {
+						$(thisobj).next().html(data.result); //next（）：下一个兄弟节点，text(data)：设置元素内部文字内容为data
+					} else alert("点赞失败！");
+				}
+			},
+			error : function() {
+				alert("无权限！");
+			}
+		});
+	}
+
+	function model(commentId) {
+		$("#model").show();
+		$("#replyCommentForm").on("submit", function(ev) {
+			var url = "/NewsSystem/servlet/CommentServlet?condition=addComment" + "&commentId=" + commentId;
+			$("#page").val("1");
+			var data = $("#pageInfo").serialize() + "&" + $("#replyCommentForm").serialize();
+
+			$("#showComment").load(url, data);
+			ev.preventDefault();
+		});
+	}
+</script>
+</head>
+<body>
+	<!--新闻内容 -->
+	<div class="center" style="width:800px;margin-top:30px;">
+		<table width="800" border="0">
+			<tbody>
+				<tr>
+					<td class="newsCaption">【汽车人◆观察】特斯拉与保险公司终有一战</td>
+				<tr>
+					<td align="center" height="50">作者：汽车人传媒&nbsp;
+						&nbsp;&nbsp; &nbsp;&nbsp; &nbsp; <myTag:LocalDateTimeTag
+							dateTime="2017-06-06T03:03" type="YMDHM" />
+					</td>
+				</tr>
+				<tr>
+					<td height="30"><hr></td>
+				</tr>
+				<tr>
+					<td><p style="text-indent: 2em;"><span style="font-family: simsun; text-indent: 28px; background-color: rgb(255, 255, 255);">原标题：【汽车人◆观察】特斯拉与保险公司终有一战</span></p><p style="text-indent: 2em;"><span style="background-color: rgb(255, 255, 255); font-family: simsun; text-indent: 28px;">对于汽车保险费用这块蛋糕，特斯拉已经开始动手“切割”，而且特斯拉的自动驾驶很有可能会彻底颠覆汽车保险行业。</span></p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0px 0px 25px; word-wrap: break-word; line-height: 30px; text-indent: 28px; font-family: simsun; white-space: normal; background-color: rgb(255, 255, 255);">◎ 《汽车人》记者 刘响林</p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0px 0px 25px; word-wrap: break-word; line-height: 30px; text-indent: 28px; font-family: simsun; white-space: normal; background-color: rgb(255, 255, 255);">或许用不了多久，全世界的电动汽车保险费率都会迎来变化。</p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0px 0px 25px; word-wrap: break-word; line-height: 30px; text-indent: 28px; font-family: simsun; white-space: normal; background-color: rgb(255, 255, 255);">美国AAA保险公司日前表示，相比同级别汽车，特斯拉Model S和Model X的索赔频率和赔付成本比较高。AAA公司考虑提高上述两款车型的保险费率。虽然这只是针对特斯拉一家车企，但它所造成的影响，是全世界范围的。</p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0px 0px 25px; word-wrap: break-word; line-height: 30px; text-indent: 28px; font-family: simsun; white-space: normal; background-color: rgb(255, 255, 255);">美国被称为“车轮上的国家”，汽车行业成熟而发达，中国在很多方面向美国学习，比如说新能源汽车积分制。去年9月22日，《企业平均燃料消耗量与新能源汽车积分并行管理暂行办法》（征求意见稿），整套方法均源自美国加州ZEV法案。</p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0px 0px 25px; word-wrap: break-word; line-height: 30px; text-indent: 28px; font-family: simsun; white-space: normal; background-color: rgb(255, 255, 255);">如果特斯拉真的被规定“多支付保险费用”，必然会影响到中国电动汽车的保险费用。毕竟行业需要有一个标杆。目前，特斯拉就是电动汽车行业的标杆。</p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0px 0px 25px; word-wrap: break-word; line-height: 30px; text-indent: 28px; font-family: simsun; white-space: normal; background-color: rgb(255, 255, 255);">AAA保险公司的前身是美国汽车协会，更多地代表着传统车企的利益。而特斯拉作为创新性企业，近年的表现已经让传统车企感受到了威胁。</p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0px 0px 25px; word-wrap: break-word; line-height: 30px; text-indent: 28px; font-family: simsun; white-space: normal; background-color: rgb(255, 255, 255);">截止6月8日收盘，特斯拉股价创历史新高，达370美元，市值已经达到608亿，远超通用的515亿和福特的442亿。</p><p style="text-indent: 2em;"><br/></p></td>
+				</tr>
+				<tr>
+					<td height="30"><hr></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<!--回复评论 -->
+	<div id="addComment">
+		<div class="center" style="width:800px;margin-top:30px;">
+			<form id="addCommentForm">
+				<div class="center" style="width:500px">
+					<textarea name="content" cols="72" rows="8" id="addCommentTextarea"
+						required></textarea>
+				</div>
+				<p>
+				<div class="center" style="width:50px;height:80px;">
+					<br> <input type="submit" value="  提 交 评 论  ">
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<div id="showComment"> 
+		<form id="showCommnentForm">
+			<div class="center" style="width:600px">
+			  <a name="commentsStart"></a>
+			  <div class="commentsHead">最新评论</div>
+				<div class="commentsHead" style="text-align:center;">
+					<table align="center" cellpadding="5" cellspacing="0" width="600px">
+						<tr>
+   
+						</tr>
+						<tr align="center">
+							<td colspan="4">total: 0
+								pages</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</form>
+
+		<div id="model" style="display: none;">
+			<form id="replyCommentForm">
+				<div class="modelContent">
+					<table>
+						<tbody>
+							<tr>
+								<td colspan="2"><textarea name="content" cols="60" rows="8"
+										id="content" required></textarea></td>
+							</tr>
+							<tr>
+								<td align="center"><input type="submit" name="submit"
+									id="submit" value="提交"></td>
+								<td align="center"><input type="button"
+									onclick="$('#model').hide();" value="取消"></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</form>
+		</div>
+
+		<form id="pageInfo">
+			<input type="hidden" name="newsId" id="newsId" value="22">
+			<input type="hidden" name="page" id="page"
+				value="0"> <input type="hidden"
+				name="pageSize" id="pageSize" value="2">
+			<input type="hidden" name="totalPageCount" id="totalPageCount"
+				value="0" /> <input type="hidden"
+				name="allRecordCount" id="allRecordCount"
+				value="0">
+		</form>
+	</div>
+</body>
+</html>

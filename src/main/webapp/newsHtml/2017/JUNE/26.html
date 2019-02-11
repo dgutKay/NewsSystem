@@ -1,0 +1,175 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<link href="/NewsSystem/css/1.css" rel="stylesheet" type="text/css">
+<script type="text/javascript"
+	src="/NewsSystem/js/jquery/jquery-3.3.1.min.js"></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		//提交用户对文章的评论
+		$("#addCommentForm").on("submit", function(ev) {
+			var url = "/NewsSystem/servlet/CommentServlet?condition=addComment";
+			$("#page").val("1");
+			var data = $("#pageInfo").serialize() + "&" + $("#addCommentForm").serialize();
+			//jQuery.post(url, [data], [callback], [type])
+			//callback:发送成功时回调函数。
+			//type:返回内容格式，xml, html, script, json, text, _default。
+			$.post(url, data, function(data, textStatus) {
+				if (textStatus == "success") {
+					$("#showComment").html(data);
+					$("#addCommentTextarea").val(""); //清空内容
+				} else
+					alert("添加失败！");
+			}, "html");
+
+			ev.preventDefault();
+		});
+	});
+
+	function getOnePage(type, orderFieldName) {
+		var page = $("#page");
+
+		pageValue = parseInt(page.val());
+		if (type == "first") {
+			page.val("1");
+		} else if (type == "pre") {
+			pageValue -= 1;
+			page.val(pageValue.toString());
+		} else if (type == "next") {
+			pageValue += 1;
+			page.val(pageValue.toString());
+		} else if (type == "last") {
+			page.val($("#totalPageCount").val());
+		}
+
+		//提交
+		$("#showComment").load("/NewsSystem/servlet/CommentServlet?condition=showComment", $("#pageInfo").serialize());
+	}
+
+	function praise(commentId, thisobj) { //thisobj表示当前被点击的元素（标签）对象
+		$.ajax({
+			type : "post",
+			dataType : "json",
+			url : "/NewsSystem/servlet/CommentServlet?condition=praise&commentId=" + commentId,
+			data : $("#pageInfo").serialize(),
+			success : function(data) {
+				if (data != null) {
+					if (data.result > 0) {
+						$(thisobj).next().html(data.result); //next（）：下一个兄弟节点，text(data)：设置元素内部文字内容为data
+					} else alert("点赞失败！");
+				}
+			},
+			error : function() {
+				alert("无权限！");
+			}
+		});
+	}
+
+	function model(commentId) {
+		$("#model").show();
+		$("#replyCommentForm").on("submit", function(ev) {
+			var url = "/NewsSystem/servlet/CommentServlet?condition=addComment" + "&commentId=" + commentId;
+			$("#page").val("1");
+			var data = $("#pageInfo").serialize() + "&" + $("#replyCommentForm").serialize();
+
+			$("#showComment").load(url, data);
+			ev.preventDefault();
+		});
+	}
+</script>
+</head>
+<body>
+	<!--新闻内容 -->
+	<div class="center" style="width:800px;margin-top:30px;">
+		<table width="800" border="0">
+			<tbody>
+				<tr>
+					<td class="newsCaption">本田全新雅阁谍照 动力系统为2.0T+10AT</td>
+				<tr>
+					<td align="center" height="50">作者：综合报道&nbsp;
+						&nbsp;&nbsp; &nbsp;&nbsp; &nbsp; <myTag:LocalDateTimeTag
+							dateTime="2017-06-15T04:04" type="YMDHM" />
+					</td>
+				</tr>
+				<tr>
+					<td height="30"><hr></td>
+				</tr>
+				<tr>
+					<td><p style="text-indent: 2em; text-align: left; line-height: 1.75em;"><span style="font-family: simsun; text-indent: 28px; background-color: rgb(255, 255, 255);">凤凰汽车讯 日前，有海外媒体提前试驾到了</span><a href="http://car.auto.ifeng.com/brand/20063/" class="kw-link" target="_blank" style="color: rgb(0, 0, 0); text-decoration: none; border-bottom: 1px dotted rgb(59, 89, 152); font-family: simsun; text-indent: 28px; white-space: normal; background-color: rgb(255, 255, 255);">本田</a><span style="font-family: simsun; text-indent: 28px; background-color: rgb(255, 255, 255);">全新</span><a href="http://car.auto.ifeng.com/series/6812/" class="kw-link" target="_blank" style="color: rgb(0, 0, 0); text-decoration: none; border-bottom: 1px dotted rgb(59, 89, 152); font-family: simsun; text-indent: 28px; white-space: normal; background-color: rgb(255, 255, 255);">雅阁</a><span style="font-family: simsun; text-indent: 28px; background-color: rgb(255, 255, 255);">车型(第十代)的测试原型车。据他们透露，全新雅阁高配将搭载2.0T发动机+全新10AT变速箱；而入门车型则将搭载1.5T发动机+6速手动/CVT变速箱。消息称，新车将于今年下半年正式发布。</span></p><p style="text-indent: 2em;"></p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0px 0px 25px; word-wrap: break-word; line-height: 30px; text-indent: 28px; font-family: simsun; white-space: normal; background-color: rgb(255, 255, 255); text-align: left;">目前本田并未透露油耗数据，仅表示将优于海外版现款雅阁3.5L车型。本田工程师表示在研发过程中新雅阁以<a href="http://car.auto.ifeng.com/series/2364/" target="_blank" style="color: rgb(0, 0, 0); text-decoration: none; border-bottom: 1px dotted rgb(59, 89, 152);">奔驰C级</a>/E级、<a href="http://car.auto.ifeng.com/series/1729/" target="_blank" style="color: rgb(0, 0, 0); text-decoration: none; border-bottom: 1px dotted rgb(59, 89, 152);">宝马3系</a>/5系为参照标杆。</p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0px 0px 25px; word-wrap: break-word; line-height: 30px; text-indent: 28px; font-family: simsun; white-space: normal; background-color: rgb(255, 255, 255); text-align: left;">在设计方面，新车采用了惯用的全LED前大灯组，以及双边共两出式排气口等。车身整体线条流畅，同时前脸造型轮廓也与新<a href="http://car.auto.ifeng.com/series/1661/" target="_blank" style="color: rgb(0, 0, 0); text-decoration: none; border-bottom: 1px dotted rgb(59, 89, 152);">思域</a>车型较为相似。</p><p style="text-indent: 2em;"><span style="font-family: simsun; text-indent: 28px; background-color: rgb(255, 255, 255);"><br/></span></p></td>
+				</tr>
+				<tr>
+					<td height="30"><hr></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<!--回复评论 -->
+	<div id="addComment">
+		<div class="center" style="width:800px;margin-top:30px;">
+			<form id="addCommentForm">
+				<div class="center" style="width:500px">
+					<textarea name="content" cols="72" rows="8" id="addCommentTextarea"
+						required></textarea>
+				</div>
+				<p>
+				<div class="center" style="width:50px;height:80px;">
+					<br> <input type="submit" value="  提 交 评 论  ">
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<div id="showComment"> 
+		<form id="showCommnentForm">
+			<div class="center" style="width:600px">
+			  <a name="commentsStart"></a>
+			  <div class="commentsHead">最新评论</div>
+				<div class="commentsHead" style="text-align:center;">
+					<table align="center" cellpadding="5" cellspacing="0" width="600px">
+						<tr>
+   
+						</tr>
+						<tr align="center">
+							<td colspan="4">total: 0
+								pages</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</form>
+
+		<div id="model" style="display: none;">
+			<form id="replyCommentForm">
+				<div class="modelContent">
+					<table>
+						<tbody>
+							<tr>
+								<td colspan="2"><textarea name="content" cols="60" rows="8"
+										id="content" required></textarea></td>
+							</tr>
+							<tr>
+								<td align="center"><input type="submit" name="submit"
+									id="submit" value="提交"></td>
+								<td align="center"><input type="button"
+									onclick="$('#model').hide();" value="取消"></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</form>
+		</div>
+
+		<form id="pageInfo">
+			<input type="hidden" name="newsId" id="newsId" value="26">
+			<input type="hidden" name="page" id="page"
+				value="0"> <input type="hidden"
+				name="pageSize" id="pageSize" value="2">
+			<input type="hidden" name="totalPageCount" id="totalPageCount"
+				value="0" /> <input type="hidden"
+				name="allRecordCount" id="allRecordCount"
+				value="0">
+		</form>
+	</div>
+</body>
+</html>

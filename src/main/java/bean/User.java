@@ -19,8 +19,8 @@ public class User {
 	private String accessToken = "";
 
 	public User() {
-		headIconUrl = "/" + WebProperties.propertiesMap.get("projectName")
-				+ WebProperties.propertiesMap.get("headIconFileDefault").replace("\\", "/");
+		headIconUrl = "/" + WebProperties.config.getString("projectName")
+				+ WebProperties.config.getString("headIconFileDefault").replace("\\", "/");
 	}
 
 	public Integer getUserId() {

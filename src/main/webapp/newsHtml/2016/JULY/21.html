@@ -1,0 +1,175 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<link href="/NewsSystem/css/1.css" rel="stylesheet" type="text/css">
+<script type="text/javascript"
+	src="/NewsSystem/js/jquery/jquery-3.3.1.min.js"></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		//提交用户对文章的评论
+		$("#addCommentForm").on("submit", function(ev) {
+			var url = "/NewsSystem/servlet/CommentServlet?condition=addComment";
+			$("#page").val("1");
+			var data = $("#pageInfo").serialize() + "&" + $("#addCommentForm").serialize();
+			//jQuery.post(url, [data], [callback], [type])
+			//callback:发送成功时回调函数。
+			//type:返回内容格式，xml, html, script, json, text, _default。
+			$.post(url, data, function(data, textStatus) {
+				if (textStatus == "success") {
+					$("#showComment").html(data);
+					$("#addCommentTextarea").val(""); //清空内容
+				} else
+					alert("添加失败！");
+			}, "html");
+
+			ev.preventDefault();
+		});
+	});
+
+	function getOnePage(type, orderFieldName) {
+		var page = $("#page");
+
+		pageValue = parseInt(page.val());
+		if (type == "first") {
+			page.val("1");
+		} else if (type == "pre") {
+			pageValue -= 1;
+			page.val(pageValue.toString());
+		} else if (type == "next") {
+			pageValue += 1;
+			page.val(pageValue.toString());
+		} else if (type == "last") {
+			page.val($("#totalPageCount").val());
+		}
+
+		//提交
+		$("#showComment").load("/NewsSystem/servlet/CommentServlet?condition=showComment", $("#pageInfo").serialize());
+	}
+
+	function praise(commentId, thisobj) { //thisobj表示当前被点击的元素（标签）对象
+		$.ajax({
+			type : "post",
+			dataType : "json",
+			url : "/NewsSystem/servlet/CommentServlet?condition=praise&commentId=" + commentId,
+			data : $("#pageInfo").serialize(),
+			success : function(data) {
+				if (data != null) {
+					if (data.result > 0) {
+						$(thisobj).next().html(data.result); //next（）：下一个兄弟节点，text(data)：设置元素内部文字内容为data
+					} else alert("点赞失败！");
+				}
+			},
+			error : function() {
+				alert("无权限！");
+			}
+		});
+	}
+
+	function model(commentId) {
+		$("#model").show();
+		$("#replyCommentForm").on("submit", function(ev) {
+			var url = "/NewsSystem/servlet/CommentServlet?condition=addComment" + "&commentId=" + commentId;
+			$("#page").val("1");
+			var data = $("#pageInfo").serialize() + "&" + $("#replyCommentForm").serialize();
+
+			$("#showComment").load(url, data);
+			ev.preventDefault();
+		});
+	}
+</script>
+</head>
+<body>
+	<!--新闻内容 -->
+	<div class="center" style="width:800px;margin-top:30px;">
+		<table width="800" border="0">
+			<tbody>
+				<tr>
+					<td class="newsCaption">大众up!特别版官图发布 土豪金是主色调</td>
+				<tr>
+					<td align="center" height="50">作者：凤凰汽车&nbsp;
+						&nbsp;&nbsp; &nbsp;&nbsp; &nbsp; <myTag:LocalDateTimeTag
+							dateTime="2016-07-19T01:02" type="YMDHM" />
+					</td>
+				</tr>
+				<tr>
+					<td height="30"><hr></td>
+				</tr>
+				<tr>
+					<td><p style="text-indent: 2em;"><span style="font-family: simsun; text-indent: 28px; background-color: rgb(255, 255, 255);">日前，</span><a href="http://car.auto.ifeng.com/brand/20012/" class="kw-link" target="_blank" style="color: rgb(0, 0, 0); text-decoration: none; border-bottom: 1px dotted rgb(59, 89, 152); font-family: simsun; text-indent: 28px; white-space: normal; background-color: rgb(255, 255, 255);">大众</a><span style="font-family: simsun; text-indent: 28px; background-color: rgb(255, 255, 255);">正式发布了up!特别版的官图。新车在普通版车型的基础上增加了一些专属的设计，同时该车也汲取了1982年款</span><a href="http://car.auto.ifeng.com/series/2061/" class="kw-link" target="_blank" style="color: rgb(0, 0, 0); text-decoration: none; border-bottom: 1px dotted rgb(59, 89, 152); font-family: simsun; text-indent: 28px; white-space: normal; background-color: rgb(255, 255, 255);">甲壳虫</a><span style="font-family: simsun; text-indent: 28px; background-color: rgb(255, 255, 255);">的设计灵感。</span></p><p style="text-indent: 2em;"><span style="background-color: rgb(255, 255, 255); font-family: simsun; text-indent: 28px;">新车具备“土豪”气息十足的金色和炫酷的黑色两款车身颜色。金色配备了17英寸黑色轮圈；而黑色车则搭配金色轮圈，形成了色彩对比。车门下方具有证明身份的“Special”特别版标示。</span></p><p style="text-indent: 2em;"><span style="font-family: simsun; text-indent: 28px; background-color: rgb(255, 255, 255);"></span></p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0px 0px 25px; word-wrap: break-word; line-height: 30px; text-indent: 28px; font-family: simsun; white-space: normal; background-color: rgb(255, 255, 255);">外媒表示，up!特别版车型的内饰将使用黑色车顶，同时在仪表盘、座椅等处也将加入金色<a href="http://car.auto.ifeng.com/series/10657/" class="kw-link" target="_blank" style="color: rgb(0, 0, 0); text-decoration: none; border-bottom: 1px dotted rgb(59, 89, 152);">元</a>素进行点缀。该车将推出搭载1.0T发动机匹配5速AMT半自动变速箱的动力选择。</p><p style="text-indent: 2em;"><span style="font-family: simsun; text-indent: 28px; background-color: rgb(255, 255, 255);"><br/></span><br/></p></td>
+				</tr>
+				<tr>
+					<td height="30"><hr></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<!--回复评论 -->
+	<div id="addComment">
+		<div class="center" style="width:800px;margin-top:30px;">
+			<form id="addCommentForm">
+				<div class="center" style="width:500px">
+					<textarea name="content" cols="72" rows="8" id="addCommentTextarea"
+						required></textarea>
+				</div>
+				<p>
+				<div class="center" style="width:50px;height:80px;">
+					<br> <input type="submit" value="  提 交 评 论  ">
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<div id="showComment"> 
+		<form id="showCommnentForm">
+			<div class="center" style="width:600px">
+			  <a name="commentsStart"></a>
+			  <div class="commentsHead">最新评论</div>
+				<div class="commentsHead" style="text-align:center;">
+					<table align="center" cellpadding="5" cellspacing="0" width="600px">
+						<tr>
+   
+						</tr>
+						<tr align="center">
+							<td colspan="4">total: 0
+								pages</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</form>
+
+		<div id="model" style="display: none;">
+			<form id="replyCommentForm">
+				<div class="modelContent">
+					<table>
+						<tbody>
+							<tr>
+								<td colspan="2"><textarea name="content" cols="60" rows="8"
+										id="content" required></textarea></td>
+							</tr>
+							<tr>
+								<td align="center"><input type="submit" name="submit"
+									id="submit" value="提交"></td>
+								<td align="center"><input type="button"
+									onclick="$('#model').hide();" value="取消"></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</form>
+		</div>
+
+		<form id="pageInfo">
+			<input type="hidden" name="newsId" id="newsId" value="21">
+			<input type="hidden" name="page" id="page"
+				value="0"> <input type="hidden"
+				name="pageSize" id="pageSize" value="2">
+			<input type="hidden" name="totalPageCount" id="totalPageCount"
+				value="0" /> <input type="hidden"
+				name="allRecordCount" id="allRecordCount"
+				value="0">
+		</form>
+	</div>
+</body>
+</html>

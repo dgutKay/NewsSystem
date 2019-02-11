@@ -1,0 +1,241 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<link href="/NewsSystem/css/1.css" rel="stylesheet" type="text/css">
+<script type="text/javascript"
+	src="/NewsSystem/js/jquery/jquery-3.3.1.min.js"></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		//提交用户对文章的评论
+		$("#addCommentForm").on("submit", function(ev) {
+			var url = "/NewsSystem/servlet/CommentServlet?condition=addComment";
+			$("#page").val("1");
+			var data = $("#pageInfo").serialize() + "&" + $("#addCommentForm").serialize();
+			//jQuery.post(url, [data], [callback], [type])
+			//callback:发送成功时回调函数。
+			//type:返回内容格式，xml, html, script, json, text, _default。
+			$.post(url, data, function(data, textStatus) {
+				if (textStatus == "success") {
+					$("#showComment").html(data);
+					$("#addCommentTextarea").val(""); //清空内容
+				} else
+					alert("添加失败！");
+			}, "html");
+
+			ev.preventDefault();
+		});
+	});
+
+	function getOnePage(type, orderFieldName) {
+		var page = $("#page");
+
+		pageValue = parseInt(page.val());
+		if (type == "first") {
+			page.val("1");
+		} else if (type == "pre") {
+			pageValue -= 1;
+			page.val(pageValue.toString());
+		} else if (type == "next") {
+			pageValue += 1;
+			page.val(pageValue.toString());
+		} else if (type == "last") {
+			page.val($("#totalPageCount").val());
+		}
+
+		//提交
+		$("#showComment").load("/NewsSystem/servlet/CommentServlet?condition=showComment", $("#pageInfo").serialize());
+	}
+
+	function praise(commentId, thisobj) { //thisobj表示当前被点击的元素（标签）对象
+		$.ajax({
+			type : "post",
+			dataType : "json",
+			url : "/NewsSystem/servlet/CommentServlet?condition=praise&commentId=" + commentId,
+			data : $("#pageInfo").serialize(),
+			success : function(data) {
+				if (data != null) {
+					if (data.result > 0) {
+						$(thisobj).next().html(data.result); //next（）：下一个兄弟节点，text(data)：设置元素内部文字内容为data
+					} else alert("点赞失败！");
+				}
+			},
+			error : function() {
+				alert("无权限！");
+			}
+		});
+	}
+
+	function model(commentId) {
+		$("#model").show();
+		$("#replyCommentForm").on("submit", function(ev) {
+			var url = "/NewsSystem/servlet/CommentServlet?condition=addComment" + "&commentId=" + commentId;
+			$("#page").val("1");
+			var data = $("#pageInfo").serialize() + "&" + $("#replyCommentForm").serialize();
+
+			$("#showComment").load(url, data);
+			ev.preventDefault();
+		});
+	}
+</script>
+</head>
+<body>
+	<!--新闻内容 -->
+	<div class="center" style="width:800px;margin-top:30px;">
+		<table width="800" border="0">
+			<tbody>
+				<tr>
+					<td class="newsCaption">中超-郜林高拉特立功曾诚扑点 恒大客场2-0恒丰</td>
+				<tr>
+					<td align="center" height="50">作者：新浪体育&nbsp;
+						&nbsp;&nbsp; &nbsp;&nbsp; &nbsp; <myTag:LocalDateTimeTag
+							dateTime="2017-06-17T05:05" type="YMDHM" />
+					</td>
+				</tr>
+				<tr>
+					<td height="30"><hr></td>
+				</tr>
+				<tr>
+					<td><p style="margin-top: 15px; margin-bottom: 15px; padding: 0px; color: rgb(51, 51, 51); font-family: &quot;PingFang SC&quot;, &quot;Lantinghei SC&quot;, &quot;Microsoft Yahei&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft Sans Serif&quot;, &quot;WenQuanYi Micro Hei&quot;, sans; white-space: normal; text-indent: 2em;">北京时间6月17日下午，2017赛季中超联赛第13轮赛事展开，广州恒大淘宝客场2-0战胜贵州恒丰智诚，恒大收获联赛9连胜，恒丰智诚4轮不败被终结。第43分钟，郜林在张琳芃助攻下取得入球；第58分钟，恒丰智诚获得点球机会，但耶拉维奇的攻门被曾诚挡出；第70分钟，高拉特为恒大将比分扩大。</p><p style="margin-top: 15px; margin-bottom: 15px; padding: 0px; color: rgb(51, 51, 51); font-family: &quot;PingFang SC&quot;, &quot;Lantinghei SC&quot;, &quot;Microsoft Yahei&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft Sans Serif&quot;, &quot;WenQuanYi Micro Hei&quot;, sans; white-space: normal;">　　恒丰智诚近4轮2胜2平，于曼萨诺接管教鞭后形成平稳走势，目前排名积分榜第8位。本轮恒丰智诚后防线减员严重，主力门将苏渤洋与出自恒大的中后卫韩鹏飞均停赛，麦克格文因国家队赛事离队。间歇期前恒大在繁密赛程中打出8连胜，持续领跑积分榜。在国家队受伤的郑智缺阵，徐新与保利尼奥搭档双后腰。</p><p style="margin-top: 15px; margin-bottom: 15px; padding: 0px; color: rgb(51, 51, 51); font-family: &quot;PingFang SC&quot;, &quot;Lantinghei SC&quot;, &quot;Microsoft Yahei&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft Sans Serif&quot;, &quot;WenQuanYi Micro Hei&quot;, sans; white-space: normal;">　　开场后恒大反客为主展开主动前压，恒丰智诚先是摆出回撤防守的姿态，比赛进行5分钟后突然加强中前场逼抢，对恒大形成连续抢断。第8分钟，耶拉维奇在右路获得前插机会，曾诚冲出禁区将球破坏；紧接着闵俊麟又为恒丰智诚赢得禁区前任意球，切里攻门被曾诚挡出。</p><p style="margin-top: 15px; margin-bottom: 15px; padding: 0px; color: rgb(51, 51, 51); font-family: &quot;PingFang SC&quot;, &quot;Lantinghei SC&quot;, &quot;Microsoft Yahei&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft Sans Serif&quot;, &quot;WenQuanYi Micro Hei&quot;, sans; white-space: normal;">　　随着双方相继获得快攻机会，比赛形成快节奏对峙。第14分钟，蒋亮因前场放铲的犯规动作领到黄牌。第16分钟，张琳芃长传发动快攻，阿兰中路前插获得单刀机会，他面对门将推射打高，裁判也判定阿兰进攻犯规在先。第19分钟，高拉特中路远射打出水准，恒丰智诚门将王卓连续扑救将险情化解。第21分钟，恒丰智诚利用任意球向恒大回敬威胁攻势，耶拉维奇禁区内甩头攻门被曾诚挡出。</p><p style="margin-top: 15px; margin-bottom: 15px; padding: 0px; color: rgb(51, 51, 51); font-family: &quot;PingFang SC&quot;, &quot;Lantinghei SC&quot;, &quot;Microsoft Yahei&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft Sans Serif&quot;, &quot;WenQuanYi Micro Hei&quot;, sans; white-space: normal;">　　在恒大连获角球机会时，阿兰禁区内与范云龙激烈纠缠，两人滚摔在地，范云龙一时倒地不起。第27分钟，范云龙外围远射打出一定水准，皮球稍稍偏出。此后一时段恒丰智诚连起冲击，常飞亚左路突分策动战机，耶拉维奇攻门被挡出底线，恒丰智诚借角球机会连续起球，耶拉维奇头球破门被判定越位无效，慢镜头显示越位判罚值得商榷。</p><p style="margin-top: 15px; margin-bottom: 15px; padding: 0px; color: rgb(51, 51, 51); font-family: &quot;PingFang SC&quot;, &quot;Lantinghei SC&quot;, &quot;Microsoft Yahei&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft Sans Serif&quot;, &quot;WenQuanYi Micro Hei&quot;, sans; white-space: normal;">　　比赛35分钟后恒大前场传递增加，虽然在最后一传时连有失误，但令恒丰智诚防守中的压力持续提升。第38分钟，恒丰智诚后场解围被自家人挡回，郜林右路传中在门前制造险情，王卓在法图斯保护下将球没收。1分钟后常飞亚突分策动攻势，耶拉维奇禁区前转身攻门打偏。</p><p style="text-indent: 2em;"><br/></p></td>
+				</tr>
+				<tr>
+					<td height="30"><hr></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<!--回复评论 -->
+	<div id="addComment">
+		<div class="center" style="width:800px;margin-top:30px;">
+			<form id="addCommentForm">
+				<div class="center" style="width:500px">
+					<textarea name="content" cols="72" rows="8" id="addCommentTextarea"
+						required></textarea>
+				</div>
+				<p>
+				<div class="center" style="width:50px;height:80px;">
+					<br> <input type="submit" value="  提 交 评 论  ">
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<div id="showComment"> 
+		<form id="showCommnentForm">
+			<div class="center" style="width:600px">
+			  <a name="commentsStart"></a>
+			  <div class="commentsHead">最新评论</div>
+				<div style="margin-bottom: 10px;;">
+					<div>
+						<div class="commentIcon">
+							<img width="35" src="\NewsSystem\upload\images\headIcon\user\1540276267146.jpg">
+						</div>
+						<div class="comment1">
+							<div class="commentAuthor">cccccccc</div>
+							<div class="commentTime">
+								<myTag:TimestampTag dateTime="2018-10-21 19:40:49" type="latest"/>
+							</div>
+						</div>
+						<div class="comment2">
+							<div class="comment3">
+								<a class="commentReply" href="javascript:void(0);" onclick="model(66);">
+									回复
+								</a>
+							</div>			
+							<div class="comment4">
+								<span class="commentPraiseText">第15楼</span>
+								<a class="commentPraiseA" href="javascript:void(0);" onclick="praise(this,66,36);">							
+								</a><span class="commentPraiseText">0</span>
+							</div>			
+						</div>
+					</div>	
+					<div class="clear">
+						<div class="comment5 ">
+							<div class="commentContent">
+								reply to No 14 floor: cccccccc:<br>iii<br><br>uuu
+							</div>
+						</div>
+					</div>
+				</div>
+				<div style="margin-bottom: 10px;;">
+					<div>
+						<div class="commentIcon">
+							<img width="35" src="\NewsSystem\upload\images\headIcon\user\1540276267146.jpg">
+						</div>
+						<div class="comment1">
+							<div class="commentAuthor">cccccccc</div>
+							<div class="commentTime">
+								<myTag:TimestampTag dateTime="2018-10-21 18:32:05" type="latest"/>
+							</div>
+						</div>
+						<div class="comment2">
+							<div class="comment3">
+								<a class="commentReply" href="javascript:void(0);" onclick="model(64);">
+									回复
+								</a>
+							</div>			
+							<div class="comment4">
+								<span class="commentPraiseText">第13楼</span>
+								<a class="commentPraiseA" href="javascript:void(0);" onclick="praise(this,64,36);">							
+								</a><span class="commentPraiseText">0</span>
+							</div>			
+						</div>
+					</div>	
+					<div class="clear">
+						<div class="comment5 ">
+							<div class="commentContent">
+								reply to No 12 floor: cccccccc:<br>ttt<br><br>ooo
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="commentsHead" style="text-align:center;">
+					<table align="center" cellpadding="5" cellspacing="0" width="600px">
+						<tr>
+  							<td><a href="javascript:void(0);"
+								onclick="getOnePage('next','');">Next</a>  							<td><a href="javascript:void(0);"
+								onclick="getOnePage('last','');">Last</a> 
+						</tr>
+						<tr align="center">
+							<td colspan="4">total: 6
+								pages</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</form>
+
+		<div id="model" style="display: none;">
+			<form id="replyCommentForm">
+				<div class="modelContent">
+					<table>
+						<tbody>
+							<tr>
+								<td colspan="2"><textarea name="content" cols="60" rows="8"
+										id="content" required></textarea></td>
+							</tr>
+							<tr>
+								<td align="center"><input type="submit" name="submit"
+									id="submit" value="提交"></td>
+								<td align="center"><input type="button"
+									onclick="$('#model').hide();" value="取消"></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</form>
+		</div>
+
+		<form id="pageInfo">
+			<input type="hidden" name="newsId" id="newsId" value="36">
+			<input type="hidden" name="page" id="page"
+				value="1"> <input type="hidden"
+				name="pageSize" id="pageSize" value="2">
+			<input type="hidden" name="totalPageCount" id="totalPageCount"
+				value="6" /> <input type="hidden"
+				name="allRecordCount" id="allRecordCount"
+				value="11">
+		</form>
+	</div>
+</body>
+</html>

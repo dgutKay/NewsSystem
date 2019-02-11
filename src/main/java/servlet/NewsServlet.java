@@ -63,7 +63,7 @@ public class NewsServlet extends HttpServlet {
 			request.setAttribute("pageInformation", pageInformation);
 			request.setAttribute("commentUserViews", commentUserViews);
 			request.setAttribute("news", news);
-			getServletContext().getRequestDispatcher("/news/aNewsShow.jsp").forward(request, response);
+			getServletContext().getRequestDispatcher("/news/aNewsShowTemplate.jsp").forward(request, response);
 		} else if ("manage".equals(condition)) {
 			PageInformation pageInformation = new PageInformation();
 			Tool.getPageInformation("news", request, pageInformation);

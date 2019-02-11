@@ -1,0 +1,175 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<link href="/NewsSystem/css/1.css" rel="stylesheet" type="text/css">
+<script type="text/javascript"
+	src="/NewsSystem/js/jquery/jquery-3.3.1.min.js"></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		//提交用户对文章的评论
+		$("#addCommentForm").on("submit", function(ev) {
+			var url = "/NewsSystem/servlet/CommentServlet?condition=addComment";
+			$("#page").val("1");
+			var data = $("#pageInfo").serialize() + "&" + $("#addCommentForm").serialize();
+			//jQuery.post(url, [data], [callback], [type])
+			//callback:发送成功时回调函数。
+			//type:返回内容格式，xml, html, script, json, text, _default。
+			$.post(url, data, function(data, textStatus) {
+				if (textStatus == "success") {
+					$("#showComment").html(data);
+					$("#addCommentTextarea").val(""); //清空内容
+				} else
+					alert("添加失败！");
+			}, "html");
+
+			ev.preventDefault();
+		});
+	});
+
+	function getOnePage(type, orderFieldName) {
+		var page = $("#page");
+
+		pageValue = parseInt(page.val());
+		if (type == "first") {
+			page.val("1");
+		} else if (type == "pre") {
+			pageValue -= 1;
+			page.val(pageValue.toString());
+		} else if (type == "next") {
+			pageValue += 1;
+			page.val(pageValue.toString());
+		} else if (type == "last") {
+			page.val($("#totalPageCount").val());
+		}
+
+		//提交
+		$("#showComment").load("/NewsSystem/servlet/CommentServlet?condition=showComment", $("#pageInfo").serialize());
+	}
+
+	function praise(commentId, thisobj) { //thisobj表示当前被点击的元素（标签）对象
+		$.ajax({
+			type : "post",
+			dataType : "json",
+			url : "/NewsSystem/servlet/CommentServlet?condition=praise&commentId=" + commentId,
+			data : $("#pageInfo").serialize(),
+			success : function(data) {
+				if (data != null) {
+					if (data.result > 0) {
+						$(thisobj).next().html(data.result); //next（）：下一个兄弟节点，text(data)：设置元素内部文字内容为data
+					} else alert("点赞失败！");
+				}
+			},
+			error : function() {
+				alert("无权限！");
+			}
+		});
+	}
+
+	function model(commentId) {
+		$("#model").show();
+		$("#replyCommentForm").on("submit", function(ev) {
+			var url = "/NewsSystem/servlet/CommentServlet?condition=addComment" + "&commentId=" + commentId;
+			$("#page").val("1");
+			var data = $("#pageInfo").serialize() + "&" + $("#replyCommentForm").serialize();
+
+			$("#showComment").load(url, data);
+			ev.preventDefault();
+		});
+	}
+</script>
+</head>
+<body>
+	<!--新闻内容 -->
+	<div class="center" style="width:800px;margin-top:30px;">
+		<table width="800" border="0">
+			<tbody>
+				<tr>
+					<td class="newsCaption">中德总理见证 北汽集团与戴姆勒签署新能源合作协议</td>
+				<tr>
+					<td align="center" height="50">作者：综合报道&nbsp;
+						&nbsp;&nbsp; &nbsp;&nbsp; &nbsp; <myTag:LocalDateTimeTag
+							dateTime="2017-06-15T03:03" type="YMDHM" />
+					</td>
+				</tr>
+				<tr>
+					<td height="30"><hr></td>
+				</tr>
+				<tr>
+					<td><p style="text-indent: 2em;"><span style="font-family: simsun; text-indent: 28px; background-color: rgb(255, 255, 255);">凤凰汽车讯 6月1日，在中国国务院总理李克强和德国总理默克尔的共同见证下，</span><a href="http://data.auto.ifeng.com/price/p-10030-1-1.html" class="kw-link" target="_blank" style="color: rgb(0, 0, 0); text-decoration: none; border-bottom: 1px dotted rgb(59, 89, 152); font-family: simsun; text-indent: 28px; white-space: normal; background-color: rgb(255, 255, 255);">北京汽车</a><span style="font-family: simsun; text-indent: 28px; background-color: rgb(255, 255, 255);">集团有限公司与合作伙伴戴姆勒股份公司签署了一份框架协议，将通过在华对新能源汽车领域的投资，进一步加强双方的战略合作。</span></p><p style="text-indent: 2em;"><span style="font-family: simsun; text-indent: 28px; background-color: rgb(255, 255, 255);"></span></p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0px 0px 25px; word-wrap: break-word; line-height: 30px; text-indent: 28px; font-family: simsun; white-space: normal; background-color: rgb(255, 255, 255);"><a href="http://car.auto.ifeng.com/brand/10004/" class="kw-link" target="_blank" style="color: rgb(0, 0, 0); text-decoration: none; border-bottom: 1px dotted rgb(59, 89, 152);">北京</a>汽车集团有限公司董事长徐和谊和戴姆勒股份公司董事会成员、负责大<a href="http://car.auto.ifeng.com/brand/10070/" class="kw-link" target="_blank" style="color: rgb(0, 0, 0); text-decoration: none; border-bottom: 1px dotted rgb(59, 89, 152);">中华</a>区业务的<a href="http://car.auto.ifeng.com/series/10281/" class="kw-link" target="_blank" style="color: rgb(0, 0, 0); text-decoration: none; border-bottom: 1px dotted rgb(59, 89, 152);">唐</a>仕凯出席了在德国柏林举行的新能源汽车战略合作签约仪式，并现场签署了框架协议。</p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0px 0px 25px; word-wrap: break-word; line-height: 30px; text-indent: 28px; font-family: simsun; white-space: normal; background-color: rgb(255, 255, 255);">根据协议，双方将引进戴姆勒的新能源汽车产品至<a href="http://data.auto.ifeng.com/price/p-10563-1-1.html" class="kw-link" target="_blank" style="color: rgb(0, 0, 0); text-decoration: none; border-bottom: 1px dotted rgb(59, 89, 152);">北京奔驰</a>，依托优势、强强联合。北京汽车股份有限公司以及戴姆勒将共同投资，对北京<a href="http://car.auto.ifeng.com/brand/20007/" class="kw-link" target="_blank" style="color: rgb(0, 0, 0); text-decoration: none; border-bottom: 1px dotted rgb(59, 89, 152);">奔驰</a>现有生产设施进行改造升级，从而为新产品的引入作好准备，并致力于持续提升全球最具竞争力的汽车工业体系标杆。作为框架协议的重要部分，戴姆勒拟战略投资北汽集团旗下北京新能源汽车股份有限公司，以加强双方在新能源汽车领域的合作。</p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0px 0px 25px; word-wrap: break-word; line-height: 30px; text-indent: 28px; font-family: simsun; white-space: normal; background-color: rgb(255, 255, 255);">徐和谊董事长表示：“作为中德两国汽车企业的代表，北汽集团与戴姆勒集团多年来携手前行，取得了骄人成绩，此次签约是双方面向未来在新能源汽车领域迈出的重要一步。北汽集团是中国最早发展新能源汽车的企业之一，纯电动汽车销量连续多年领跑中国市场，已成为中国新能源汽车产业的领军企业；戴姆勒集团在新能源汽车领域拥有长时间的探索，积累了先进的技术经验。双方将发挥各自在新能源汽车技术及市场运营方面的优势，实现互利共赢，努力成为‘中国制造2025’和‘德国工业4.0’战略对接的实践标杆。”</p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0px 0px 25px; word-wrap: break-word; line-height: 30px; text-indent: 28px; font-family: simsun; white-space: normal; background-color: rgb(255, 255, 255);">唐仕凯先生表示：“本土化是戴姆勒在华实现可持续发展和未来<a href="http://data.auto.ifeng.com/price/p-30040-1-1.html" class="kw-link" target="_blank" style="color: rgb(0, 0, 0); text-decoration: none; border-bottom: 1px dotted rgb(59, 89, 152);">成功</a>的关键所在。我们不断加大对本土研发的投入，扩大本土生产规模，在产品中融入中国客户的喜好，正是他们让中国成为梅赛德斯-奔驰全球最大的市场。同时，也要特别感谢同我们开展精诚合作的中方合作伙伴。我们与北汽的战略合作已走过12年，双方不断拓展合作业务领域，持续深化紧密合作关系。今天签署的框架协议，为双方在新能源汽车领域的合作开启了崭新篇章。中国已成为全球最大的新能源汽车市场，戴姆勒致力于为中国电动汽车领域的进一步发展贡献力量。”</p><p style="text-indent: 2em;"><span style="font-family: simsun; text-indent: 28px; background-color: rgb(255, 255, 255);"><br/></span><br/></p></td>
+				</tr>
+				<tr>
+					<td height="30"><hr></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<!--回复评论 -->
+	<div id="addComment">
+		<div class="center" style="width:800px;margin-top:30px;">
+			<form id="addCommentForm">
+				<div class="center" style="width:500px">
+					<textarea name="content" cols="72" rows="8" id="addCommentTextarea"
+						required></textarea>
+				</div>
+				<p>
+				<div class="center" style="width:50px;height:80px;">
+					<br> <input type="submit" value="  提 交 评 论  ">
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<div id="showComment"> 
+		<form id="showCommnentForm">
+			<div class="center" style="width:600px">
+			  <a name="commentsStart"></a>
+			  <div class="commentsHead">最新评论</div>
+				<div class="commentsHead" style="text-align:center;">
+					<table align="center" cellpadding="5" cellspacing="0" width="600px">
+						<tr>
+   
+						</tr>
+						<tr align="center">
+							<td colspan="4">total: 0
+								pages</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</form>
+
+		<div id="model" style="display: none;">
+			<form id="replyCommentForm">
+				<div class="modelContent">
+					<table>
+						<tbody>
+							<tr>
+								<td colspan="2"><textarea name="content" cols="60" rows="8"
+										id="content" required></textarea></td>
+							</tr>
+							<tr>
+								<td align="center"><input type="submit" name="submit"
+									id="submit" value="提交"></td>
+								<td align="center"><input type="button"
+									onclick="$('#model').hide();" value="取消"></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</form>
+		</div>
+
+		<form id="pageInfo">
+			<input type="hidden" name="newsId" id="newsId" value="24">
+			<input type="hidden" name="page" id="page"
+				value="0"> <input type="hidden"
+				name="pageSize" id="pageSize" value="2">
+			<input type="hidden" name="totalPageCount" id="totalPageCount"
+				value="0" /> <input type="hidden"
+				name="allRecordCount" id="allRecordCount"
+				value="0">
+		</form>
+	</div>
+</body>
+</html>

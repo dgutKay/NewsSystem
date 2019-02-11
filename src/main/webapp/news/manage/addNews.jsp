@@ -7,11 +7,11 @@
 <title>addNews.jsp</title>
 <script type="text/javascript"
 	src="/NewsSystem/js/jquery/jquery-3.3.1.min.js"></script>
-<script src='<%=WebProperties.propertiesMap.get("ueditConfigJs")%>'
+<script src='<%=WebProperties.config.getString("ueditConfigJs")%>'
 	type="text/javascript"></script>
-<script src='<%=WebProperties.propertiesMap.get("ueditJs")%>'
+<script src='<%=WebProperties.config.getString("ueditJs")%>'
 	type="text/javascript"></script>
-<script src='<%=WebProperties.propertiesMap.get("ueditLang")%>'
+<script src='<%=WebProperties.config.getString("ueditLang")%>'
 	type="text/javascript"></script>
 <script type="text/javascript">
 	function valEmpty(input) {

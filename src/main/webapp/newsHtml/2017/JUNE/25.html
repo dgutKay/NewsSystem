@@ -1,0 +1,175 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<link href="/NewsSystem/css/1.css" rel="stylesheet" type="text/css">
+<script type="text/javascript"
+	src="/NewsSystem/js/jquery/jquery-3.3.1.min.js"></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		//提交用户对文章的评论
+		$("#addCommentForm").on("submit", function(ev) {
+			var url = "/NewsSystem/servlet/CommentServlet?condition=addComment";
+			$("#page").val("1");
+			var data = $("#pageInfo").serialize() + "&" + $("#addCommentForm").serialize();
+			//jQuery.post(url, [data], [callback], [type])
+			//callback:发送成功时回调函数。
+			//type:返回内容格式，xml, html, script, json, text, _default。
+			$.post(url, data, function(data, textStatus) {
+				if (textStatus == "success") {
+					$("#showComment").html(data);
+					$("#addCommentTextarea").val(""); //清空内容
+				} else
+					alert("添加失败！");
+			}, "html");
+
+			ev.preventDefault();
+		});
+	});
+
+	function getOnePage(type, orderFieldName) {
+		var page = $("#page");
+
+		pageValue = parseInt(page.val());
+		if (type == "first") {
+			page.val("1");
+		} else if (type == "pre") {
+			pageValue -= 1;
+			page.val(pageValue.toString());
+		} else if (type == "next") {
+			pageValue += 1;
+			page.val(pageValue.toString());
+		} else if (type == "last") {
+			page.val($("#totalPageCount").val());
+		}
+
+		//提交
+		$("#showComment").load("/NewsSystem/servlet/CommentServlet?condition=showComment", $("#pageInfo").serialize());
+	}
+
+	function praise(commentId, thisobj) { //thisobj表示当前被点击的元素（标签）对象
+		$.ajax({
+			type : "post",
+			dataType : "json",
+			url : "/NewsSystem/servlet/CommentServlet?condition=praise&commentId=" + commentId,
+			data : $("#pageInfo").serialize(),
+			success : function(data) {
+				if (data != null) {
+					if (data.result > 0) {
+						$(thisobj).next().html(data.result); //next（）：下一个兄弟节点，text(data)：设置元素内部文字内容为data
+					} else alert("点赞失败！");
+				}
+			},
+			error : function() {
+				alert("无权限！");
+			}
+		});
+	}
+
+	function model(commentId) {
+		$("#model").show();
+		$("#replyCommentForm").on("submit", function(ev) {
+			var url = "/NewsSystem/servlet/CommentServlet?condition=addComment" + "&commentId=" + commentId;
+			$("#page").val("1");
+			var data = $("#pageInfo").serialize() + "&" + $("#replyCommentForm").serialize();
+
+			$("#showComment").load(url, data);
+			ev.preventDefault();
+		});
+	}
+</script>
+</head>
+<body>
+	<!--新闻内容 -->
+	<div class="center" style="width:800px;margin-top:30px;">
+		<table width="800" border="0">
+			<tbody>
+				<tr>
+					<td class="newsCaption">雪铁龙C4L优惠1.5万 法系浪漫家轿</td>
+				<tr>
+					<td align="center" height="50">作者：Xjr&nbsp;
+						&nbsp;&nbsp; &nbsp;&nbsp; &nbsp; <myTag:LocalDateTimeTag
+							dateTime="2017-06-06T03:03" type="YMDHM" />
+					</td>
+				</tr>
+				<tr>
+					<td height="30"><hr></td>
+				</tr>
+				<tr>
+					<td><p style="margin-top: 0px; margin-bottom: 0px; padding: 0px 0px 25px; word-wrap: break-word; line-height: 30px; text-indent: 28px; font-family: simsun; white-space: normal; background-color: rgb(255, 255, 255);"><strong>凤凰汽车讯 价格信息：</strong>近日，凤凰汽车区域编辑从神龙京津经销商处获悉，目前该店<a href="http://car.auto.ifeng.com/series/2052/" class="kw-link" target="_blank" style="color: rgb(0, 0, 0); text-decoration: none; border-bottom: 1px dotted rgb(59, 89, 152);">雪铁龙C4</a>L车型有大量现车在售，购车可优惠1.5万<a href="http://car.auto.ifeng.com/series/10657/" class="kw-link" target="_blank" style="color: rgb(0, 0, 0); text-decoration: none; border-bottom: 1px dotted rgb(59, 89, 152);">元</a>。对这款车感兴趣的朋友们不妨进一步关注一下。具体价格请详见下表：</p><table align="center" class="article_table" width="555"><tbody><tr class="firstRow"><td class="tabhead" colspan="5" style="margin: 0px; padding-top: 3px; padding-bottom: 3px; word-break: break-all; word-wrap: break-word;  font-size: 13px; font-weight: bold;">C4L 最新价格变动报价表<span style="position: absolute; right: 5px; font-weight: 100; top: 0px;">单位：万元</span></td></tr><tr><td width="" style="margin: 0px; padding: 0px; background-color: rgb(255, 255, 255); word-break: break-all; word-wrap: break-word;">车型</td><td width="75" style="margin: 0px; padding: 0px; background-color: rgb(255, 255, 255); word-break: break-all; word-wrap: break-word;">指导价</td><td width="75" style="margin: 0px; padding: 0px; background-color: rgb(255, 255, 255); word-break: break-all; word-wrap: break-word;">现价</td><td width="75" style="margin: 0px; padding: 0px; background-color: rgb(255, 255, 255); word-break: break-all; word-wrap: break-word;">优惠幅度</td><td width="75" style="margin: 0px; padding: 0px; background-color: rgb(255, 255, 255); word-break: break-all; word-wrap: break-word;">现车情况</td></tr><tr><td style="margin: 0px; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; background-color: rgb(255, 255, 255); word-break: break-all; word-wrap: break-word; text-align: left;"><a href="http://car.auto.ifeng.com/car/40460" target="_blank" style="color: rgb(0, 0, 0); text-decoration: none;">2016款 1.2THP 手动领先型</a></td><td style="margin: 0px; padding: 0px; background-color: rgb(255, 255, 255); word-break: break-all; word-wrap: break-word;">13.49</td><td style="margin: 0px; padding: 0px; background-color: rgb(255, 255, 255); word-break: break-all; word-wrap: break-word;">11.99&nbsp;<a class="inquiry" title="2016款 1.2THP 手动领先型 报价" style="color: rgb(255, 255, 255); background-color: rgb(214, 0, 2); padding: 0px 2px;">询价</a></td><td style="margin: 0px; padding: 0px; background-color: rgb(255, 255, 255); word-break: break-all; word-wrap: break-word;">1.50</td><td style="margin: 0px; padding: 0px; background-color: rgb(255, 255, 255); word-break: break-all; word-wrap: break-word;">现车充足</td></tr><tr><td style="margin: 0px; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; background-color: rgb(255, 255, 255); word-break: break-all; word-wrap: break-word; text-align: left;"><a href="http://car.auto.ifeng.com/car/40018" target="_blank" style="color: rgb(0, 0, 0); text-decoration: none;">2016款 1.2THP 自动领先型</a></td><td style="margin: 0px; padding: 0px; background-color: rgb(255, 255, 255); word-break: break-all; word-wrap: break-word;">14.59</td><td style="margin: 0px; padding: 0px; background-color: rgb(255, 255, 255); word-break: break-all; word-wrap: break-word;">13.09&nbsp;<a class="inquiry" title="2016款 1.2THP 自动领先型 报价" style="color: rgb(255, 255, 255); background-color: rgb(214, 0, 2); padding: 0px 2px;">询价</a></td><td style="margin: 0px; padding: 0px; background-color: rgb(255, 255, 255); word-break: break-all; word-wrap: break-word;">1.50</td><td style="margin: 0px; padding: 0px; background-color: rgb(255, 255, 255); word-break: break-all; word-wrap: break-word;">现车充足</td></tr><tr><td style="margin: 0px; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; background-color: rgb(255, 255, 255); word-break: break-all; word-wrap: break-word; text-align: left;"><a href="http://car.auto.ifeng.com/car/40242" target="_blank" style="color: rgb(0, 0, 0); text-decoration: none;">2016款 1.2THP 自动精英型</a></td><td style="margin: 0px; padding: 0px; background-color: rgb(255, 255, 255); word-break: break-all; word-wrap: break-word;">15.19</td><td style="margin: 0px; padding: 0px; background-color: rgb(255, 255, 255); word-break: break-all; word-wrap: break-word;">13.69&nbsp;<a class="inquiry" title="2016款 1.2THP 自动精英型 报价" style="color: rgb(255, 255, 255); background-color: rgb(214, 0, 2); padding: 0px 2px;">询价</a></td><td style="margin: 0px; padding: 0px; background-color: rgb(255, 255, 255); word-break: break-all; word-wrap: break-word;">1.50</td><td style="margin: 0px; padding: 0px; background-color: rgb(255, 255, 255); word-break: break-all; word-wrap: break-word;">现车充足</td></tr><tr><td style="margin: 0px; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; background-color: rgb(255, 255, 255); word-break: break-all; word-wrap: break-word; text-align: left;"><a href="http://car.auto.ifeng.com/car/40461" target="_blank" style="color: rgb(0, 0, 0); text-decoration: none;">2016款 1.6THP 自动领先型</a></td><td style="margin: 0px; padding: 0px; background-color: rgb(255, 255, 255); word-break: break-all; word-wrap: break-word;">15.19</td><td style="margin: 0px; padding: 0px; background-color: rgb(255, 255, 255); word-break: break-all; word-wrap: break-word;">13.69&nbsp;<a class="inquiry" title="2016款 1.6THP 自动领先型 报价" style="color: rgb(255, 255, 255); background-color: rgb(214, 0, 2); padding: 0px 2px;">询价</a></td><td style="margin: 0px; padding: 0px; background-color: rgb(255, 255, 255); word-break: break-all; word-wrap: break-word;">1.50</td><td style="margin: 0px; padding: 0px; background-color: rgb(255, 255, 255); word-break: break-all; word-wrap: break-word;">现车充足</td></tr><tr><td style="margin: 0px; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; background-color: rgb(255, 255, 255); word-break: break-all; word-wrap: break-word; text-align: left;"><a href="http://car.auto.ifeng.com/car/40462" target="_blank" style="color: rgb(0, 0, 0); text-decoration: none;">2016款 1.6THP 自动精英型</a></td><td style="margin: 0px; padding: 0px; background-color: rgb(255, 255, 255); word-break: break-all; word-wrap: break-word;">16.09</td><td style="margin: 0px; padding: 0px; background-color: rgb(255, 255, 255); word-break: break-all; word-wrap: break-word;">14.59&nbsp;<a class="inquiry" title="2016款 1.6THP 自动精英型 报价" style="color: rgb(255, 255, 255); background-color: rgb(214, 0, 2); padding: 0px 2px;">询价</a></td><td style="margin: 0px; padding: 0px; background-color: rgb(255, 255, 255); word-break: break-all; word-wrap: break-word;">1.50</td><td style="margin: 0px; padding: 0px; background-color: rgb(255, 255, 255); word-break: break-all; word-wrap: break-word;">现车充足</td></tr><tr><td style="margin: 0px; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; background-color: rgb(255, 255, 255); word-break: break-all; word-wrap: break-word; text-align: left;"><a href="http://car.auto.ifeng.com/car/40194" target="_blank" style="color: rgb(0, 0, 0); text-decoration: none;">2016款 1.6THP 自动旗舰型</a></td><td style="margin: 0px; padding: 0px; background-color: rgb(255, 255, 255); word-break: break-all; word-wrap: break-word;">18.29</td><td style="margin: 0px; padding: 0px; background-color: rgb(255, 255, 255); word-break: break-all; word-wrap: break-word;">16.79&nbsp;<a class="inquiry" title="2016款 1.6THP 自动旗舰型 报价" style="color: rgb(255, 255, 255); background-color: rgb(214, 0, 2); padding: 0px 2px;">询价</a></td><td style="margin: 0px; padding: 0px; background-color: rgb(255, 255, 255); word-break: break-all; word-wrap: break-word;">1.50</td><td style="margin: 0px; padding: 0px; background-color: rgb(255, 255, 255); word-break: break-all; word-wrap: break-word;">现车充足</td></tr><tr><td colspan="5" style="margin: 0px; padding: 0px; background-color: rgb(255, 255, 255); word-break: break-all; word-wrap: break-word;">更多优惠请致电经销商</td></tr><tr><td class="tabfoot" colspan="5" style="margin: 0px; padding: 0px 15px 0px 0px; background-color: rgb(255, 255, 255); word-break: break-all; word-wrap: break-word;"><span class="tel" style="font-size: 18px; float: left; display: inline; color: rgb(36, 140, 0); line-height: 40px; font-family: &quot;Microsoft YaHei&quot;; font-weight: 700; padding: 0px 0px 0px 18px;">免费咨询电话：400-068-1313 转 680</span></td></tr></tbody></table><p style="text-indent: 2em;"><br/></p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0px 0px 25px; word-wrap: break-word; line-height: 30px; text-indent: 28px; font-family: simsun; white-space: normal; background-color: rgb(255, 255, 255);"><strong>金融政策：</strong>保险方面，以售价为13.49万的2016款 1.2THP 手动领先型车型为例，新车第一年保险费用在0.6万元左右。贷款方面，按央行基准利率首付30%三年期计算，首付5.9万元左右(包含车款、上牌、保险、购置税和担保金等),月供0.3万元左右。具体费用根据车型以到店核算为准。</p><p style="margin-top: 0px; margin-bottom: 0px; padding: 0px 0px 25px; word-wrap: break-word; line-height: 30px; text-indent: 28px; font-family: simsun; white-space: normal; background-color: rgb(255, 255, 255);"><strong>保养费用：</strong><a href="http://car.auto.ifeng.com/series/9840/" class="kw-link" target="_blank" style="color: rgb(0, 0, 0); text-decoration: none; border-bottom: 1px dotted rgb(59, 89, 152);">雪铁龙C4L</a>车型享受3年或10万公里整车质保。常规保养周期为每5000公里更换一次机油、机滤，费用在300元左右。更换机油、三滤的费用在550元左右，此保养费只作为参考依据，因为不同的保养材料会造成保养费用的差异。具体费用根据车型不同以到店核算为准。</p><p style="text-indent: 2em;"><br/></p></td>
+				</tr>
+				<tr>
+					<td height="30"><hr></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<!--回复评论 -->
+	<div id="addComment">
+		<div class="center" style="width:800px;margin-top:30px;">
+			<form id="addCommentForm">
+				<div class="center" style="width:500px">
+					<textarea name="content" cols="72" rows="8" id="addCommentTextarea"
+						required></textarea>
+				</div>
+				<p>
+				<div class="center" style="width:50px;height:80px;">
+					<br> <input type="submit" value="  提 交 评 论  ">
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<div id="showComment"> 
+		<form id="showCommnentForm">
+			<div class="center" style="width:600px">
+			  <a name="commentsStart"></a>
+			  <div class="commentsHead">最新评论</div>
+				<div class="commentsHead" style="text-align:center;">
+					<table align="center" cellpadding="5" cellspacing="0" width="600px">
+						<tr>
+   
+						</tr>
+						<tr align="center">
+							<td colspan="4">total: 0
+								pages</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</form>
+
+		<div id="model" style="display: none;">
+			<form id="replyCommentForm">
+				<div class="modelContent">
+					<table>
+						<tbody>
+							<tr>
+								<td colspan="2"><textarea name="content" cols="60" rows="8"
+										id="content" required></textarea></td>
+							</tr>
+							<tr>
+								<td align="center"><input type="submit" name="submit"
+									id="submit" value="提交"></td>
+								<td align="center"><input type="button"
+									onclick="$('#model').hide();" value="取消"></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</form>
+		</div>
+
+		<form id="pageInfo">
+			<input type="hidden" name="newsId" id="newsId" value="25">
+			<input type="hidden" name="page" id="page"
+				value="0"> <input type="hidden"
+				name="pageSize" id="pageSize" value="2">
+			<input type="hidden" name="totalPageCount" id="totalPageCount"
+				value="0" /> <input type="hidden"
+				name="allRecordCount" id="allRecordCount"
+				value="0">
+		</form>
+	</div>
+</body>
+</html>

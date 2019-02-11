@@ -71,10 +71,10 @@ public class NewsDao {
 		List<News> newses = new ArrayList<News>();
 		String sql;
 		if ("all".equals(type))
-			sql = "select newsId,caption,author,newsType,newsTime,publishTime from news order by newsTime desc limit 0,"
+			sql = "select newsId,caption,author,newsType,newsTime,publishTime,url from news order by newsTime desc limit 0,"
 					+ n.toString();
 		else
-			sql = "select newsId,caption,author,newsType,newsTime,publishTime from news  where newsType ='" + type
+			sql = "select newsId,caption,author,newsType,newsTime,publishTime,url from news where newsType ='" + type
 					+ "' order by newsTime desc limit 0," + n.toString();
 
 		databaseDao.query(sql);
@@ -86,6 +86,7 @@ public class NewsDao {
 			news.setNewsType(databaseDao.getString("newsType"));
 			news.setNewsTime(databaseDao.getLocalDateTime("newsTime"));
 			news.setPublishTime(databaseDao.getTimestamp("publishTime"));
+			news.setUrl(databaseDao.getString("url"));
 			newses.add(news);
 		}
 		return newses;
@@ -134,4 +135,45 @@ public class NewsDao {
 		return articleNumberByMonthInAYearEveryYearList;
 	}
 
+	public List<News> getAll(DatabaseDao databaseDao) throws SQLException {
+		List<News> newsList = new ArrayList<News>();
+		// 检索没有生成过静态网页的新闻
+		String sql = "select * from news where staticHtml=0;";
+		databaseDao.query(sql);
+		while (databaseDao.next()) {
+			News news = new News();
+			news.setNewsId(databaseDao.getInt("newsId"));
+			news.setCaption(databaseDao.getString("caption"));
+			news.setContent(databaseDao.getString("content"));
+			news.setAuthor(databaseDao.getString("author"));
+			news.setNewsType(databaseDao.getString("newsType"));
+			news.setNewsTime(databaseDao.getLocalDateTime("newsTime"));
+			news.setPublishTime(databaseDao.getTimestamp("publishTime"));
+			news.setUrl(databaseDao.getString("url"));
+
+			newsList.add(news);
+		}
+
+		return newsList;
+	}
+
+	public Integer setStaticHtml(DatabaseDao databaseDao) throws SQLException {
+		return databaseDao.update("update news set staticHtml=1 where staticHtml=0");
+	}
+
+	public Integer resetStaticHtml(DatabaseDao databaseDao) throws SQLException {
+		return databaseDao.update("update news set staticHtml=0");
+	}
+
+	public void batchUpdateUrl(List<News> newsList, DatabaseDao databaseDao) throws SQLException {
+		String sql = "update news set url=? where newsId=?";
+		databaseDao.createPreparedStatement(sql);
+		for (News news : newsList) {
+			databaseDao.setString(1, news.getUrl());
+			databaseDao.setInt(2, news.getNewsId());
+			databaseDao.addBatch();
+		}
+
+		databaseDao.executeBatch();
+	}
 }

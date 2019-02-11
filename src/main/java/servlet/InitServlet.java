@@ -14,6 +14,7 @@ import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
 import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.configuration2.ex.ConfigurationException;
+import org.quartz.SchedulerException;
 
 import bean.Authority;
 import bean.NewsType;
@@ -22,24 +23,13 @@ import tools.EMailTool;
 import tools.FileTool;
 import tools.WebProperties;
 import dao.DatabaseDao;
+import job.DatabaseBackup;
 import service.AuthorityService;
 import service.NewsTypeService;
 
 public class InitServlet extends HttpServlet {
 	public void init(ServletConfig conf) throws ServletException {
 		super.init(conf);
-		// 初始化数据库参数
-		DatabaseDao.drv = this.getServletContext().getInitParameter("drv");
-		DatabaseDao.url = this.getServletContext().getInitParameter("url");
-		DatabaseDao.usr = this.getServletContext().getInitParameter("usr");
-		DatabaseDao.pwd = this.getServletContext().getInitParameter("pwd");
-
-		// 初始化email参数
-		EMailTool.emailHost = this.getServletContext().getInitParameter("emailHost");
-		EMailTool.emailUserEmail = this.getServletContext().getInitParameter("emailUserEmail");
-		EMailTool.emailUserName = this.getServletContext().getInitParameter("emailUserName");
-		EMailTool.emailPassword = this.getServletContext().getInitParameter("emailPassword");
-		EMailTool.domain = this.getServletContext().getInitParameter("domain");
 
 		ServletContext servletContext = conf.getServletContext();
 		FileTool.root = servletContext.getRealPath("\\");
@@ -54,19 +44,6 @@ public class InitServlet extends HttpServlet {
 			WebProperties.config = builder.getConfiguration();
 			WebProperties.config.addProperty("projectRoot",
 					servletContext.getRealPath(WebProperties.config.getString("projectName")));
-
-			Configuration config = builder.getConfiguration();
-			WebProperties.propertiesMap.put("projectRoot", servletContext.getRealPath(config.getString("projectName")));
-			WebProperties.propertiesMap.put("projectName", config.getString("projectName"));
-			WebProperties.propertiesMap.put("tempDir", config.getString("tempDir"));
-			WebProperties.propertiesMap.put("headIconFileDefault", config.getString("headIconFileDefault"));
-			WebProperties.propertiesMap.put("headIconDirDefault", config.getString("headIconDirDefault"));
-			WebProperties.propertiesMap.put("redirectTime", config.getString("redirectTime"));
-			WebProperties.propertiesMap.put("ueditConfigJs", config.getString("ueditConfigJs"));
-			WebProperties.propertiesMap.put("ueditJs", config.getString("ueditJs"));
-			WebProperties.propertiesMap.put("ueditLang", config.getString("ueditLang"));
-			WebProperties.propertiesMap.put("excelTemplate", config.getString("excelTemplate"));
-			WebProperties.propertiesMap.put("wordTemplate", config.getString("wordTemplate"));
 
 			// 加载新闻类型
 			NewsTypeService newsTypeService = new NewsTypeService();
@@ -84,8 +61,26 @@ public class InitServlet extends HttpServlet {
 					key = authority.getUrl() + authority.getParam() + authority.getUserType();
 				AuthorityTool.authorityMap.put(key, authority);
 			}
-
 		} catch (ConfigurationException e) {
+			e.printStackTrace();
+		}
+
+		// 初始化email参数
+		EMailTool.domain = WebProperties.config.getString("domain");
+		EMailTool.emailHost = WebProperties.config.getString("emailHost");
+		EMailTool.emailUserEmail = WebProperties.config.getString("emailUserEmail");
+		EMailTool.emailUserName = WebProperties.config.getString("emailUserName");
+		EMailTool.emailPassword = WebProperties.config.getString("emailPassword");
+
+		String d = this.getServletContext().getRealPath(WebProperties.config.getString("databaseBackupDir"));
+		WebProperties.config.setProperty("databaseBackupDir", d);
+
+		// quartz实现周期性备份数据库任务
+		try {
+			DatabaseBackup.createScheduler();
+			DatabaseBackup.scheduleJob();
+			DatabaseBackup.start();
+		} catch (SchedulerException e) {
 			e.printStackTrace();
 		}
 	}
