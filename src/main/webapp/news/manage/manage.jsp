@@ -7,6 +7,11 @@
 <title>manage.jsp</title>
 <script type="text/javascript"
 	src="/NewsSystem/js/jquery/jquery-3.3.1.min.js"></script>
+<link rel="stylesheet" type="text/css"
+	href="/NewsSystem/plugin/DataTables/datatables.css">
+<script type="text/javascript" charset="utf8"
+	src="/NewsSystem/plugin/DataTables/datatables.js">
+</script>
 <script type="text/javascript">
 	function getOnePage(type, orderFieldName) {
 		var page = $("#page");
@@ -51,57 +56,58 @@
 		$("#myform").attr("target", "_blank");
 		$("#myform").attr("action", "/NewsSystem/servlet/NewsServlet?condition=edit").submit();
 	}
+
 </script>
 </head>
 
 <body>
-	<form action="" id="myform" method="post">
-		<table border="1" align="center" cellpadding="5" cellspacing="0">
+	<form id="myform" method="post">
+		<table border="1" align="center" cellpadding="5" cellspacing="0" id="myTable">
 			<tr bgcolor='lightyellow'>
 				<td><a href='javascript:void(0);'
 					onclick="getOnePage('','newsId');">Id</a></td>
-				<td>Caption</td>
-				<td>Author</td>
-				<td>News Date</td>
-				<td>Delete</td>
-				<td>Edit</td>
+				<td>标题</td>
+				<td>作者</td>
+				<td>时间</td>
+				<td>删除</td>
+				<td>修改</td>
 			</tr>
 			<c:forEach items="${requestScope.newses }" var="news">
 				<tr>
-					<td>${news.newsId }</td>
-					<td><a
+					<td  width="5%">${news.newsId }</td>
+					<td width="30%"><a
 						href="/NewsSystem/servlet/NewsServlet?condition=showANews&newsId=${news.newsId }&page=1&pageSize=2">${news.caption }</a></td>
-					<td>${news.author }</td>
-					<td>${news.newsTime }</td>
-					<td><a href="javascript:void(0);"
-						onclick="deleteANews(${news.newsId});">delete</a></td>
-					<td><a href="javascript:void(0);"
-						onclick="editANews(${news.newsId});">edit</a></td>
+					<td width="15%">${news.author }</td>
+					<td width="20%">${news.newsTime }</td>
+					<td width="10%"><a href="javascript:void(0);"
+						onclick="deleteANews(${news.newsId});">删除</a></td>
+					<td width="10%"><a href="javascript:void(0);"
+						onclick="editANews(${news.newsId});">修改</a></td>
 				</tr>
 			</c:forEach>
 		</table>
 		<br>
-		<table border="1" align="center" cellpadding="5" cellspacing="0">
+		<table border="1" align="right" cellpadding="5" cellspacing="0">
 			<tr>
 				<c:if test="${requestScope.pageInformation.page>1 }">
 					<td><a href="javascript:void(0);"
-						onclick="getOnePage('first','');">First</a>
+						onclick="getOnePage('first','');">首页</a>
 				</c:if>
 				<c:if test="${requestScope.pageInformation.page>1 }">
 					<td><a href="javascript:void(0);"
-						onclick="getOnePage('pre','');">Previous</a>
+						onclick="getOnePage('pre','');">上一页</a>
 				</c:if>
 				<c:if
 					test="${requestScope.pageInformation.page< requestScope.pageInformation.totalPageCount }">
 					<td><a href="javascript:void(0);"
-						onclick="getOnePage('next','');">Next</a>
+						onclick="getOnePage('next','');">下一页</a>
 				</c:if>
 				<c:if
 					test="${requestScope.pageInformation.page< requestScope.pageInformation.totalPageCount }">
 					<td><a href="javascript:void(0);"
-						onclick="getOnePage('last','');">Last</a>
+						onclick="getOnePage('last','');">尾页</a>
 				</c:if>
-				<td>total: ${requestScope.pageInformation.totalPageCount} pages</td>
+				<td>总共：${requestScope.pageInformation.totalPageCount} 页</td>
 			</tr>
 		</table>
 		<input type="hidden" name="page" id="page"

@@ -59,31 +59,31 @@
 	<form enctype="multipart/form-data" id="form" name="form" method="post">
 		<table border="1" align="center" cellpadding="5" cellspacing="0">
 			<tr>
-				<td colspan="2" align="center">Change Information</td>
+				<td colspan="2" align="center">修改个人信息</td>
 			</tr>
 			<tr>
-				<td align="right">Head Icon:</td>
+				<td align="right">头像：</td>
 				<td><img src="${sessionScope.user.headIconUrl }" height="100"
 					width="100" /> <input type="file" id="myFile" name="myFile"><br>
-					<br>Preview:<img id="myImage" height="100" width="100" /></td>
+					<br>预览：<img id="myImage" height="100" width="100" /></td>
 			</tr>
 			<c:if test="${sessionScope.user.type=='user' }">
 				<tr>
-					<td align="right">Gender:</td>
+					<td align="right">性别：</td>
 					<td><select id="sex" name="sex">
 							<option value="男">男</option>
 							<option value="女">女</option>
 					</select></td>
 				</tr>
 				<tr>
-					<td align="right">Hobby:</td>
+					<td align="right">爱好：</td>
 					<td><input type="text" name="hobby"
 						value="${requestScope.userInformation.hobby }"></td>
 				</tr>
 			</c:if>
 			<tr>
 				<td colspan="2" align="center"><input type="button"
-					value="submit" id="submit" /></td>
+					value="确认" id="submit" /></td>
 			</tr>
 		</table>
 	</form>

@@ -43,31 +43,32 @@
 </head>
 
 <body>
+<div align="center">
 	<form action="/NewsSystem/servlet/NewsServlet?condition=add"
 		method="post" name="myform" onsubmit="return check()">
 		<table border="0" align="center" cellpadding="5" cellspacing="0">
 			<tr>
-				<td colspan="2" align="center">Add News</td>
+				<td colspan="2" align="center">添加新闻</td>
 			</tr>
 			<tr>
-				<td align="right">Caption:</td>
+				<td align="right">标题：</td>
 				<td><input type="text" name="caption" id="caption"
 					onBlur="valEmpty('caption')"><span id="captionSpan"></span></td>
 			</tr>
 			<tr>
-				<td align="right">Type:</td>
+				<td align="right">类型：</td>
 				<td><select name="newsType" id="newsType">
 						<c:forEach items="${applicationScope.newsTypes }" var="newsType">
 							<option value="${newsType.name }">${newsType.name}</option>
 						</c:forEach>
 				</select></td>
 			<tr>
-				<td align="right">Author:</td>
+				<td align="right">作者：</td>
 				<td><input type="text" name="author" id="author"
 					onBlur="valEmpty('author')"><span id="authorSpan"></span></td>
 			</tr>
 			<tr>
-				<td align="right">News Time:</td>
+				<td align="right">时间：</td>
 				<td><input type="datetime-local" name="newsTime" id="newsTime"
 					onBlur="valEmpty('newsTime')"><span id="newsTimeSpan"></span></td>
 			</tr>
@@ -81,9 +82,10 @@
 			</tr>
 			<tr>
 				<td colspan="2" align="center"><input type="submit"
-					value="submit" /></td>
+					value="确认" /></td>
 			</tr>
 		</table>
 	</form>
+</div>
 </body>
 </html>

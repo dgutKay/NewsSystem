@@ -78,6 +78,15 @@
   </servlet-mapping>
 
 	<filter>
+		<filter-name>CorsFilter</filter-name>
+		<filter-class>filter.CorsFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>CorsFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
+	<filter>
 		<filter-name>charencode</filter-name>
 		<filter-class>filter.CharEncodingFilter</filter-class>
 	</filter>
@@ -122,7 +131,8 @@
 
 
 	<welcome-file-list>
-		<welcome-file>index.jsp</welcome-file>
+		<!-- <welcome-file>index.jsp</welcome-file> -->
+		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>
 
 	<session-config>

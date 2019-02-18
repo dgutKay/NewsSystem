@@ -96,8 +96,7 @@ public class NewsServlet extends HttpServlet {
 			request.setAttribute("message", message);
 			getServletContext().getRequestDispatcher("/message.jsp").forward(request, response);
 		} else if ("homepage".equals(condition)) {// 主页多个分类新闻区
-			String newsTypesString = new String(WebProperties.config.getString("newsTypes").getBytes("ISO-8859-1"),
-					"UTF-8");
+			String newsTypesString=new String(WebProperties.config.getString("newsTypes"));
 			String[] newsTypes = newsTypesString.split(",");
 			Integer homePageNewsN = Integer.parseInt(WebProperties.config.getString("homePageNewsN"));
 			List<List<String>> newsCaptionsList = new ArrayList<List<String>>();
@@ -143,6 +142,41 @@ public class NewsServlet extends HttpServlet {
 
 			Gson gson = new Gson();
 			String jsonString = gson.toJson(list);
+			Tool.returnJsonString(response, jsonString);
+		} else if ("showNewsByNewsTypeAjaxVue".equals(condition)) {// 主页多个分类新闻区
+			PageInformation pageInformation = new PageInformation();
+			Tool.getPageInformation("news", request, pageInformation);
+			String newsType = request.getParameter("newsType");
+
+			if (!("all").equals(newsType))
+				pageInformation.setSearchSql(" newsType='" + newsType + "' ");
+			else 
+				pageInformation.setSearchSql(null);
+
+			List<News> newses = newsService.getOnePage(pageInformation);
+			List<Object> list = new ArrayList<Object>();
+			list.add(pageInformation);// 第一个对象保存分页信息
+			list.add(newses);// 第二个对象保存新闻
+
+			Gson gson = new Gson();
+			String jsonString = gson.toJson(list);
+			Tool.returnJsonString(response, jsonString);
+		} else if ("homepageJson".equals(condition)) {// 主页多个分类新闻区
+			String newsTypesString=new String(WebProperties.config.getString("newsTypes"));
+			String[] newsTypes = newsTypesString.split(",");
+			Integer homePageNewsN = Integer.parseInt(WebProperties.config.getString("homePageNewsN"));
+			List<List<String>> newsCaptionsList = new ArrayList<List<String>>();
+			List<List<News>> newsesList = newsService.getByTypesTopN(newsTypes, homePageNewsN, newsCaptionsList);
+			int newsTypesNumber = newsTypes.length;
+
+			List<Object> list = new ArrayList<Object>();			
+			list.add(newsTypesNumber);
+			list.add(newsTypes);
+			list.add(newsesList);
+			list.add(newsCaptionsList);
+
+			Gson gson = new Gson();
+			String jsonString= gson.toJson(list);
 			Tool.returnJsonString(response, jsonString);
 		}
 	}

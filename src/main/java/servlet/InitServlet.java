@@ -75,14 +75,14 @@ public class InitServlet extends HttpServlet {
 		String d = this.getServletContext().getRealPath(WebProperties.config.getString("databaseBackupDir"));
 		WebProperties.config.setProperty("databaseBackupDir", d);
 
-		// quartz实现周期性备份数据库任务
+		/*// quartz实现周期性备份数据库任务
 		try {
 			DatabaseBackup.createScheduler();
 			DatabaseBackup.scheduleJob();
 			DatabaseBackup.start();
 		} catch (SchedulerException e) {
 			e.printStackTrace();
-		}
+		}*/
 	}
 
 }

@@ -89,22 +89,22 @@
 	<form action="" id="form" name="form" method="post">
 		<table border="0" align="center" cellpadding="5" cellspacing="0">
 			<tr>
-				<td colspan="2" align="center">Change Password</td>
+				<td colspan="2" align="center">修改密码</td>
 			</tr>
 			<tr>
-				<td align="right">Current Password:</td>
+				<td align="right">旧密码：</td>
 				<td><input type="password" name="curPassword" id="curPassword"
 					onBlur="valPassword('curPassword','curPasswordSpan')"><span
 					id="curPasswordSpan"></span></td>
 			</tr>
 			<tr>
-				<td align="right">New Password:</td>
+				<td align="right">新密码：</td>
 				<td><input type="password" name="newPassword" id="newPassword"
 					onBlur="valPassword('newPassword','newPasswordSpan')"><span
 					id="newPasswordSpan"></span></td>
 			</tr>
 			<tr>
-				<td align="right">Confirm Password:</td>
+				<td align="right">确认密码：</td>
 				<td><input type="password" name="confirmPassword"
 					id="confirmPassword"
 					onBlur="passwordSame('newPassword','confirmPassword','confirmPasswordSpan')"><span
@@ -112,7 +112,7 @@
 			</tr>
 			<tr>
 				<td colspan="2" align="center"><input type="button"
-					name="button" id="button" value="confirm" /></td>
+					name="button" id="button" value="确认" /></td>
 			</tr>
 		</table>
 	</form>

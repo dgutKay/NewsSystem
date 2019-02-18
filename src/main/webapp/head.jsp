@@ -14,18 +14,18 @@
 		<div class="logRight">
 			<div class="logRightInner">
 				<c:if test="${!(empty sessionScope.user) }">
-					<a href="/NewsSystem/user/manageUIMain/manageMain.jsp">Manage</a>&nbsp;&nbsp;&nbsp;
+					<a href="/NewsSystem/user/manageUIMain/manageMain.jsp">管理</a>&nbsp;&nbsp;&nbsp;
 					</c:if>
 
-				<a href="/NewsSystem/index.jsp">Home Page</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<a href="/NewsSystem/index.jsp">首页</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 				<c:choose>
 					<c:when test="${empty sessionScope.user}">
-						<a href="/NewsSystem/user/free/login.jsp">Login</a>&nbsp;&nbsp;&nbsp;
-							&nbsp;<a href="/NewsSystem/user/free/register.jsp">Register</a>
+						<a href="/NewsSystem/user/free/login.jsp">登录</a>&nbsp;&nbsp;&nbsp;
+							&nbsp;<a href="/NewsSystem/user/free/register.jsp">注册</a>
 					</c:when>
 					<c:otherwise>
 					    	${sessionScope.user.name}&nbsp;&nbsp;
-					    	<a href="/NewsSystem/servlet/UserServlet?condition=exit">Logout</a>
+					    	<a href="/NewsSystem/servlet/UserServlet?condition=exit">注销</a>
 					</c:otherwise>
 				</c:choose>
 			</div>

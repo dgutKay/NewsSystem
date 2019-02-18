@@ -1,6 +1,7 @@
 package servlet;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -169,6 +170,17 @@ public class UserServlet extends HttpServlet {
 				request.setAttribute("userInformation", userInformation);
 			}
 			getServletContext().getRequestDispatcher("/user/manage/showUserInformation.jsp").forward(request, response);
+		} else if ("showUserInformationAjaxVue".equals(condition)) { // 显示普通用户个人信息
+			List<Object> list = new ArrayList<Object>();
+			user = (User) request.getSession().getAttribute("user");
+			list.add(user);
+			if ("user".equals(user.getType())) {
+				UserInformation userInformation = userService.getByUserId(user.getUserId());
+				list.add(userInformation);
+			}
+			Gson gson = new Gson();
+			String jsonString = gson.toJson(list);
+			Tool.returnJsonString(response, jsonString);
 		} else if ("changeUserInformation".equals(condition)) { // 修改普通用户个人信息的第一步：显示可修改信息
 			user = (User) session.getAttribute("user");
 			if ("user".equals(user.getType())) {
@@ -296,6 +308,11 @@ public class UserServlet extends HttpServlet {
 				userService.qqBindOldUser(user);
 				return;
 			}
+		} else if (condition.equals("getUser")) {// 批量添加用户
+			user = (User) session.getAttribute("user");
+			Gson gson = new Gson();
+			String jsonString = gson.toJson(user);
+			Tool.returnJsonString(response, jsonString);
 		}
 	}
 

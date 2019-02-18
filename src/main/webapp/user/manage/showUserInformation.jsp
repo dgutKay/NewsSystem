@@ -9,32 +9,32 @@
 <body>
 	<table border="1" align="center" cellpadding="5" cellspacing="0">
 		<tr>
-			<td colspan="2" align="center">User Information</td>
+			<td colspan="2" align="center">个人信息：</td>
 		</tr>
 		<tr>
-			<td align="right">User Type:</td>
+			<td align="right">用户类型：</td>
 			<td>${sessionScope.user.type }</td>
 		</tr>
 		<tr>
-			<td align="right">User Name:</td>
+			<td align="right">用户名：</td>
 			<td>${sessionScope.user.name }</td>
 		</tr>
 		<tr>
-			<td align="right">Head Icon:</td>
+			<td align="right">头像：</td>
 			<td><img src="${sessionScope.user.headIconUrl }" height="100"
 				width="100" /></td>
 		</tr>
 		<tr>
-			<td align="right">Register Date:</td>
+			<td align="right">注册日期：</td>
 			<td>${sessionScope.user.registerDate }</td>
 		</tr>
 		<c:if test="${sessionScope.user.type=='user' }">
 			<tr>
-				<td align="right">Gender:</td>
+				<td align="right">性别：</td>
 				<td>${requestScope.userInformation.sex }</td>
 			</tr>
 			<tr>
-				<td align="right">Hobby:</td>
+				<td align="right">爱好：</td>
 				<td>${requestScope.userInformation.hobby }</td>
 			</tr>
 		</c:if>
